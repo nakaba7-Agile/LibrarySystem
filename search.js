@@ -48,18 +48,19 @@ $('#searchBookBtn').on('click', searchBooksByTitle);
 
 $('#bookSearchResults').on('click', '.register-btn', async function() {
   const bookId = $(this).data('bookid');
-  // 必要に応じてユーザーIDなども取得
-  const readingData = {
-    id: newId,
-    bookId: bookId,
-    // 例: userId: 1, // 必要ならユーザーIDを追加
-    startedAt: new Date().toISOString()
-  };
   try {
     // 既存のreadingsを取得して最大idを調べる
     const readings = await $.getJSON(`${API}/readings`);
     const maxId = readings.length > 0 ? Math.max(...readings.map(r => r.id || 0)) : 0;
     const newId = maxId + 1;
+
+    // 必要に応じてユーザーIDなども取得
+    const readingData = {
+      id: newId,
+      userId: 5, // 仮のユーザーID
+      bookId: bookId,
+      date: new Date().toISOString().split('T')[0]
+    };
 
     await $.ajax({
       url: `${API}/readings`,
