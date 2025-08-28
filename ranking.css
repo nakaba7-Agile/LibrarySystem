@@ -10,21 +10,6 @@ body {
                "Hiragino Kaku Gothic ProN",Meiryo,Arial,sans-serif;
 }
 
-/* 変更ここから*/
-/* ページ切り替え */
-.page { 
-  display: none; 
-}
-
-.active { 
-  display: block; 
-}
-
-nav button { 
-  margin-right: 10px; 
-}
-/* 変更ここまで */
-
 /* ウィンドウ幅に沿わせる（最大100vw） */
 .wrap { width: 100%; max-width: 100vw; margin: 0 auto; padding: 0; }
 
