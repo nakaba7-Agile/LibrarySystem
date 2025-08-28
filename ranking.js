@@ -6,6 +6,7 @@ const PADDING_PX   = 6;                // 左右パディング
 
 // ★ 自分の表示名（左端・黒で表示）
 const MY_NAME = "窓辺あかり";
+const MY_USER_ID = 6; // ← あなたの users.id に合わせて
 
 /* ===== 状態 ===== */
 let RAW = { users: [], departments: [], positions: [], readings: [] };
@@ -192,7 +193,7 @@ function render(){
   });
 
   // ② 本人だけはフィルタから“除外”して必ず含める
-  const me = RAW.users.find(u => u.name === MY_NAME);
+  const me = RAW.users.find(u => u.id === MY_USER_ID || u.name === MY_NAME);
   if (me && !users.some(u => u.id === me.id)) {
     users = [me, ...users];   // 先頭に差し込む（この後のロジックでも最左に固定）
   }
@@ -205,13 +206,14 @@ function render(){
 
   // --- (4)の要件 ---
   // 1) 全員を作る
-  let rows = users.map(u => ({ name: u.name, count: map.get(u.id) ?? 0 }));
+  let rows = users.map(u => ({ id: u.id, name: u.name, count: map.get(u.id) ?? 0 }));
   // 2) 自分（MY_NAME）は0冊でも残す。他は0冊を除外（必要ならこの行を外す）
   rows = rows.filter(r => r.count > 0 || r.name === MY_NAME);
   // 3) 読書数降順 → 名前昇順
-  rows.sort((a,b)=> b.count - a.count || a.name.localeCompare(b.name,'ja'));
+  // 0冊は全員除外（本人も含む）
+  rows = rows.filter(r => r.count > 0);
   // 4) 自分を先頭へ
-  const mineIdx = rows.findIndex(r => r.name === MY_NAME);
+  const mineIdx = rows.findIndex(r => r.id === MY_USER_ID || r.name === MY_NAME);
   if (mineIdx > -1) {
     const mine = rows.splice(mineIdx, 1)[0];
     rows = [mine, ...rows];
@@ -219,7 +221,7 @@ function render(){
 
   const labels = rows.map(r => r.name);
   const counts = rows.map(r => r.count);
-  const colors = rows.map(r => r.name === MY_NAME ? '#b0a8a8ff' : '#dedcdcff'); // 自分は黒
+  const colors = rows.map(r => (r.id === MY_USER_ID || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
 
   // スクロール用の幅とキャンバス解像度を調整
   setInnerWidth(labels.length);
@@ -257,5 +259,3 @@ $('#month').addEventListener('change', render);
 
 // 初回
 fetchAll();
-
-window.parent.postMessage('resizeIframe', '*');
