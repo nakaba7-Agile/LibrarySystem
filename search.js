@@ -48,12 +48,11 @@ $('#searchBookBtn').on('click', searchBooksByTitle);
 
 $('#bookSearchResults').on('click', '.register-btn', async function() {
   const bookId = $(this).data('bookid');
-  try {
-    // 既存のreadingsを取得して最大idを調べる
-    const readings = await $.getJSON(`${API}/readings`);
-    const maxId = readings.length > 0 ? Math.max(...readings.map(r => r.id || 0)) : 0;
-    const newId = maxId + 1;
+  const userId = 6; // 仮のユーザーID（必要に応じて動的に取得してください）
 
+  try {
+    // 既存のreadingsを取得
+    const readings = await $.getJSON(`${API}/readings`);
     // すでに同じuserIdとbookIdの組み合わせが存在するかチェック
     const exists = readings.some(r => r.userId === userId && r.bookId === bookId);
     if (exists) {
@@ -61,10 +60,13 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
       return;
     }
 
-    // 必要に応じてユーザーIDなども取得
+    // 最大idを取得して+1
+    const maxId = readings.length > 0 ? Math.max(...readings.map(r => r.id || 0)) : 0;
+    const newId = maxId + 1;
+
     const readingData = {
       id: newId,
-      userId: 6, // 仮のユーザーID
+      userId: userId,
       bookId: bookId,
       date: new Date().toISOString().split('T')[0]
     };
