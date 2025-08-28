@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>読書履歴（json-server × Chart.js：横スクロール＋固定Y軸）</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; margin: 24px; color:#222; }
+    h2 { margin: 0 0 12px; }
+    .controls {
+      display: grid; grid-template-columns: repeat(4, minmax(180px, 1fr)) auto;
+      gap: 10px; align-items: end; margin-bottom: 14px;
+    }
+    .controls label { display:block; font-size:12px; color:#555; margin-bottom:4px; }
+    .controls input[type="date"], .controls select {
+      width:100%; padding:8px 10px; border:1px solid #cfcfcf; border-radius:8px; background:#fff;
+    }
+    .controls button { padding:10px 14px; border:1px solid #cfcfcf; border-radius:10px; background:#fff; cursor:pointer; }
+    .status { font-size:12px; color:#666; margin: 4px 0 14px; }
+    .empty { margin: 16px 0; color:#666; display:none; }
+
+    /* ===== グラフ：左に固定Y軸／右が横スクロール ===== */
+    .chart-layout { display:flex; align-items:stretch; width:fit-content; border:1px solid #bbb; border-radius:10px; background:#fff; }
+    .yaxis-fixed { width:64px; height:360px; border-right:1px solid #ddd; background:#fafafa; position:sticky; left:0; flex:0 0 auto; }
+    .yaxis-fixed canvas { display:block; width:100% !important; height:100% !important; }
+    .chart-wrap { width:860px; height:360px; overflow-x:auto; overflow-y:hidden; flex:0 0 auto; }
+    .chart-inner { height:100%; min-width:100%; }
+    #mainCanvas { display:block; width:100% !important; height:100% !important; }
+  </style>
+</head>
+<body>
+  <h2>読書数ランキング（横=氏名／縦=読書数）</h2>
+
+  <div class="controls">
+    <div><label for="selDept">部門</label><select id="selDept"><option value="">すべて</option></select></div>
+    <div><label for="selPos">役職</label><select id="selPos"><option value="">すべて</option></select></div>
+    <div><label for="startDate">開始日</label><input type="date" id="startDate" /></div>
+    <div><label for="endDate">終了日</label><input type="date" id="endDate" /></div>
+    <div><button id="btnReload">再読込</button></div>
+  </div>
+
+  <div id="status" class="status"></div>
+  <div id="empty" class="empty">該当データがありません。</div>
+
+  <div class="chart-layout">
+    <div class="yaxis-fixed">
+      <!-- 高さはグラフと同じ 360 -->
+      <canvas id="yAxisCanvas" width="64" height="360"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <div id="chartInner" class="chart-inner">
+        <canvas id="mainCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ====== 設定 ====== */
+    const API = "http://localhost:4000";
+    const BAR_WIDTH_PX = 90;   // 1人あたりの固定幅（バー幅のベース）
+    const GAP_PX       = 18;   // 人と人の間隔
+    const PADDING_PX   = 40;   // 左右パディング
+
+    /* ====== 状態 ====== */
+    let RAW = { users: [], departments: [], positions: [], readings: [] };
+    let chart;
+
+    /* ====== Utils ====== */
+    const $ = (s)=>document.querySelector(s);
+    function setStatus(t){ $('#status').textContent=t||''; }
+    function toggleEmpty(show){ $('#empty').style.display = show ? 'block':'none'; }
+    const debounce=(fn,w=250)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),w); } };
+
+    function parseDate(s){ if(!s) return null; const [y,m,d]=s.split('-').map(Number); if(!y||!m||!d) return null; return new Date(y,m-1,d); }
+    function between(dateStr, startStr, endStr){
+      if(!startStr && !endStr) return true;
+      const dt=parseDate(dateStr); if(!dt) return false;
+      const s=parseDate(startStr); const e=parseDate(endStr);
+      if(s && dt < s) return false;
+      if(e){ const ee=new Date(e.getFullYear(),e.getMonth(),e.getDate(),23,59,59,999); if(dt>ee) return false; }
+      return true;
+    }
+
+    /* ====== 横スクロール幅（各バー幅は固定） ====== */
+    function setInnerWidth(categoryCount, datasetCount=1){
+      const per = (BAR_WIDTH_PX * datasetCount) + GAP_PX;
+      const needed = (per * categoryCount) + (PADDING_PX * 2);
+      const inner = document.getElementById('chartInner');
+      inner.style.width = `${Math.max(needed, inner.parentElement.clientWidth)}px`;
+    }
+
+    /* ====== 固定Y軸の再描画 ====== */
+    function drawFixedYAxis(){
+      if(!chart) return;
+      const scale = chart.scales.y;
+      const cvs = document.getElementById('yAxisCanvas');
+      const ctx = cvs.getContext('2d');
+
+      ctx.clearRect(0,0,cvs.width,cvs.height);
+
+      // 軸線
+      ctx.strokeStyle='#ddd'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(cvs.width-1.5, scale.top); ctx.lineTo(cvs.width-1.5, scale.bottom); ctx.stroke();
+
+      ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif';
+      ctx.textAlign='right'; ctx.textBaseline='middle';
+
+      scale.ticks.forEach(t=>{
+        const y = scale.getPixelForValue(t.value);
+        // 補助線
+        ctx.strokeStyle='#eee';
+        ctx.beginPath(); ctx.moveTo(0, Math.round(y)+0.5); ctx.lineTo(cvs.width-2, Math.round(y)+0.5); ctx.stroke();
+        // ラベル
+        ctx.fillStyle='#333'; ctx.fillText(t.label, cvs.width-6, y);
+      });
+    }
+
+    /* ====== Chart.js 準備（バー横幅固定設定） ====== */
+    function ensureChart(){
+      if(chart) return chart;
+      const ctx = document.getElementById('mainCanvas').getContext('2d');
+      chart = new Chart(ctx, {
+        type:'bar',
+        data:{ labels:[], datasets:[{
+          label:'読書数',
+          data:[],
+          // 各バーの幅を固定するための指定
+          categoryPercentage: 1.0,
+          barPercentage: 1.0,
+          barThickness: BAR_WIDTH_PX - 10,
+          maxBarThickness: BAR_WIDTH_PX - 10,
+          borderWidth:0
+        }]},
+        options:{
+          responsive:false,            // ←自動リサイズ無効
+          maintainAspectRatio:false,
+          animation:false,
+          layout:{ padding:{left:8, right:8} },
+          scales:{
+            // y は描画時に毎回（データ最大値から）上限を設定する
+            y:{
+              beginAtZero:true,
+              ticks:{ display:false, stepSize:1, precision:0 },
+              grid:{ color:'rgba(0,0,0,0.08)' },
+              border:{ display:false }
+            },
+            x:{
+              grid:{ display:false },
+              ticks:{ maxRotation:0, minRotation:0 }
+            }
+          },
+          plugins:{ legend:{ display:false }, tooltip:{ enabled:true } }
+        }
+      });
+      return chart;
+    }
+
+    /* ====== データ取得 ====== */
+    async function fetchAll(){
+      setStatus('サーバから取得中…');
+      const paths=['users','departments','positions','readings'];
+      const [users,depts,poses,reads]=await Promise.all(paths.map(p=>fetch(`${API}/${p}`).then(r=>{
+        if(!r.ok) throw new Error(`${p}: ${r.status}`); return r.json();
+      })));
+      RAW = { users, departments:depts, positions:poses, readings:reads };
+      setStatus(`取得完了：ユーザー${users.length}・読書履歴${reads.length}`);
+      buildSelectors();
+      render();
+    }
+
+    /* ====== セレクタ構築 ====== */
+    function buildSelectors(){
+      const selDept = document.getElementById('selDept');
+      const selPos  = document.getElementById('selPos');
+      selDept.querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
+      selPos .querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
+      RAW.departments.forEach(d=>{ const o=document.createElement('option'); o.value=String(d.id); o.textContent=d.name; selDept.appendChild(o); });
+      RAW.positions  .forEach(p=>{ const o=document.createElement('option'); o.value=String(p.id); o.textContent=p.name; selPos.appendChild(o); });
+    }
+
+    /* ====== 集計＆描画 ====== */
+    function render(){
+      const deptId = $('#selDept').value ? Number($('#selDept').value):null;
+      const posId  = $('#selPos').value  ? Number($('#selPos').value ):null;
+      const sd = $('#startDate').value;
+      const ed = $('#endDate').value;
+
+      const users = RAW.users.filter(u=>{
+        if(deptId && u.departmentId!==deptId) return false;
+        if(posId  && u.positionId  !==posId ) return false;
+        return true;
+      });
+      const userIds = new Set(users.map(u=>u.id));
+
+      const reads = RAW.readings.filter(r=>{
+        if(!userIds.has(r.userId)) return false;
+        return between(r.date, sd, ed);
+      });
+
+      const map = new Map();
+      reads.forEach(r=>map.set(r.userId,(map.get(r.userId)||0)+1));
+
+      const rows = users
+        .map(u=>({ id:u.id, name:u.name, count: map.get(u.id)||0 }))
+        .filter(r=>r.count>0)
+        .sort((a,b)=> b.count - a.count || a.name.localeCompare(b.name,'ja'));
+
+      const labels = rows.map(r=>r.name);
+      const counts = rows.map(r=>r.count);
+
+      // 内側幅（各バー横幅は固定）
+      setInnerWidth(labels.length, 1);
+
+      // Chart更新
+      const c = ensureChart();
+      c.data.labels = labels;
+      c.data.datasets[0].data = counts;
+
+      // ← ここが「縦軸がつぶれる」対策：上限を動的に整数で設定
+      const maxCount = counts.length ? Math.max(...counts) : 0;
+      const suggested = Math.max(1, maxCount + 1);     // 少し余裕
+      c.options.scales.y.min = 0;
+      c.options.scales.y.suggestedMax = suggested;
+      c.options.scales.y.ticks.stepSize = 1;           // 整数目盛
+      c.update();
+
+      drawFixedYAxis();
+      toggleEmpty(labels.length===0);
+
+      const dName = deptId ? (RAW.departments.find(d=>d.id===deptId)||{}).name : '全て';
+      const pName = posId  ? (RAW.positions  .find(p=>p.id===posId )||{}).name : '全て';
+      setStatus(`表示人数：${labels.length}（条件：部門=${dName} / 役職=${pName} / 期間：${sd||'制限なし'}〜${ed||'制限なし'}）`);
+    }
+
+    /* ====== ハンドラ ====== */
+    document.getElementById('btnReload').addEventListener('click', fetchAll);
+    document.getElementById('selDept').addEventListener('change', render);
+    document.getElementById('selPos').addEventListener('change', render);
+    document.getElementById('startDate').addEventListener('change', debounce(render,150));
+    document.getElementById('endDate').addEventListener('change', debounce(render,150));
+
+    const ro = new ResizeObserver(()=>drawFixedYAxis());
+    ro.observe(document.querySelector('.chart-layout'));
+
+    // 初回
+    fetchAll().catch(e=>{
+      console.error(e);
+      setStatus('データ取得に失敗しました。json-server が起動しているか確認してください。');
+    });
+  </script>
+</body>
+</html>

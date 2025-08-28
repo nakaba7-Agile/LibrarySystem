@@ -1,0 +1,155 @@
+/* ========= Theme ========= */
+:root{
+--bg:#f5f6f7;
+--panel:#ffffff;
+--text:#222;
+--muted:#6b7280;
+--line:#e5e7eb;
+--primary:#3b82f6;
+--accent:#9ca3af;
+--chip:#f3f4f6;
+--radius:14px;
+--shadow:0 6px 20px rgba(0,0,0,.06);
+--gap:16px;
+--sidebar:300px;          /* ← サイド幅 */
+--content-max:1200px;     /* ← 本文の最大幅 */
+}
+
+/* ========= Reset (最低限) ========= */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto,
+"Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+background:var(--bg); color:var(--text); letter-spacing:.02em;
+}
+h1,h2,h3,p{margin:0}
+button,input,select{font:inherit}
+
+/* ========= App Shell ========= */
+.app{min-height:100%}
+header{
+background:#fff; border-bottom:1px solid var(--line);
+position:sticky; top:0; z-index:50;
+}
+.topbar{
+max-width:calc(var(--content-max) + var(--sidebar) + 80px);
+margin:auto; display:flex; align-items:center; justify-content:space-between;
+padding:12px 20px;
+}
+.logo{font-weight:700; letter-spacing:.12em}
+.nav{display:flex; gap:18px; align-items:center; color:#555}
+.nav a{color:inherit; text-decoration:none; padding:6px 10px; border-radius:10px}
+.nav a:hover{background:var(--bg)}
+.crumbs{display:flex; gap:8px; align-items:center; color:var(--muted)}
+.crumbs span{display:inline-flex; gap:6px; align-items:center}
+.crumbs b{color:#111}
+
+main{
+display:grid; gap:var(--gap);
+grid-template-columns: var(--sidebar) 1fr;
+max-width:calc(var(--content-max) + var(--sidebar));
+margin:18px auto 60px; padding:0 20px;
+}
+
+/* ========= Panels / Cards ========= */
+.panel{
+background:var(--panel); border:1px solid var(--line);
+border-radius:var(--radius); box-shadow:var(--shadow);
+}
+.panel .hd{
+padding:14px 16px; border-bottom:1px solid var(--line);
+font-weight:700; font-size:15px;
+}
+.panel .bd{padding:14px 16px}
+.muted{color:var(--muted); font-size:12px}
+
+/* ========= Sidebar ========= */
+.sidebar{display:flex; flex-direction:column; gap:var(--gap)}
+.progress-wrap{display:grid; grid-template-columns:80px 1fr; gap:12px; align-items:center}
+.progress-box{
+width:80px; height:90px; border-radius:10px;
+background:#efefef; border:1px solid var(--line); display:grid; place-items:center;
+}
+.progress-label{display:flex; align-items:center; gap:8px; justify-content:space-between}
+.progress{
+width:100%; height:8px; background:#eef2ff; border-radius:999px; overflow:hidden; margin-top:6px;
+}
+.progress > i{display:block; height:100%; width:65%; background:var(--primary)}
+.row{display:flex; gap:8px; margin-top:8px}
+.row .btn{padding:6px 10px; border:1px solid var(--line); background:#fff; border-radius:10px; cursor:pointer}
+.row .btn:hover{background:#f8fafc}
+
+.search input{
+width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line);
+outline:none;
+}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{
+background:var(--chip); border:1px solid var(--line); color:#333;
+border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; user-select:none;
+}
+.chip:hover{background:#eef2f7}
+
+/* ========= Content ========= */
+.content{display:flex; flex-direction:column; gap:var(--gap)}
+.tabs{display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--line)}
+.tab{
+font-size:13px; padding:8px 12px; border-radius:999px; cursor:pointer; color:#555;
+}
+.tab.active{background:#eef2ff; color:#1d4ed8; font-weight:600}
+
+/* ---- Ranking (dummy chart) ---- */
+.rank-wrap{display:flex; flex-direction:column; gap:10px}
+.rank-head{display:flex; align-items:center; gap:10px; color:#374151; font-size:14px}
+.bars{
+display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:12px;
+align-items:end; height:180px; padding:10px 4px; border:1px dashed var(--line);
+border-radius:12px; background:linear-gradient(to bottom, #fff, #fafafa);
+}
+.bar{
+position:relative; display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.bar .stick{
+width:34px; border-radius:8px; background:#d1d5db; display:flex; align-items:flex-end;
+overflow:hidden; border:1px solid #c9ced6;
+}
+.bar .fill{width:100%; background:#4b5563; border-bottom-left-radius:8px; border-bottom-right-radius:8px}
+.bar .me .stick{background:#dbeafe; border-color:#c7dcfb}
+.bar .me .fill{background:#3b82f6}
+.bar .label{font-size:12px; color:#4b5563}
+.bar .value{
+position:absolute; top:-26px; padding:3px 6px; font-size:11px; background:#111; color:#fff;
+border-radius:6px; opacity:.0; transform:translateY(6px); transition:.2s;
+white-space:nowrap;
+}
+.bar:hover .value{opacity:1; transform:translateY(0)}
+.legend{display:flex; gap:12px; color:#6b7280; font-size:12px}
+.legend i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px}
+.legend .me i{background:#3b82f6}
+.legend .other i{background:#9ca3af}
+
+/* ---- Card rails ---- */
+.rail{display:grid; grid-template-columns: repeat(5, minmax(120px,1fr)); gap:12px}
+.book{
+height:140px; border-radius:12px; border:1px solid var(--line); background:linear-gradient(#fafafa,#f3f4f6);
+box-shadow:var(--shadow);
+}
+.section-hd{
+display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; color:#374151;
+}
+
+/* ========= Responsive ========= */
+@media (max-width: 1100px){
+:root{ --sidebar: 260px; }
+.rail{grid-template-columns: repeat(4, minmax(120px,1fr))}
+}
+@media (max-width: 920px){
+main{grid-template-columns: 1fr}
+.rail{grid-template-columns: repeat(3, minmax(120px,1fr))}
+}
+@media (max-width: 600px){
+.topbar{padding:10px 14px}
+.rail{grid-template-columns: repeat(2, minmax(120px,1fr))}
+.bars{height:160px}
+}

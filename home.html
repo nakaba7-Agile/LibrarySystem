@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>読書ダッシュボード</title>
+  <link rel="stylesheet" href="./home.css" />
+  <script src="./insertHTML.js"></script>
+</head>
+
+<body>
+    <div class="app">
+        <!-- ======= Header ======= -->
+        <header>
+            <div id="header"></div>
+        </header>
+
+        <!-- ======= Crumbs (任意) ======= -->
+        <div class="topbar" style="padding-top:8px;padding-bottom:0;">
+            <div class="crumbs"><span>📚 <b>読書管理</b></span><span>› ダッシュボード</span></div>
+        </div>
+
+        <!-- ======= Main ======= -->
+        <main>
+
+            <!-- ===== Sidebar ===== -->
+            <aside class="sidebar">
+
+                <!-- 今月の読書数 -->
+                <section class="panel">
+                    <div class="hd">今月の読書数</div>
+                    <div class="bd">
+                    <div style="font-size:32px; font-weight:800; margin-bottom:4px;">4<small style="font-size:14px; color:var(--muted); margin-left:2px;">冊</small></div>
+
+                    <p class="muted" style="margin:8px 0 10px;">現在の進捗</p>
+                    <div class="progress-wrap">
+                        <div class="progress-box">📘</div>
+                        <div>
+                        <div class="progress-label">
+                            <span class="muted">基本情報技術者試験</span>
+                            <span class="muted">65%</span>
+                        </div>
+                        <div class="progress" aria-label="進捗バー"><i style="width:65%"></i></div>
+                        <div class="row">
+                            <button class="btn">更新</button>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </section>
+
+                <!-- 登録・検索 -->
+                <section class="panel">
+                    <div class="hd">読んでいる本の登録・検索</div>
+                    <div class="bd search">
+                    <input type="text" placeholder="本のタイトル・著者・ユーザー名を入力" aria-label="本の検索" />
+                    </div>
+                </section>
+
+                <!-- ジャンルから選ぶ -->
+                <section class="panel">
+                    <div class="hd">ジャンルから選ぶ</div>
+                    <div class="bd">
+                    <div class="chips" aria-label="ジャンル">
+                        <span class="chip">ビジネス</span>
+                        <span class="chip">小説</span>
+                        <span class="chip">技術・IT</span>
+                        <span class="chip">芸術・文化</span>
+                        <span class="chip">数学</span>
+                    </div>
+                    </div>
+                </section>
+
+                <!-- 人気ワード -->
+                <section class="panel">
+                    <div class="hd">人気のワードから選ぶ</div>
+                    <div class="bd">
+                    <div class="chips">
+                        <span class="chip">統計</span>
+                        <span class="chip">AWS</span>
+                        <span class="chip">Azure</span>
+                        <span class="chip">デザイン</span>
+                    </div>
+                    </div>
+                </section>
+
+                <!-- 著者 -->
+                <section class="panel">
+                    <div class="hd">著者名から選ぶ</div>
+                    <div class="bd">
+                    <div class="chips">
+                        <span class="chip">AWS</span>
+                        <span class="chip">Azure</span>
+                        <span class="chip">TK</span>
+                    </div>
+                    </div>
+                </section>
+
+            </aside>
+
+            <!-- ===== Content ===== -->
+            <section class="content">
+
+                <!-- ランキング -->
+                <section class="panel">
+                    <iframe id="rankingFrame" src="ranking.html" width="100%" style="border:none;"></iframe>
+                    <script>
+                    function resizeIframe() {
+                        const iframe = document.getElementById('rankingFrame');
+                        if (iframe.contentWindow.document.body) {
+                        const height = iframe.contentWindow.document.body.scrollHeight;
+                        iframe.style.height = height + 'px';
+                        }
+                    }
+                    document.getElementById('rankingFrame').addEventListener('load', resizeIframe);
+                    </script>
+                </section>
+
+                <!-- あなたへのおすすめ -->
+                <section class="panel">
+                    <div class="bd">
+                    <div class="section-hd">
+                        <strong>あなたへのおすすめ</strong>
+                        <span class="muted">更新: 今日</span>
+                    </div>
+                    <div class="rail" aria-label="あなたへのおすすめ一覧">
+                        <div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div>
+                    </div>
+                    </div>
+                </section>
+
+                <!-- みんなが読んでいる本 -->
+                <section class="panel">
+                    <div class="bd">
+                    <div class="section-hd">
+                        <strong>みんなが読んでいる本</strong>
+                        <span class="muted">リアルタイム</span>
+                    </div>
+                    <div class="rail" aria-label="トレンド本一覧">
+                        <div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div>
+                    </div>
+                    </div>
+                </section>
+
+            </section>
+
+        </main>
+    </div>
+</body>
+
+</html>
