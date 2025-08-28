@@ -43,9 +43,9 @@
                         <div>
                         <div class="progress-label">
                             <span class="muted">基本情報技術者試験</span>
-                            <span class="muted">65%</span>
                         </div>
-                        <div class="progress" aria-label="進捗バー"><i style="width:65%"></i></div>
+                        <input type="range" id="progressSlider" value="0" min="0" max="100" />
+                        <span id="progressPercent">0%</span>
                         <div class="row">
                             <button class="btn">更新</button>
                         </div>
@@ -171,6 +171,7 @@
 
         </main>
     </div>
+    <script src="./progressupdate.js"></script>
     <script src="./search.js"></script>
 </body>
 
