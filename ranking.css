@@ -25,7 +25,7 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku G
 /* グラフエリア */
 .chart-wrap{
   width: 860px;
-  height: 260px;        /* お好みで */
+  height: 300px;        /* お好みで */
   overflow-x: auto;     /* 枠内で横スクロール */
   overflow-y: hidden;
   border: none;
