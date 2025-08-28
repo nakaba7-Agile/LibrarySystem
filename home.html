@@ -6,7 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>読書ダッシュボード</title>
   <link rel="stylesheet" href="./home.css" />
+  <!-- jQuery / Chart.js -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="./insertHTML.js"></script>
+  <script src="./pageswap.js"></script>
 </head>
 
 <body>
@@ -52,10 +56,9 @@
 
                 <!-- 登録・検索 -->
                 <section class="panel">
-                    <div class="hd">読んでいる本の登録・検索</div>
-                    <div class="bd search">
-                    <input type="text" placeholder="本のタイトル・著者・ユーザー名を入力" aria-label="本の検索" />
-                    </div>
+                    <h2>本のタイトル検索</h2>
+                    <input type="text" id="bookTitleInput" placeholder="タイトルを入力" />
+                    <nav><button onclick="showPage('kensaku')" id="searchBookBtn">検索</button></nav>
                 </section>
 
                 <!-- ジャンルから選ぶ -->
@@ -161,6 +164,7 @@
 
         </main>
     </div>
+    <script src="./search.js"></script>
 </body>
 
 </html>
