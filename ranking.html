@@ -2,49 +2,37 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <title>社内図書館｜読了数ランキング</title>
+  <title>月間読書数ランキング</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="./ranking.css" />
-  <!-- jQuery / Chart.js -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 
 <body>
-  <main class="wrap">
-    <section class="card">
-      <h1>読了数ランキング（ユーザ別）</h1>
+    
+    <div id="home" class="page active">
 
-      <div class="controls">
-        <label class="control">
-          <span>部署</span>
-          <select id="departmentSelect">
-            <option value="0">ALL（すべて）</option>
-            <!-- /departments から動的追加 -->
-          </select>
-        </label>
+        <h2>月間読書数ランキング</h2>
 
-        <label class="control">
-          <span>役職</span>
-          <select id="positionSelect">
-            <option value="0">ALL（すべて）</option>
-            <!-- /positions から動的追加 -->
-          </select>
-        </label>
+        <div class="controls">
+            <div><label for="selDept">部門</label><select id="selDept"><option value="">すべて</option></select></div>
+            <div><label for="selPos">役職</label><select id="selPos"><option value="">すべて</option></select></div>
+            <div><label for="startDate">開始日</label><input type="date" id="startDate" /></div>
+            <div><label for="endDate">終了日</label><input type="date" id="endDate" /></div>
+            <div><button id="btnReload">再読込</button></div>
+        </div>
 
-        <button id="reload">更新</button>
-        <span id="status" class="muted"></span>
-      </div>
+        <div id="status" class="status"></div>
+        <div id="empty" class="empty">該当データがありません。</div>
 
-      <!-- ★ この枠の「幅」に合わせて 5 本見えるように調整。枠の中だけ横スクロール -->
-      <div class="chart-area" id="chartArea">
-        <canvas id="chart"></canvas>
-        <div id="empty" class="empty" hidden>該当データがありません。</div>
-      </div>
-    </section>
-  </main>
+        <div class="chart-wrap">
+            <div id="chartInner" class="chart-inner">
+                <canvas id="mainCanvas"></canvas>
+            </div>
+        </div>
+    </div>
 
-  <script src="./ranking.js"></script>
+    <script src="./ranking.js"></script>
+    
 </body>
 </html>
