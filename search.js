@@ -57,7 +57,7 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
     // 必要に応じてユーザーIDなども取得
     const readingData = {
       id: newId,
-      userId: 5, // 仮のユーザーID
+      userId: 6, // 仮のユーザーID
       bookId: bookId,
       date: new Date().toISOString().split('T')[0]
     };
