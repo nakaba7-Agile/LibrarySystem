@@ -54,6 +54,13 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
     const maxId = readings.length > 0 ? Math.max(...readings.map(r => r.id || 0)) : 0;
     const newId = maxId + 1;
 
+    // すでに同じuserIdとbookIdの組み合わせが存在するかチェック
+    const exists = readings.some(r => r.userId === userId && r.bookId === bookId);
+    if (exists) {
+      alert('この本はすでに「読んでいる」に登録されています');
+      return;
+    }
+
     // 必要に応じてユーザーIDなども取得
     const readingData = {
       id: newId,
