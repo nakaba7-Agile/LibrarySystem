@@ -1,242 +1,185 @@
-// ==== 設定 ====
-// json-server のポートに合わせてください
-const API = "http://localhost:4000";
+/* ===== 設定 ===== */
+const API = "http://localhost:4000";   // json-server のURL
+const BAR_WIDTH_PX = 90;               // 棒の太さ（固定）
+const GAP_PX       = 50;               // 棒と棒の間隔（固定）
+const PADDING_PX   = 10;               // 左右パディング（px）
 
-// 仕様：枠の中で「常に5本分が見える」ようにする
-const VISIBLE_BARS = 5;       // 表示枠に常に見せたい本数
-const BAR_MIN_PX   = 80;      // 1本あたりの最小幅（見切れ防止）
-const BAR_MAX_PX   = 180;     // 1本あたりの最大幅（文字が詰まり過ぎないように）
-const CANVAS_HEIGHT = 360;    // キャンバス高さ(px)
-const Y_MAX = 10;             // 縦軸上限（0〜10固定）
-
+/* ===== 状態 ===== */
+let RAW = { users: [], departments: [], positions: [], readings: [] };
 let chart;
-let lastLabels = [];
-let lastData = [];
 
-$(async function init() {
-  setStatus("マスタ取得中…");
-  await Promise.all([loadDepartments(), loadPositions()]); // 部署＆役職
+/* ===== Utils ===== */
+const $ = (s)=>document.querySelector(s);
+function setStatus(t){ $('#status').textContent=t||''; }
+function toggleEmpty(show){ $('#empty').style.display = show ? 'block':'none'; }
 
-  setStatus("データ取得中…");
-  await fetchAndRender();
-  setStatus("");
-
-  $("#departmentSelect").on("change", () => fetchAndRender());
-  $("#positionSelect").on("change", () => fetchAndRender());
-  $("#reload").on("click", () => fetchAndRender());
-
-  // ★ ウィンドウリサイズ時、枠幅に合わせて barWidth を再計算して再描画
-  $(window).on("resize", debounce(() => {
-    if (!lastLabels.length) return;
-    renderWithLayout(lastLabels, lastData);
-  }, 150));
-});
-
-/** 部署セレクト生成 */
-async function loadDepartments() {
-  try {
-    const deps = await $.getJSON(`${API}/departments`);
-    deps.sort((a, b) => a.id - b.id);
-    const $sel = $("#departmentSelect");
-    $sel.find("option:not([value='0'])").remove();
-    deps.forEach(d => $sel.append(new Option(d.name, String(d.id))));
-  } catch (e) {
-    setStatus("部署リスト取得に失敗しました");
-    console.error(e);
-  }
+function parseDate(s){ if(!s) return null; const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function between(dateStr, startStr, endStr){
+  if(!startStr && !endStr) return true;
+  const dt=parseDate(dateStr); if(!dt) return false;
+  const s=parseDate(startStr); const e=parseDate(endStr);
+  if(s && dt < s) return false;
+  if(e){ const ee=new Date(e.getFullYear(),e.getMonth(),e.getDate(),23,59,59,999); if(dt>ee) return false; }
+  return true;
 }
 
-/** 役職（position）セレクト生成 */
-async function loadPositions() {
-  try {
-    const positions = await $.getJSON(`${API}/positions`);
-    positions.sort((a, b) => a.id - b.id);
-    const $sel = $("#positionSelect");
-    $sel.find("option:not([value='0'])").remove();
-    positions.forEach(p => $sel.append(new Option(p.name, String(p.id))));
-  } catch (e) {
-    setStatus("役職リスト取得に失敗しました");
-    console.error(e);
-  }
+// きりのいい上限に切り上げ（1,2,5,10系列）
+function niceCeil(v) {
+  if (v <= 10) return 10;
+  const pow = Math.pow(10, Math.floor(Math.log10(v)));
+  const n = v / pow;
+  let m = 10;
+  if (n <= 1) m = 1;
+  else if (n <= 2) m = 2;
+  else if (n <= 5) m = 5;
+  return m * pow;
 }
 
-/** 読了ログとユーザを手動JOIN → 部署×役職の積集合でfilter → 集計 → レイアウトに沿って描画 */
-async function fetchAndRender() {
-  const depId = Number($("#departmentSelect").val() || 0);
-  const posId = Number($("#positionSelect").val() || 0);
-  setStatus("読み込み中…");
+/* ===== 内部幅（スクロール領域＋キャンバス解像度） ===== */
+function setInnerWidth(count){
+  const CAT = BAR_WIDTH_PX + GAP_PX;
+  // x.offset=true なので、両端に半カテゴリ×2 = 1カテゴリ分の余白を足す
+  const needed = CAT * (count + 1) + (PADDING_PX * 2);
 
-  try {
-    const [readings, users] = await Promise.all([
-      $.getJSON(`${API}/readings`),
-      $.getJSON(`${API}/users`)
-    ]);
+  const inner  = document.getElementById('chartInner');
+  const canvas = document.getElementById('mainCanvas');
+  const wrap   = document.querySelector('.chart-wrap');
 
-    // 対象ユーザー（部署×役職）…読了0件でも含める
-    const eligibleUsers = users.filter(u => {
-      const depOk = depId === 0 || Number(u.departmentId) === depId;
-      const posOk = posId === 0 || Number(u.positionId) === posId;
-      return depOk && posOk;
-    });
-    const eligibleIds = new Set(eligibleUsers.map(u => u.id));
-
-    // 0 初期化（LEFT JOIN的）
-    const counts = {};
-    eligibleUsers.forEach(u => { counts[u.name] = 0; });
-
-    // 読了ログで加算
-    const userById = Object.fromEntries(users.map(u => [Number(u.id), u]));
-
-    for (const r of readings) {
-      const uid = String(r.userId);
-      
-      if (eligibleIds.has(uid)) {
-        const u = userById[uid];
-        const name = u?.name ?? `User${uid}`;
-        counts[name] = (counts[name] || 0) + 1;
-      }
-    }
-
-
-    // 降順
-    let entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-
-    // 5本未満 → ダミーで5本に埋める（空ラベル＋0）
-    if (entries.length < VISIBLE_BARS) {
-      const blanks = Array(VISIBLE_BARS - entries.length).fill(null).map(() => ["", 0]);
-      entries = entries.concat(blanks);
-    }
-    // 6本以上 → そのまま全件（枠内で横スクロール）
-
-    const labels = entries.map(([name]) => name);
-    const data   = entries.map(([_, count]) => count);
-
-    lastLabels = labels;
-    lastData   = data;
-
-    renderWithLayout(labels, data);
-    setStatus(`対象ユーザ数: ${eligibleUsers.length}, ログ件数: ${readings.length}`);
-  } catch (e) {
-    setStatus("データ取得に失敗しました");
-    console.error(e);
-  }
+  inner.style.width = `${needed}px`;   // スクロール用の見かけの幅
+  canvas.width  = needed;              // 内部ピクセル幅も“ちょうど”に
+  canvas.height = wrap.clientHeight;   // 高さも同期
 }
 
-/** 枠幅から 1 本あたりの barWidth を算出し、キャンバス幅を決めて描画 */
-function renderWithLayout(labels, data) {
-  const area = document.getElementById("chartArea");
-  const canvas = document.getElementById("chart");
-
-  // 見える本数 = 5 本に合わせた barWidth を、枠の内寸から動的計算
-  const areaInnerWidth = Math.max(0, area.clientWidth - 16); // paddingのぶん少し減らす
-  const barWidth = clamp(Math.floor(areaInnerWidth / VISIBLE_BARS), BAR_MIN_PX, BAR_MAX_PX);
-
-  // 全本数ぶんのキャンバス幅を設定（5未満は既にダミーで5本に揃っている）
-  const totalBars = labels.length;
-  canvas.width  = totalBars * barWidth;
-  canvas.height = CANVAS_HEIGHT;
-
-  // “データなし”表示（全0のとき）
-  const allZero = data.every(v => v === 0);
-  toggleEmpty(allZero);
-
-  renderChart(labels, data);
-}
-
-/** Chart.js 描画（縦軸 0〜10 固定） */
-function renderChart(labels, data) {
-  const ctx = document.getElementById("chart").getContext("2d");
-  if (chart) { chart.destroy(); chart = null; }
-
+/* ===== Chart.js 初期化 ===== */
+function ensureChart(){
+  if(chart) return chart;
+  const ctx = document.getElementById('mainCanvas').getContext('2d');
   chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: "読了数",
-        data,
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: false,          // 親枠で横スクロールするので false
-      maintainAspectRatio: false,
-      scales: {
+    type:'bar',
+    data:{ labels:[], datasets:[{
+      label:'読書数',
+      data:[],
+      categoryPercentage:1.0,
+      barPercentage:1.0,
+      barThickness: BAR_WIDTH_PX,
+      maxBarThickness: BAR_WIDTH_PX,
+      borderWidth: 0
+    }]},
+    options:{
+      responsive:false,
+      maintainAspectRatio:false,
+      animation:false,
+      layout: { padding: { left: PADDING_PX, right: PADDING_PX, bottom: 28 } },
+      scales:{
+        x: {
+          offset: true,                                  // 両端の見切れ防止
+          grid: { display: false },
+          ticks: { minRotation: 0, maxRotation: 0, autoSkip: false, font: { size: 16 } }
+        },
         y: {
           beginAtZero: true,
           min: 0,
-          max: Y_MAX,             // ← 縦軸固定
-          ticks: { stepSize: 1, precision: 0 }
+          suggestedMax: 10,                              // 基本は0〜10
+          ticks: { stepSize: 1, precision: 0 },
+          grid: { color: 'rgba(0,0,0,0.08)' },
+          border: { display: false }
         }
       },
-      plugins: { legend: { display: false } },
-      animation: false
+      plugins:{ legend:{ display:false } }
     }
   });
+  return chart;
 }
 
-/* Util */
-function toggleEmpty(show) {
-  const el = document.getElementById("empty");
-  if (!el) return;
-  el.hidden = !show;
-}
-function setStatus(text) { $("#status").text(text); }
-function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-function debounce(fn, wait=250) {
-  let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); };
-}
-
-//田北変更箇所はここから
-// 本のタイトル検索機能（db.jsonのbooksを利用）
-async function searchBooksByTitle() {
-  const keyword = $('#bookTitleInput').val().trim();
-  if (!keyword) {
-    $('#bookSearchResults').empty();
-    return;
-  }
-  try {
-    const books = await $.getJSON(`${API}/books`);
-    const results = books.filter(book => book.title.includes(keyword));
-    // 検索結果ページへ遷移
-    showPage('kensaku');
-    const $results = $('#bookSearchResults');
-    $results.empty();
-    // 検索結果の見出しを追加
-    $results.append(`<h2>「${keyword}」の検索結果（${results.length}件）</h2>`);
-    if (results.length === 0) {
-      $results.append('<div>該当する本がありません。</div>');
-    } else {
-      results.forEach(book => {
-        // サムネ画像がなければダミー画像
-        const img = book.image ? book.image : 'images/noimage.png';
-        // 著者名がなければ空欄
-        const author = book.author ? book.author : '';
-        $results.append(`
-          <div class="book-result" style="display:flex;align-items:flex-start;gap:16px;margin-bottom:32px;">
-            <img src="${img}" alt="${book.title}" style="width:80px;height:110px;object-fit:cover;border-radius:8px;background:#eee;">
-            <div>
-              <div style="font-size:1.1em;font-weight:bold;margin-bottom:4px;">${book.title}</div>
-              <div style="color:#555;margin-bottom:10px;">${author}</div>
-              <button class="register-btn" data-bookid="${book.id}">読んでいるに登録</button>
-            </div>
-          </div>
-        `);
-      });
-    }
-  } catch (e) {
-    $('#bookSearchResults').html('<div>本データの取得に失敗しました。</div>');
-    console.error(e);
-  }
+/* ===== データ取得 ===== */
+async function fetchAll(){
+  setStatus('取得中...');
+  const [users,depts,poses,reads] = await Promise.all([
+    fetch(`${API}/users`).then(r=>r.json()),
+    fetch(`${API}/departments`).then(r=>r.json()),
+    fetch(`${API}/positions`).then(r=>r.json()),
+    fetch(`${API}/readings`).then(r=>r.json())
+  ]);
+  RAW={users,departments:depts,positions:poses,readings:reads};
+  buildSelectors();
+  render();
 }
 
-$('#searchBookBtn').on('click', searchBooksByTitle);
+function buildSelectors(){
+  const sd=$('#selDept'), sp=$('#selPos');
+  sd.querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
+  sp.querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
+  RAW.departments.forEach(d=>{ let o=document.createElement('option'); o.value=d.id; o.textContent=d.name; sd.appendChild(o); });
+  RAW.positions.forEach(p=>{ let o=document.createElement('option'); o.value=p.id; o.textContent=p.name; sp.appendChild(o); });
+}
 
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(div => {
-    div.classList.remove('active');
+/* ===== 集計＆描画 ===== */
+function render(){
+  const deptId=$('#selDept').value?Number($('#selDept').value):null;
+  const posId=$('#selPos').value?Number($('#selPos').value):null;
+  const sd=$('#startDate').value, ed=$('#endDate').value;
+
+  const users=RAW.users.filter(u=>{
+    if(deptId && u.departmentId!==deptId) return false;
+    if(posId && u.positionId!==posId) return false;
+    return true;
   });
-  document.getElementById(pageId).classList.add('active');
+  const uids=new Set(users.map(u=>u.id));
+
+  const reads=RAW.readings.filter(r=>uids.has(r.userId)&&between(r.date,sd,ed));
+  const map=new Map();
+  reads.forEach(r=>map.set(r.userId,(map.get(r.userId)||0)+1));
+
+  // ※ 読書数0のユーザーは表示しない仕様（必要なら .filter を外す）
+  const rows=users.map(u=>({name:u.name,count:map.get(u.id)||0}))
+    .filter(r=>r.count>0)
+    .sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name,'ja'));
+
+  const labels=rows.map(r=>r.name);
+  const counts=rows.map(r=>r.count);
+
+  setInnerWidth(labels.length);
+
+  const c=ensureChart();
+
+  // キャンバス解像度を変えたので、Chart.js にもサイズ変更を通知
+  const cvs = document.getElementById('mainCanvas');
+  c.resize(cvs.width, cvs.height);
+
+  // データ反映
+  c.data.labels=labels;
+  c.data.datasets[0].data=counts;
+
+  // --- Y軸：基本は0〜10、超えたら拡張 ---
+  const maxVal = counts.length ? Math.max(...counts) : 0;
+  const yopt = c.options.scales.y;
+  yopt.min = 0;
+  if (maxVal <= 10) {
+    yopt.max = 10;
+    yopt.suggestedMax = undefined;
+    yopt.ticks.stepSize = 1;
+  } else {
+    const upper = niceCeil(maxVal);
+    yopt.max = upper;
+    yopt.suggestedMax = undefined;
+    yopt.ticks.stepSize = Math.max(1, Math.round(upper / 10));
+  }
+
+  c.update();
+
+  toggleEmpty(labels.length===0);
+  setStatus(`表示人数:${labels.length}`);
 }
 
-/*変更ここまで*/
+/* ===== イベント ===== */
+$('#btnReload').addEventListener('click', fetchAll);
+$('#selDept').addEventListener('change', render);
+$('#selPos').addEventListener('change', render);
+$('#startDate').addEventListener('change', render);
+$('#endDate').addEventListener('change', render);
+
+// 初回
+fetchAll().catch(e=>{
+  console.error(e);
+  setStatus('データ取得に失敗しました。json-server の起動を確認してください。');
+});
