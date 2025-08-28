@@ -7,32 +7,28 @@
   <link rel="stylesheet" href="./ranking.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
-
 <body>
-    
-    <div id="home" class="page active">
 
-        <h2>月間読書数ランキング</h2>
-
-        <div class="controls">
-            <div><label for="selDept">部門</label><select id="selDept"><option value="">すべて</option></select></div>
-            <div><label for="selPos">役職</label><select id="selPos"><option value="">すべて</option></select></div>
-            <div><label for="startDate">開始日</label><input type="date" id="startDate" /></div>
-            <div><label for="endDate">終了日</label><input type="date" id="endDate" /></div>
-            <div><button id="btnReload">再読込</button></div>
-        </div>
-
-        <div id="status" class="status"></div>
-        <div id="empty" class="empty">該当データがありません。</div>
-
-        <div class="chart-wrap">
-            <div id="chartInner" class="chart-inner">
-                <canvas id="mainCanvas"></canvas>
-            </div>
-        </div>
+  <!-- タイトルの“すぐ右”にフィルタを並べる -->
+  <div class="header-bar">
+    <div class="title-line">
+      <span class="title">月間読書数ランキング</span>
+      <div class="filters">
+        <input type="month" id="month" class="pill" />
+        <select id="selDept" class="pill"><option value="">すべての部門</option></select>
+        <select id="selPos"  class="pill"><option value="">すべての役職</option></select>
+      </div>
     </div>
+  </div>
 
-    <script src="./ranking.js"></script>
-    
+  <div id="empty" class="empty">該当データがありません。</div>
+
+  <div class="chart-wrap">
+    <div id="chartInner" class="chart-inner">
+      <canvas id="mainCanvas"></canvas>
+    </div>
+  </div>
+
+  <script src="./ranking.js"></script>
 </body>
 </html>
