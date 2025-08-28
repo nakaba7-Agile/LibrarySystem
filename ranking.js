@@ -4,22 +4,21 @@ const BAR_WIDTH_PX = 45;               // 棒の太さ
 const GAP_PX       = 40;               // 棒間隔
 const PADDING_PX   = 6;                // 左右パディング
 
-// ★ 自分の表示名（左端・黒で表示）
+// ★ 自分（左端＆黒）
 const MY_NAME = "窓辺あかり";
-const MY_USER_ID = 6; // ← あなたの users.id に合わせて
+const MY_USER_ID = 6;                  // users.id に合わせて
 
 /* ===== 状態 ===== */
 let RAW = { users: [], departments: [], positions: [], readings: [] };
 let chart;
 
-/* ===== 値ラベル描画プラグイン ===== */
-// バーの中（高さが足りなければ上）に「n冊」を描画
+/* ===== 値ラベル描画プラグイン（棒の中央に “n冊”） ===== */
 const valueLabelPlugin = {
   id: 'valueLabel',
   afterDatasetsDraw(chart) {
     const { ctx } = chart;
-    const meta = chart.getDatasetMeta(0);
-    const data = chart.data.datasets[0].data;
+    const meta   = chart.getDatasetMeta(0);
+    const data   = chart.data.datasets[0].data;
     const labels = chart.data.labels;
 
     ctx.save();
@@ -33,13 +32,9 @@ const valueLabelPlugin = {
       const value = data[i];
       const isMine = labels[i] === MY_NAME;
 
-      const barTopY  = el.y;
-      const barBaseY = el.base;
-      const centerY  = (barTopY + barBaseY) / 2;   // ← 棒の中央
-
-      const text = `${value}冊`;
+      const centerY = (el.y + el.base) / 2;
       ctx.fillStyle = isMine ? '#fff' : '#666';
-      ctx.fillText(text, el.x, centerY);
+      ctx.fillText(`${value}冊`, el.x, centerY);
     }
     ctx.restore();
   }
@@ -47,7 +42,10 @@ const valueLabelPlugin = {
 
 /* ===== Utils ===== */
 const $ = (s)=>document.querySelector(s);
-function toggleEmpty(show){ const el=$('#empty'); if(el) el.style.display = show ? 'block':'none'; }
+function toggleEmpty(show){
+  const el=$('#empty');
+  if(el) el.style.display = show ? 'flex':'none';
+}
 
 function parseDate(s){ if(!s) return null; const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function between(dateStr, startStr, endStr){
@@ -59,7 +57,7 @@ function between(dateStr, startStr, endStr){
   return true;
 }
 
-// 月（YYYY-MM）→ 開始・終了（YYYY-MM-DD文字列）
+// 月（YYYY-MM）→ [YYYY-MM-DD, YYYY-MM-DD]
 function monthToRange(ym) {
   if (!ym) return { start: "", end: "" };
   const [y,m] = ym.split('-').map(Number);
@@ -72,7 +70,7 @@ function monthToRange(ym) {
   };
 }
 
-// きりのいい上限（1,2,5,10 系列）
+// きりのいい上限
 function niceCeil(v) {
   if (v <= 10) return 10;
   const pow = Math.pow(10, Math.floor(Math.log10(v)));
@@ -91,7 +89,7 @@ function setInnerWidth(count){
 
   const inner  = $('#chartInner');
   const canvas = $('#mainCanvas');
-  const wrap   = $('.chart-inner');     // ← 枠内のスクロール領域の高さに合わせる
+  const wrap   = $('.chart-inner');
 
   if (inner) inner.style.width = `${needed}px`;
   canvas.width  = needed;
@@ -111,9 +109,10 @@ function ensureChart(){
       barPercentage:1.0,
       barThickness: BAR_WIDTH_PX,
       maxBarThickness: BAR_WIDTH_PX,
-      backgroundColor: [],       // ← 自分だけ黒にするため配列で指定（renderでセット）
+      backgroundColor: [],            // render で配列セット
+      userMeta: [],                   // ← 所属/役職をここに載せる
       borderRadius: 10,
-      borderSkipped: false,      // 下の角も含めて丸める
+      borderSkipped: false,           // 下の角も丸く
       borderWidth: 0
     }]},
     options:{
@@ -124,22 +123,43 @@ function ensureChart(){
       scales:{
         x: {
           offset: true,
-          grid: { display: false, drawBorder: false },
-          border: { display: false },             // 下の基準線を消す
-          ticks: { minRotation: 0, maxRotation: 0, autoSkip: false, font: { size: 13 }, padding: 16, display: true }
+          grid:   { display: false, drawBorder: false },
+          border: { display: false },
+          ticks:  { minRotation: 0, maxRotation: 0, autoSkip: false, font: { size: 13 }, padding: 16, display: true }
         },
         y: {
           beginAtZero: true,
           min: 0,
-          suggestedMax: 10,                       // 基本は10
-          display: false,                         // 縦軸非表示
-          grid: { drawBorder: false },
+          suggestedMax: 10,
+          display: false,
+          grid:   { drawBorder: false },
           border: { display: false }
         }
       },
-      plugins:{ legend:{ display:false }, tooltip:{ enabled:true } }
+      plugins:{
+        legend:{ display:false },
+        // ★ ツールチップで所属/役職を出す
+        tooltip:{
+          enabled: true,
+          callbacks: {
+            title(items){
+              const i = items[0].dataIndex;
+              const ch = items[0].chart;
+              const name = ch.data.labels[i];
+              const cnt  = ch.data.datasets[0].data[i];
+              return `${name}：${cnt}冊`;
+            },
+            label(item){
+              const i = item.dataIndex;
+              const meta = item.chart.data.datasets[0].userMeta?.[i];
+              if (!meta) return '';
+              return `${meta.dept}／${meta.pos}`;
+            }
+          }
+        }
+      }
     },
-    plugins: [valueLabelPlugin]                    // ★ ラベル描画プラグイン
+    plugins: [valueLabelPlugin]
   });
   return chart;
 }
@@ -155,6 +175,7 @@ async function fetchAll(){
     ]);
     RAW={users,departments:depts,positions:poses,readings:reads};
     buildSelectors();
+
     // デフォルト：当月
     const m = $('#month');
     if (!m.value){
@@ -181,82 +202,75 @@ function render(){
   const deptId=$('#selDept').value?Number($('#selDept').value):null;
   const posId=$('#selPos').value?Number($('#selPos').value):null;
 
-  // 月→期間に変換
+  // 月→期間
   const ym = $('#month').value;
   const { start: sd, end: ed } = monthToRange(ym);
 
-  // ① まず通常のフィルタ
+  // まず通常のフィルタ
   let users = RAW.users.filter(u=>{
     if (deptId && u.departmentId !== deptId) return false;
     if (posId  && u.positionId  !== posId ) return false;
     return true;
   });
 
-  // ② 本人だけはフィルタから“除外”して必ず含める
+  // 本人はフィルタから除外して必ず含める（あとで0冊なら消える）
   const me = RAW.users.find(u => u.id === MY_USER_ID || u.name === MY_NAME);
-  if (me && !users.some(u => u.id === me.id)) {
-    users = [me, ...users];   // 先頭に差し込む（この後のロジックでも最左に固定）
-  }
+  if (me && !users.some(u => u.id === me.id)) users = [me, ...users];
 
   const uids=new Set(users.map(u=>u.id));
 
+  // 読書数集計
   const reads=RAW.readings.filter(r=>uids.has(r.userId)&&between(r.date,sd,ed));
   const map=new Map();
   reads.forEach(r=>map.set(r.userId,(map.get(r.userId)||0)+1));
 
-  // --- (4)の要件 ---
-  // 1) 全員を作る
-  let rows = users.map(u => ({ id: u.id, name: u.name, count: map.get(u.id) ?? 0 }));
-  // 2) 自分（MY_NAME）は0冊でも残す。他は0冊を除外（必要ならこの行を外す）
-  rows = rows.filter(r => r.count > 0 || r.name === MY_NAME);
-  // 3) 読書数降順 → 名前昇順
-  // 0冊は全員除外（本人も含む）
+  // id→部門/役職名
+  const deptById = new Map(RAW.departments.map(d => [d.id, d.name]));
+  const posById  = new Map(RAW.positions.map(p => [p.id, p.name]));
+
+  // rows（dept/posを持たせる）
+  let rows = users.map(u => ({
+    id: u.id,
+    name: u.name,
+    count: map.get(u.id) ?? 0,
+    dept: deptById.get(u.departmentId) || '',
+    pos:  posById.get(u.positionId)  || ''
+  }));
+
+  // 0冊は全員除外（本人も含む＝0冊なら出さない）
   rows = rows.filter(r => r.count > 0);
-  // 4) 自分を先頭へ
-  // --- 並べ替え ---
-  // まず「自分」だけ抜き出す
+
+  // 自分を抜き出し、残りを降順→名前、最後に自分を先頭へ
   const mineIdx = rows.findIndex(r => r.id === MY_USER_ID || r.name === MY_NAME);
   let mine = null;
-  if (mineIdx > -1) {
-    mine = rows.splice(mineIdx, 1)[0];  // 自分を rows から取り出す
-  }
+  if (mineIdx > -1) mine = rows.splice(mineIdx, 1)[0];
+  rows.sort((a,b)=> b.count - a.count || a.name.localeCompare(b.name,'ja'));
+  if (mine) rows = [mine, ...rows];
 
-  // 残り（自分以外）は読書数降順 → 名前昇順
-  rows.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'ja'));
+  const labels   = rows.map(r => r.name);
+  const counts   = rows.map(r => r.count);
+  const colors   = rows.map(r => (r.id === MY_USER_ID || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
+  const userMeta = rows.map(r => ({ dept: r.dept, pos: r.pos }));
 
-  // 自分を先頭に戻す（0冊なら mine=null なので出さない）
-  if (mine && mine.count > 0) {
-    rows = [mine, ...rows];
-  }
-
-  const labels = rows.map(r => r.name);
-  const counts = rows.map(r => r.count);
-  const colors = rows.map(r => (r.id === MY_USER_ID || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
-
-  // スクロール用の幅とキャンバス解像度を調整
+  // スクロール幅＆キャンバス解像度
   setInnerWidth(labels.length);
 
   const c = ensureChart();
   const cvs = $('#mainCanvas');
   c.resize(cvs.width, cvs.height);
 
-  // データ反映
+  // 反映
   c.data.labels = labels;
   c.data.datasets[0].data = counts;
   c.data.datasets[0].backgroundColor = colors;
+  c.data.datasets[0].userMeta = userMeta;     // ← ツールチップ用
 
   // Y軸：基本0〜10、超えたら拡張
   const maxVal = counts.length ? Math.max(...counts) : 0;
   const yopt = c.options.scales.y;
   yopt.min = 0;
-  if (maxVal <= 10) {
-    yopt.max = 10;
-    yopt.suggestedMax = undefined;
-  } else {
-    const upper = niceCeil(maxVal);
-    yopt.max = upper;
-    yopt.suggestedMax = undefined;
-  }
+  if (maxVal <= 10) { yopt.max = 10; yopt.suggestedMax = undefined; }
+  else { const upper = niceCeil(maxVal); yopt.max = upper; yopt.suggestedMax = undefined; }
 
   c.update();
   toggleEmpty(labels.length===0);

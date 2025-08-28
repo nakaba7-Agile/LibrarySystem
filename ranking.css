@@ -1,41 +1,34 @@
 /* ベース */
-body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; color:#222; }
-.empty { margin: 12px 0; color:#666; display:none; }
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; margin: 20px; color:#222; }
 
 /* ヘッダー行（タイトルのすぐ右にフィルタを並べる） */
 .header-bar{ margin-bottom:12px; }
 .title-line{
   display:flex;
   align-items:center;
-  gap: 12px;         /* タイトルとフィルタの間隔（お好みで） */
-  flex-wrap: wrap;   /* 画面が狭いときは折り返しOK */
+  gap: 12px;        /* タイトルとフィルタの間隔 */
+  flex-wrap: wrap;  /* 画面が狭いとき折返し */
 }
 .title{ font-weight:700; font-size:20px; }
 
-.filters{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-wrap: nowrap; /* PCでは1行に並べる */
-}
-.pill{
-  padding:8px 12px; border:1px solid #cfcfcf; border-radius:999px; background:#fff; font-size:14px;
-}
+.filters{ display:flex; gap:8px; align-items:center; }
+.pill{ padding:8px 12px; border:1px solid #cfcfcf; border-radius:999px; background:#fff; font-size:14px; }
 
-/* グラフエリア */
+/* グラフ枠 */
 .chart-wrap{
+  position: relative;            /* empty を中央表示するため */
   width: 860px;
-  height: 300px;
-  overflow-x: auto;     /* 枠内で横スクロール */
+  height: 260px;
+  overflow-x: auto;              /* 枠内で横スクロール */
   overflow-y: hidden;
-  border: none;
+  border: none;                  /* 枠線は非表示 */
   border-radius: 16px;
   background: #fff;
 }
 .chart-inner{
   height:100%;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: hidden;              /* はみ出しを切る（角丸の内側） */
 }
 #mainCanvas{
   display:block;
@@ -43,12 +36,23 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku G
   height:100% !important;
 }
 
-/* 小さめ画面での崩れ防止 */
+/* 空表示（中央・大きめ） */
+.empty{
+  position: absolute;
+  inset: 0;
+  display: none;                 /* JS で切替 */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #999;
+  pointer-events: none;
+}
+
+/* レスポンシブ */
 @media (max-width: 680px){
   .chart-wrap{ width:100%; }
   .title-line{ gap:10px; }
-  .filters{
-    flex-wrap: wrap;         /* 小画面は折り返し可 */
-    row-gap: 6px;
-  }
+  .filters{ flex-wrap: wrap; row-gap:6px; }
 }
