@@ -45,3 +45,26 @@ async function searchBooksByTitle() {
 }
 
 $('#searchBookBtn').on('click', searchBooksByTitle);
+
+$('#bookSearchResults').on('click', '.register-btn', async function() {
+  const bookId = $(this).data('bookid');
+  // 必要に応じてユーザーIDなども取得
+  const readingData = {
+    bookId: bookId,
+    // 例: userId: 1, // 必要ならユーザーIDを追加
+    startedAt: new Date().toISOString()
+  };
+  try {
+    await $.ajax({
+      url: `${API}/readings`,
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(readingData)
+    });
+    alert('「読んでいる」に登録しました');
+    // 必要ならボタンの状態変更や再描画など
+  } catch (e) {
+    alert('登録に失敗しました');
+    console.error(e);
+  }
+});
