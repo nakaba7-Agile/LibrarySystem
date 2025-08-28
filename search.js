@@ -1,3 +1,7 @@
+// ==== 設定 ====
+// json-server のポートに合わせてください
+const API = "http://localhost:4000";
+
 // 本のタイトル検索機能（db.jsonのbooksを利用）
 async function searchBooksByTitle() {
   const keyword = $('#bookTitleInput').val().trim();
