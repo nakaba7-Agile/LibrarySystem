@@ -28,14 +28,14 @@
     { "id": 103, "title": "AWS", "author":"佐藤 ハナコ" , "image": "images/book_103.png" },
     { "id": 104, "title": "データベーススペシャリスト問題集", "author":"矢田 直子", "image": "images/book_104.png" },
     { "id": 105, "title": "苦しんで覚えるC言語", "author":"窓辺 あかり", "image": "images/book_105.png" },
-    { "id": 106, "title": "ゼロから作るdeep learning 1", "author":"長野 さとみ" },
-    { "id": 107, "title": "パターン認識と機械学習 上", "author":"内田 幸喜" },
-    { "id": 108, "title": "パターン認識と機械学習 下", "author":"灘 奈々子" },
-    { "id": 109, "title": "python入門", "author":"河田 はじめ" },
-    { "id": 110, "title": "HTML&CSS デザインレシピ集", "author":"山口 優斗" },
-    { "id": 111, "title": "チームが勝手に動く仕組み", "author":"佐藤 勇気" },
-    { "id": 112, "title": "起業3年目の崖", "author":"花 ゆめ" },
-    { "id": 113, "title": "メンタルの筋トレ、していますか？", "author":"香田 あかり" }
+    { "id": 106, "title": "ゼロから作るdeep learning 1", "author":"長野 さとみ", "image": "images/book_106.png"},
+    { "id": 107, "title": "パターン認識と機械学習 上", "author":"内田 幸喜", "image": "images/book_107.png" },
+    { "id": 108, "title": "パターン認識と機械学習 下", "author":"灘 奈々子", "image": "images/book_108.png" },
+    { "id": 109, "title": "python入門", "author":"河田 はじめ", "image": "images/book_109.png" },
+    { "id": 110, "title": "HTML&CSS デザインレシピ集", "author":"山口 優斗", "image": "images/book_110.png" },
+    { "id": 111, "title": "チームが勝手に動く仕組み", "author":"佐藤 勇気", "image": "images/book_111.png" },
+    { "id": 112, "title": "起業3年目の崖", "author":"花 ゆめ", "image": "images/book_112.png" },
+    { "id": 113, "title": "メンタルの筋トレ、していますか？", "author":"香田 あかり", "image": "images/book_113.png" }
    ],
    "readings": [
     { "id": 1001, "userId": 1, "bookId": 101, "date": "2025-08-27" },
