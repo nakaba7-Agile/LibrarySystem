@@ -61,7 +61,26 @@ border-radius:var(--radius); box-shadow:var(--shadow);
 padding:14px 16px; border-bottom:1px solid var(--line);
 font-weight:700; font-size:15px;
 }
-.panel .bd{padding:14px 16px}
+.panel .bd{
+    padding:14px 16px;
+}
+
+/* 本のタイトル検索だけカスタム */
+.search-bd {
+  display:flex;
+  gap:8px;        /* ← input と button の余白 */
+  align-items:center;
+}
+
+.search-bd input {
+  flex: 1;             /* 残り幅いっぱいに広げる */
+  min-width: 0;        /* はみ出し防止 */
+}
+
+.search-bd button {
+  white-space: nowrap; /* ボタン内改行しない */
+}
+
 .muted{color:var(--muted); font-size:12px}
 
 /* ========= ページ切り替え ========= */
