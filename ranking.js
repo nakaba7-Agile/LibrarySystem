@@ -257,3 +257,5 @@ $('#month').addEventListener('change', render);
 
 // 初回
 fetchAll();
+
+window.parent.postMessage('resizeIframe', '*');
