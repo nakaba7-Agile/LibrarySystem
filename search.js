@@ -78,7 +78,8 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
       data: JSON.stringify(readingData)
     });
     alert('「読んでいる」に登録しました');
-    // 必要ならボタンの状態変更や再描画など
+    showPage('home'); // home画面に遷移
+    location.reload(); // ページをリロードして最新情報を表示
   } catch (e) {
     alert('登録に失敗しました');
     console.error(e);
