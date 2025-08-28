@@ -102,46 +102,60 @@
             <!-- ===== Content ===== -->
             <section class="content">
 
-                <!-- ランキング -->
-                <section class="panel">
-                    <iframe id="rankingFrame" src="ranking.html" width="100%" style="border:none;"></iframe>
-                    <script>
-                    function resizeIframe() {
-                        const iframe = document.getElementById('rankingFrame');
-                        if (iframe.contentWindow.document.body) {
-                        const height = iframe.contentWindow.document.body.scrollHeight;
-                        iframe.style.height = height + 'px';
+                <!-- ページ遷移 -->
+                <div id="home" class="page active">
+                    <!-- ランキング -->
+                    <section class="panel">
+                        <iframe id="rankingFrame" src="ranking.html" width="100%" style="border:none;"></iframe>
+                        <script>
+                        function resizeIframe() {
+                            const iframe = document.getElementById('rankingFrame');
+                            if (iframe.contentWindow.document.body) {
+                            const height = iframe.contentWindow.document.body.scrollHeight;
+                            iframe.style.height = height + 'px';
+                            }
                         }
-                    }
-                    document.getElementById('rankingFrame').addEventListener('load', resizeIframe);
-                    </script>
-                </section>
+                        document.getElementById('rankingFrame').addEventListener('load', resizeIframe);
+                        </script>
+                    </section>
+                </div>
 
-                <!-- あなたへのおすすめ -->
-                <section class="panel">
-                    <div class="bd">
-                    <div class="section-hd">
-                        <strong>あなたへのおすすめ</strong>
-                        <span class="muted">更新: 今日</span>
-                    </div>
-                    <div class="rail" aria-label="あなたへのおすすめ一覧">
-                        <div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div>
-                    </div>
-                    </div>
-                </section>
+                <!-- ページ遷移 -->
+                <div id="kensaku" class="page">
+                    <div id="bookSearchResults"></div>
+                </div>
 
-                <!-- みんなが読んでいる本 -->
-                <section class="panel">
-                    <div class="bd">
-                    <div class="section-hd">
-                        <strong>みんなが読んでいる本</strong>
-                        <span class="muted">リアルタイム</span>
-                    </div>
-                    <div class="rail" aria-label="トレンド本一覧">
-                        <div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div>
-                    </div>
-                    </div>
-                </section>
+                <!-- ページ遷移 -->
+                <div id="recomend" class="page">
+                    <!-- あなたへのおすすめ -->
+                    <section class="panel">
+                        <div class="bd">
+                        <div class="section-hd">
+                            <strong>あなたへのおすすめ</strong>
+                            <span class="muted">更新: 今日</span>
+                        </div>
+                        <div class="rail" aria-label="あなたへのおすすめ一覧">
+                            <div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div>
+                        </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ページ遷移 -->
+                <div id="popular" class="page">
+                    <!-- みんなが読んでいる本 -->
+                    <section class="panel">
+                        <div class="bd">
+                        <div class="section-hd">
+                            <strong>みんなが読んでいる本</strong>
+                            <span class="muted">リアルタイム</span>
+                        </div>
+                        <div class="rail" aria-label="トレンド本一覧">
+                            <div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div><div class="book"></div>
+                        </div>
+                        </div>
+                    </section>
+                </div>
 
             </section>
 

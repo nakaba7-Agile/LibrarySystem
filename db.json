@@ -34,7 +34,6 @@
     { "id": 108, "title": "パターン認識と機械学習 下" },
     { "id": 109, "title": "python入門" },
     { "id": 110, "title": "HTML&CSS デザインレシピ集" }
-
    ],
    "readings": [
     { "id": 1001, "userId": 1, "bookId": 101, "date": "2025-08-27" },
