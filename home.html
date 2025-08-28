@@ -106,18 +106,17 @@
             <section class="content">
 
                 <!-- ページ遷移 -->
-                <div id="home" class="page active">
+                <div>
                     <!-- ランキング -->
                     <section class="panel">
                         <iframe id="rankingFrame" src="ranking.html" width="100%" style="border:none; display:block; padding:0; margin:0;"></iframe>
 
                         <script>
-                            
                         function resizeIframe() {
                             const iframe = document.getElementById('rankingFrame');
                             if (iframe.contentWindow.document.body) {
                             const height = iframe.contentWindow.document.body.scrollHeight;
-                            iframe.style.height = height + 'px';
+                            iframe.style.height = height + 50 + 'px';
                             }
                         }
                         window.addEventListener('message', (event) => {
