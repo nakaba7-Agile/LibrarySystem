@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <!-- タイトルの“すぐ右”にフィルタを並べる -->
+  <!-- タイトルの右にフィルタ -->
   <div class="header-bar">
     <div class="title-line">
       <span class="title">月間読書数ランキング</span>
@@ -21,12 +21,12 @@
     </div>
   </div>
 
-  <div id="empty" class="empty">該当データがありません。</div>
-
   <div class="chart-wrap">
     <div id="chartInner" class="chart-inner">
       <canvas id="mainCanvas"></canvas>
     </div>
+    <!-- 空表示（中央に） -->
+    <div id="empty" class="empty">該当データがありません</div>
   </div>
 
   <script src="./ranking.js"></script>
