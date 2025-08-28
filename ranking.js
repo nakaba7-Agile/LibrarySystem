@@ -213,9 +213,19 @@ function render(){
   // 0冊は全員除外（本人も含む）
   rows = rows.filter(r => r.count > 0);
   // 4) 自分を先頭へ
+  // --- 並べ替え ---
+  // まず「自分」だけ抜き出す
   const mineIdx = rows.findIndex(r => r.id === MY_USER_ID || r.name === MY_NAME);
+  let mine = null;
   if (mineIdx > -1) {
-    const mine = rows.splice(mineIdx, 1)[0];
+    mine = rows.splice(mineIdx, 1)[0];  // 自分を rows から取り出す
+  }
+
+  // 残り（自分以外）は読書数降順 → 名前昇順
+  rows.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'ja'));
+
+  // 自分を先頭に戻す（0冊なら mine=null なので出さない）
+  if (mine && mine.count > 0) {
     rows = [mine, ...rows];
   }
 
