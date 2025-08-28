@@ -64,6 +64,11 @@ font-weight:700; font-size:15px;
 .panel .bd{padding:14px 16px}
 .muted{color:var(--muted); font-size:12px}
 
+/* ========= ページ切り替え ========= */
+.page{display: none;}
+.active{display: block;}
+nav button{margin-right: 10px;}
+
 /* ========= Sidebar ========= */
 .sidebar{display:flex; flex-direction:column; gap:var(--gap)}
 .progress-wrap{display:grid; grid-template-columns:80px 1fr; gap:12px; align-items:center}
