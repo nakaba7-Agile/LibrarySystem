@@ -24,10 +24,10 @@
     { "id": 7, "name": "ITSE" }
    ],
    "books": [
-    { "id": 101, "title": "基本情報技術者", "author":"山田 太郎" , "image": "/images/book_101.png" },
-    { "id": 102, "title": "応用情報技術者", "author":"佐藤 次郎" , "image": "/images/book_102.png" },
-    { "id": 103, "title": "AWS", "author":"佐藤 ハナコ" , "image": "/images/book_103.png" },
-    { "id": 104, "title": "データベーススペシャリスト問題集", "author":"矢田 直子" },
+    { "id": 101, "title": "基本情報技術者", "author":"山田 太郎" , "image": "images/book_101.png" },
+    { "id": 102, "title": "応用情報技術者", "author":"佐藤 次郎" , "image": "images/book_102.png" },
+    { "id": 103, "title": "AWS", "author":"佐藤 ハナコ" , "image": "images/book_103.png" },
+    { "id": 104, "title": "データベーススペシャリスト問題集", "author":"矢田 直子", "image": "images/book_104.png" },
     { "id": 105, "title": "苦しんで覚えるC言語", "author":"窓辺 あかり" },
     { "id": 106, "title": "ゼロから作るdeep learning 1", "author":"長野 さとみ" },
     { "id": 107, "title": "パターン認識と機械学習 上", "author":"内田 幸喜" },
