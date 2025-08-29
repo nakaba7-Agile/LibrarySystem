@@ -32,7 +32,11 @@ async function searchBooksByTitle() {
             <div>
               <div style="font-size:1.1em;font-weight:bold;margin-bottom:4px;">${book.title}</div>
               <div style="color:#555;margin-bottom:10px;">${author}</div>
-              <button class="register-btn" data-bookid="${book.id}">読んだ！</button>
+              <div style="display:flex; gap:8px;">
+                <!-- 左に読んでいる、右に読んだ！ -->
+                <button class="register-btn reading" data-bookid="${book.id}">読んでいる</button>
+                <button class="register-btn done"    data-bookid="${book.id}">読んだ！</button>
+              </div>
             </div>
           </div>
         `);
@@ -46,9 +50,12 @@ async function searchBooksByTitle() {
 
 $('#searchBookBtn').on('click', searchBooksByTitle);
 
+// ボタンクリック処理（読んでいる=progress0, 読んだ=progress100）
 $('#bookSearchResults').on('click', '.register-btn', async function() {
   const bookId = $(this).data('bookid');
   const userId = 6; // 仮のユーザーID（必要に応じて動的に取得してください）
+  const isDone = $(this).hasClass('done'); // 「読んだ！」かどうか
+  const progressValue = isDone ? 100 : 0;
 
   try {
     // 既存のreadingsを取得
@@ -56,7 +63,7 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
     // すでに同じuserIdとbookIdの組み合わせが存在するかチェック
     const exists = readings.some(r => r.userId === userId && r.bookId === bookId);
     if (exists) {
-      alert('この本はすでに「読んだ本」に登録されています');
+      alert('この本はすでに登録されています');
       return;
     }
 
@@ -69,7 +76,7 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
       userId: userId,
       bookId: bookId,
       date: new Date().toISOString().split('T')[0],
-      progress: 100 // 進捗100%で登録
+      progress: progressValue
     };
 
     await $.ajax({
@@ -78,7 +85,7 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
       contentType: 'application/json',
       data: JSON.stringify(readingData)
     });
-    alert('「読んだ本」に登録しました');
+    alert(isDone ? '「読んだ本」に登録しました' : '「読んでいる本」に登録しました');
     showPage('home'); // home画面に遷移
     location.reload(); // ページをリロードして最新情報を表示
   } catch (e) {
