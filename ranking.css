@@ -3,7 +3,11 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku G
 .empty { margin: 12px 0; color:#666; display:none; }
 
 /* ヘッダー行（タイトルのすぐ右にフィルタを並べる） */
-.header-bar{ margin-bottom:12px; }
+.header-bar{ 
+  margin-bottom:12px; 
+  padding-top: 1%;
+  padding-left: 2%;
+}
 .title-line{
   display:flex;
   align-items:center;
@@ -24,7 +28,8 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku G
 
 /* グラフエリア（枠内で横スクロール） */
 .chart-wrap{
-  width: 860px;
+  position: relative;            /* empty を中央表示するため */
+  width: 70%;
   height: 260px;
   overflow-x: auto;
   overflow-y: hidden;
@@ -32,8 +37,9 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku G
   border-radius: 16px;
   background: #fff;
 }
-.chart-inner{
-  height:100%;
+.chart-inner {
+  display: inline-block;   /* ← スクロールに自然に追従 */
+  height: 100%;
   border-radius: 16px;
   overflow: hidden;
 }

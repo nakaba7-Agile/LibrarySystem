@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>読書ダッシュボード</title>
   <link rel="stylesheet" href="./home.css" />
+  <link rel="stylesheet" href="./ranking.css" />
   <!-- jQuery / Chart.js -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -112,7 +113,7 @@
                             const iframe = document.getElementById('rankingFrame'); 
                             if (iframe.contentWindow.document.body) { 
                                 const height = iframe.contentWindow.document.body.scrollHeight; 
-                                iframe.style.height = height + 25 + 'px'; 
+                                iframe.style.height = height + 30 + 'px'; 
                             } 
                         } 
                         document.getElementById('rankingFrame').addEventListener('load', resizeIframe); </script>
