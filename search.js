@@ -32,7 +32,7 @@ async function searchBooksByTitle() {
             <div>
               <div style="font-size:1.1em;font-weight:bold;margin-bottom:4px;">${book.title}</div>
               <div style="color:#555;margin-bottom:10px;">${author}</div>
-              <button class="register-btn" data-bookid="${book.id}">読んでいるに登録</button>
+              <button class="register-btn" data-bookid="${book.id}">読んだ！</button>
             </div>
           </div>
         `);
