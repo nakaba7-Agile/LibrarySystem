@@ -2,7 +2,11 @@
 body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; margin: 20px; color:#222; }
 
 /* ヘッダー行（タイトルのすぐ右にフィルタを並べる） */
-.header-bar{ margin-bottom:12px; }
+.header-bar{ 
+  margin-bottom:12px; 
+  padding-top: 1%;
+  padding-left: 2%;
+}
 .title-line{
   display:flex;
   align-items:center;
@@ -17,7 +21,7 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku G
 /* グラフ枠 */
 .chart-wrap{
   position: relative;            /* empty を中央表示するため */
-  width: 860px;
+  width: 70%;
   height: 260px;
   overflow-x: auto;              /* 枠内で横スクロール */
   overflow-y: hidden;
@@ -25,11 +29,13 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku G
   border-radius: 16px;
   background: #fff;
 }
-.chart-inner{
-  height:100%;
+.chart-inner {
+  display: inline-block;   /* ← スクロールに自然に追従 */
+  height: 100%;
   border-radius: 16px;
-  overflow: hidden;              /* はみ出しを切る（角丸の内側） */
+  overflow: hidden;
 }
+
 #mainCanvas{
   display:block;
   width:100% !important;
