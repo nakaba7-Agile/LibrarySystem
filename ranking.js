@@ -219,8 +219,13 @@ function render(){
 
   const uids=new Set(users.map(u=>u.id));
 
-  // 読書数集計
-  const reads=RAW.readings.filter(r=>uids.has(r.userId)&&between(r.date,sd,ed));
+  // 読書数集計（完了のみ）
+  const reads = RAW.readings.filter(
+    r => uids.has(r.userId) &&
+    between(r.date, sd, ed) &&
+    (r.progress ?? 0) >= 100          // ★ ここを追加
+  );
+
   const map=new Map();
   reads.forEach(r=>map.set(r.userId,(map.get(r.userId)||0)+1));
 
