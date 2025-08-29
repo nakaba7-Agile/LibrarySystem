@@ -68,7 +68,8 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
       id: newId,
       userId: userId,
       bookId: bookId,
-      date: new Date().toISOString().split('T')[0]
+      date: new Date().toISOString().split('T')[0],
+      progress: 100 // 進捗100%で登録
     };
 
     await $.ajax({
