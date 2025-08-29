@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>本の検索UI</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+    }
+
+    .container {
+      width: 300px;
+      background-color: #e0e0e0;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .section {
+      margin-top: 20px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .item {
+      margin-left: 15px;
+      margin-bottom: 6px;
+    }
+
+    .dropdown-arrow::before {
+      content: "▼ ";
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="search-box">
+      <p>読んでいる本の登録・検索</p>
+      <input type="text" placeholder="本のタイトル・著者・ユーザー名を入力">
+    </div>
+
+    <div class="section">
+      <p class="section-title dropdown-arrow">ジャンルから選ぶ</p>
+      <div class="item">ビジネス</div>
+      <div class="item">小説</div>
+      <div class="item">芸術・文化</div>
+      <div class="item">数学</div>
+    </div>
+
+    <div class="section">
+      <p class="section-title dropdown-arrow">人気のワードから選ぶ</p>
+      <div class="item">健康</div>
+      <div class="item">AWS</div>
+    </div>
+
+    <div class="section">
+      <p class="section-title dropdown-arrow">資格名から選ぶ</p>
+      <div class="item">AWS</div>
+      <div class="item">Azure</div>
+    </div>
+  </div>
+
+</body>
+</html>
