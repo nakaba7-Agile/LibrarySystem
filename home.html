@@ -41,19 +41,10 @@
                     </div>
 
                     <p class="muted" style="margin:8px 0 10px;">現在の進捗</p>
-                    <div class="progress-wrap">
-                        <div class="progress-box">📘</div>
-                        <div>
-                        <div class="progress-label">
-                            <span class="muted">基本情報技術者試験</span>
-                        </div>
-                        <input type="range" id="progressSlider" value="0" min="0" max="100" />
-                        <span id="progressPercent">0%</span>
-                        <div class="row">
-                            <button class="btn">更新</button>
-                        </div>
-                        </div>
+                    <div id="inProgressArea" style="display:grid;gap:10px;">
+                    <!-- JS で進捗 99% 以下の本を描画します -->
                     </div>
+
                     </div>
                 </section>
 
@@ -171,8 +162,8 @@
             
         </main>
     </div>
-    <script src="./progressupdate.js"></script>
     <script src="./search.js"></script>
+    <script src="./progressupdate.js"></script>
     <!-- ★ ランキング iframe からの冊数を受け取り表示する（追記） -->
     <script>
         // 1) iframe からの通知を受信して「今月の読書数」を更新
@@ -197,6 +188,104 @@
         rankingFrame.contentWindow?.postMessage({ type: 'request-monthly-count' }, '*');
     });
     </script>
+
+    <script>
+        // ==== 設定 ====
+        const API_HOME = "http://localhost:4000";
+        const MY_USER_ID_HOME = 6;
+
+        // 月→開始/終了 文字列
+        function monthToRangeHome(ym) {
+            let d = ym ? new Date(ym + "-01") : new Date();
+            const y = d.getFullYear(), m = d.getMonth();
+            const pad = n => String(n).padStart(2, "0");
+            const s = new Date(y, m, 1), e = new Date(y, m + 1, 0);
+            return {
+                start: `${s.getFullYear()}-${pad(s.getMonth()+1)}-${pad(s.getDate())}`,
+                end:   `${e.getFullYear()}-${pad(e.getMonth()+1)}-${pad(e.getDate())}`
+            };
+        }
+        function betweenHome(dateStr, s, e){
+            if(!s && !e) return true;
+            const dt = new Date(dateStr);
+            return (!s || dt >= new Date(s)) && (!e || dt <= new Date(e + "T23:59:59.999"));
+        }
+
+        // ランキング iframe から月が送られて来たら追従
+        let currentYMFromRanking = null;
+        window.addEventListener("message", (e)=>{
+            const data = e?.data;
+            if(!data || typeof data !== "object") return;
+
+            if (data.type === "monthly-count" || data.type === "month-change") {
+                currentYMFromRanking = data.ym || null;
+                renderInProgressArea(currentYMFromRanking);
+            }
+        });
+
+        // 初回：ページ読込時にも当月で描画（iframe から来ない環境でも出るように）
+        document.addEventListener("DOMContentLoaded", () => {
+        renderInProgressArea(null);
+        });
+
+        // ===== 進捗（99%以下）リスト描画 =====
+        async function renderInProgressArea(ym){
+        const area = document.getElementById("inProgressArea");
+        if(!area) return;
+
+        const { start, end } = monthToRangeHome(ym);
+
+        try{
+            // books は画像・タイトルのために取得（無くても動くように try/catch）
+            const readings = await fetch(`${API_HOME}/readings`).then(r=>r.json());
+            let books = [];
+            try { books = await fetch(`${API_HOME}/books`).then(r=>r.json()); } catch(_) {}
+
+                const list = readings
+                .filter(r =>
+                r.userId === MY_USER_ID_HOME &&
+                betweenHome(r.date, start, end) &&
+                (r.progress ?? 0) <= 99
+                )
+                .map(r => ({
+                ...r,
+                book: books.find(b => b.id === r.bookId) || {}
+                }));
+
+                if(list.length === 0){
+                    area.innerHTML = `<div class="muted">（進行中の本はありません）</div>`;
+                    return;
+                }
+
+                // 読みやすくタイトル順
+                list.sort((a,b)=> (a.book?.title||"").localeCompare(b.book?.title||"","ja"));
+
+                area.innerHTML = list.map(item=>{
+                    const img   = item.book?.image || "images/noimage.png";
+                    const title = item.book?.title || "（タイトル不明）";
+                    const prog  = item.progress ?? 0;
+                    return `
+                    <div class="card-row" style="display:flex;align-items:center;gap:12px;">
+                    <img src="${img}" alt="" style="width:36px;height:48px;object-fit:cover;border-radius:8px;background:#eee;">
+                    <div style="flex:1;min-width:0;">
+                    <div style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${title}</div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+                    <div style="flex:1;height:6px;border-radius:999px;background:#ececec;overflow:hidden;">
+                    <div style="height:100%;width:${prog}%;background:#8aa9ff;"></div>
+                    </div>
+                    <span style="width:42px;text-align:right;" class="muted">${prog}%</span>
+                    </div>
+                    </div>
+                    </div>
+                    `;
+                }).join("");
+        }catch(err){
+        console.error(err);
+        area.innerHTML = `<div style="color:#c00;">進捗データの取得に失敗しました</div>`;
+        }
+        }
+    </script>
+
 
 </body>
 
