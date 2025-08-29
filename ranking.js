@@ -1,18 +1,18 @@
 /* ===== 設定 ===== */
-const API = "http://localhost:4000";   // json-server のURL
-const BAR_WIDTH_PX = 45;               // 棒の太さ
-const GAP_PX       = 40;               // 棒間隔
-const PADDING_PX   = 6;                // 左右パディング
+const API = "http://localhost:4000";
+const BAR_WIDTH_PX = 45;
+const GAP_PX       = 40;
+const PADDING_PX   = 6;
 
-// ★ 自分（左端＆黒）
+// 自分（左端＆黒）
 const MY_NAME = "窓辺あかり";
-const MY_USER_ID = 6;                  // users.id に合わせて
+const MY_USER_ID = 6;
 
 /* ===== 状態 ===== */
 let RAW = { users: [], departments: [], positions: [], readings: [] };
 let chart;
 
-/* ===== 値ラベル描画プラグイン（棒の中央に “n冊”） ===== */
+/* ===== 値ラベル（棒の中央に “n冊”） ===== */
 const valueLabelPlugin = {
   id: 'valueLabel',
   afterDatasetsDraw(chart) {
@@ -31,7 +31,6 @@ const valueLabelPlugin = {
       if (!el) continue;
       const value = data[i];
       const isMine = labels[i] === MY_NAME;
-
       const centerY = (el.y + el.base) / 2;
       ctx.fillStyle = isMine ? '#fff' : '#666';
       ctx.fillText(`${value}冊`, el.x, centerY);
@@ -44,9 +43,8 @@ const valueLabelPlugin = {
 const $ = (s)=>document.querySelector(s);
 function toggleEmpty(show){
   const el=$('#empty');
-  if(el) el.style.display = show ? 'flex':'none';
+  if(el) el.style.display = show ? 'block':'none';
 }
-
 function parseDate(s){ if(!s) return null; const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function between(dateStr, startStr, endStr){
   if(!startStr && !endStr) return true;
@@ -56,8 +54,6 @@ function between(dateStr, startStr, endStr){
   if(e){ const ee=new Date(e.getFullYear(),e.getMonth(),e.getDate(),23,59,59,999); if(dt>ee) return false; }
   return true;
 }
-
-// 月（YYYY-MM）→ [YYYY-MM-DD, YYYY-MM-DD]
 function monthToRange(ym) {
   if (!ym) return { start: "", end: "" };
   const [y,m] = ym.split('-').map(Number);
@@ -69,8 +65,6 @@ function monthToRange(ym) {
     end:   `${end.getFullYear()}-${pad(end.getMonth()+1)}-${pad(end.getDate())}`
   };
 }
-
-// きりのいい上限
 function niceCeil(v) {
   if (v <= 10) return 10;
   const pow = Math.pow(10, Math.floor(Math.log10(v)));
@@ -82,21 +76,19 @@ function niceCeil(v) {
   return m * pow;
 }
 
-/* ===== 内部幅（スクロール領域＋キャンバス解像度） ===== */
+/* ===== 内部幅（横スクロール用） ===== */
 function setInnerWidth(count){
   const CAT = BAR_WIDTH_PX + GAP_PX;
   const needed = CAT * (count + 1) + (PADDING_PX * 2); // x.offset=true を考慮
-
   const inner  = $('#chartInner');
   const canvas = $('#mainCanvas');
   const wrap   = $('.chart-inner');
-
   if (inner) inner.style.width = `${needed}px`;
   canvas.width  = needed;
   canvas.height = wrap ? wrap.clientHeight : canvas.height;
 }
 
-/* ===== Chart.js 初期化 ===== */
+/* ===== Chart.js ===== */
 function ensureChart(){
   if(chart) return chart;
   const ctx = $('#mainCanvas').getContext('2d');
@@ -109,10 +101,10 @@ function ensureChart(){
       barPercentage:1.0,
       barThickness: BAR_WIDTH_PX,
       maxBarThickness: BAR_WIDTH_PX,
-      backgroundColor: [],            // render で配列セット
-      userMeta: [],                   // ← 所属/役職をここに載せる
+      backgroundColor: [],            // renderで設定
+      userMeta: [],                   // ツールチップ用
       borderRadius: 10,
-      borderSkipped: false,           // 下の角も丸く
+      borderSkipped: false,
       borderWidth: 0
     }]},
     options:{
@@ -138,7 +130,6 @@ function ensureChart(){
       },
       plugins:{
         legend:{ display:false },
-        // ★ ツールチップで所属/役職を出す
         tooltip:{
           enabled: true,
           callbacks: {
@@ -164,6 +155,33 @@ function ensureChart(){
   return chart;
 }
 
+/* ===== 今月の冊数（MY_USER の progress==100 をカウント） ===== */
+// ★★★ 補足の中身：ここで計算し、親に postMessage で送る ★★★
+function postMonthlyCountToParent() {
+  // 月（未選択なら当月）
+  let ym = $('#month')?.value;
+  if (!ym) {
+    const t = new Date();
+    ym = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
+  }
+  const { start: sd, end: ed } = monthToRange(ym);
+
+  // 自分
+  const me = RAW.users.find(u => u.id === MY_USER_ID) || RAW.users.find(u => u.name === MY_NAME);
+  if (!me) return;
+
+  // progress==100 のみ
+  const myCompleted = RAW.readings.filter(r =>
+    r.userId === me.id && between(r.date, sd, ed) && Number(r.progress ?? 0) >= 100
+  );
+
+  // bookId でユニーク化（同じ本が複数行あっても 1冊）
+  const count = new Set(myCompleted.map(r => r.bookId)).size;
+
+  // 親に送る
+  window.parent?.postMessage({ type:'monthly-count', ym, count }, '*');
+}
+
 /* ===== データ取得 ===== */
 async function fetchAll(){
   try {
@@ -183,9 +201,12 @@ async function fetchAll(){
       const ym = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
       m.value = ym;
     }
+
     render();
+    postMonthlyCountToParent();   // ← 初回にも冊数を親へ送る
+
   } catch (e) {
-    console.error('データ取得に失敗しました。json-server の起動/ポート/CORS を確認してください。', e);
+    console.error('取得失敗', e);
   }
 }
 
@@ -197,43 +218,38 @@ function buildSelectors(){
   RAW.positions  .forEach(p=>{ let o=document.createElement('option'); o.value=p.id; o.textContent=p.name; selPos.appendChild(o); });
 }
 
-/* ===== 集計＆描画 ===== */
+/* ===== 集計＆描画（progress==100のみカウント） ===== */
 function render(){
   const deptId=$('#selDept').value?Number($('#selDept').value):null;
   const posId=$('#selPos').value?Number($('#selPos').value):null;
 
-  // 月→期間
   const ym = $('#month').value;
   const { start: sd, end: ed } = monthToRange(ym);
 
-  // まず通常のフィルタ
   let users = RAW.users.filter(u=>{
     if (deptId && u.departmentId !== deptId) return false;
     if (posId  && u.positionId  !== posId ) return false;
     return true;
   });
 
-  // 本人はフィルタから除外して必ず含める（あとで0冊なら消える）
+  // 本人はフィルタから除外して必ず含める（0冊なら後で落ちる）
   const me = RAW.users.find(u => u.id === MY_USER_ID || u.name === MY_NAME);
   if (me && !users.some(u => u.id === me.id)) users = [me, ...users];
 
   const uids=new Set(users.map(u=>u.id));
 
-  // 読書数集計（完了のみ）
+  // 完了のみ
   const reads = RAW.readings.filter(
     r => uids.has(r.userId) &&
-    between(r.date, sd, ed) &&
-    (r.progress ?? 0) >= 100          // ★ ここを追加
+         between(r.date, sd, ed) &&
+         Number(r.progress ?? 0) >= 100
   );
-
   const map=new Map();
   reads.forEach(r=>map.set(r.userId,(map.get(r.userId)||0)+1));
 
-  // id→部門/役職名
   const deptById = new Map(RAW.departments.map(d => [d.id, d.name]));
   const posById  = new Map(RAW.positions.map(p => [p.id, p.name]));
 
-  // rows（dept/posを持たせる）
   let rows = users.map(u => ({
     id: u.id,
     name: u.name,
@@ -242,10 +258,10 @@ function render(){
     pos:  posById.get(u.positionId)  || ''
   }));
 
-  // 0冊は全員除外（本人も含む＝0冊なら出さない）
+  // 0冊は全員除外（本人も含む）
   rows = rows.filter(r => r.count > 0);
 
-  // 自分を抜き出し、残りを降順→名前、最後に自分を先頭へ
+  // 自分を抜いて、残りは降順→名前、最後に自分を先頭へ
   const mineIdx = rows.findIndex(r => r.id === MY_USER_ID || r.name === MY_NAME);
   let mine = null;
   if (mineIdx > -1) mine = rows.splice(mineIdx, 1)[0];
@@ -257,20 +273,17 @@ function render(){
   const colors   = rows.map(r => (r.id === MY_USER_ID || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
   const userMeta = rows.map(r => ({ dept: r.dept, pos: r.pos }));
 
-  // スクロール幅＆キャンバス解像度
   setInnerWidth(labels.length);
 
   const c = ensureChart();
   const cvs = $('#mainCanvas');
   c.resize(cvs.width, cvs.height);
 
-  // 反映
   c.data.labels = labels;
   c.data.datasets[0].data = counts;
   c.data.datasets[0].backgroundColor = colors;
-  c.data.datasets[0].userMeta = userMeta;     // ← ツールチップ用
+  c.data.datasets[0].userMeta = userMeta;
 
-  // Y軸：基本0〜10、超えたら拡張
   const maxVal = counts.length ? Math.max(...counts) : 0;
   const yopt = c.options.scales.y;
   yopt.min = 0;
@@ -279,12 +292,21 @@ function render(){
 
   c.update();
   toggleEmpty(labels.length===0);
+
+  // ★ 再描画のたびに親へ最新冊数を通知
+  postMonthlyCountToParent();
 }
 
 /* ===== イベント ===== */
 $('#selDept').addEventListener('change', render);
 $('#selPos').addEventListener('change', render);
-$('#month').addEventListener('change', render);
+$('#month').addEventListener('change', () => {
+  // 親に月変更を通知（必要なら）
+  const ym = $('#month').value;
+  window.parent?.postMessage({ type:'month-change', ym }, '*');
+  render();                   // ← グラフ更新
+  // postMonthlyCountToParent() は render 内で呼ばれる
+});
 
-// 初回
+/* ===== 初回 ===== */
 fetchAll();

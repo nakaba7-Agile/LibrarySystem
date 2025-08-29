@@ -36,7 +36,10 @@
                 <section class="panel">
                     <div class="hd">今月の読書数</div>
                     <div class="bd">
-                    <div style="font-size:32px; font-weight:800; margin-bottom:4px;">4<small style="font-size:14px; color:var(--muted); margin-left:2px;">冊</small></div>
+                    <div style="font-size:32px; font-weight:800; margin-bottom:4px;">
+                        <span id="monthlyCount">0</span>
+                        <small style="font-size:14px; color:var(--muted); margin-left:2px;">冊</small>
+                    </div>
 
                     <p class="muted" style="margin:8px 0 10px;">現在の進捗</p>
                     <div class="progress-wrap">
@@ -144,7 +147,7 @@
                             const iframe = document.getElementById('rankingFrame'); 
                             if (iframe.contentWindow.document.body) { 
                                 const height = iframe.contentWindow.document.body.scrollHeight; 
-                                iframe.style.height = height + 13 + 'px'; 
+                                iframe.style.height = height + 25 + 'px'; 
                             } 
                         } 
                         document.getElementById('rankingFrame').addEventListener('load', resizeIframe); </script> -->
@@ -188,12 +191,75 @@
                     </section>
                 </div>
 
+                <!-- ページ遷移 -->
+                 <div id="mypage" class="page">
+                    <!-- マイページ -->
+                    <section class="panel">
+                        <div class="bd">
+                            <dl>
+                            <dt>名前</dt>
+                            <dd class="value">◯◯</dd>
+
+
+                            <dt>メール</dt>
+                            <dd class="value">◯◯.aiueo@jp.aaaaaa.bbbbb.com</dd>
+
+
+                            <dt>所属</dt>
+                            <dd class="value">技術本部　シス研</dd>
+
+
+                            <dt>年数</dt>
+                            <dd class="value">3年目</dd>
+
+
+                            <dt>役職</dt>
+                            <dd class="value">副主任</dd>
+
+
+                            <dt>資格</dt>
+                            <dd>
+                            <div class="chips">
+                            <span class="chip">基本情報技術者</span>
+                            <span class="chip">応用情報技術者</span>
+                            </div>
+                            </dd>
+                            </dl>
+                        </div>
+                    </section>
+                </div>
+
             </section>
 
         </main>
     </div>
     <script src="./progressupdate.js"></script>
     <script src="./search.js"></script>
+    <!-- ★ ランキング iframe からの冊数を受け取り表示する（追記） -->
+    <script>
+        // 1) iframe からの通知を受信して「今月の読書数」を更新
+        window.addEventListener('message', (e) => {
+            const data = e?.data;
+            if (!data || typeof data !== 'object') return;
+
+            // 進捗100%のみで集計された今月の冊数
+            if (data.type === 'monthly-count') {
+            const el = document.getElementById('monthlyCount');
+            if (el) el.textContent = Number(data.count || 0);
+            }
+
+            // （任意）月変更イベントを受けたい場合はここで処理
+            // if (data.type === 'month-change') { ... }
+        });
+
+        // 2) iframe 読み込み完了時に、初回の冊数送信を依頼（保険）
+        const rankingFrame = document.getElementById('rankingFrame');
+        rankingFrame.addEventListener('load', () => {
+        // ランキング側（ranking.js）でこのリクエストを受けて monthly-count を postMessage してください
+        rankingFrame.contentWindow?.postMessage({ type: 'request-monthly-count' }, '*');
+    });
+    </script>
+
 </body>
 
 </html>
