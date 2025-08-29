@@ -56,7 +56,7 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
     // すでに同じuserIdとbookIdの組み合わせが存在するかチェック
     const exists = readings.some(r => r.userId === userId && r.bookId === bookId);
     if (exists) {
-      alert('この本はすでに「読んでいる」に登録されています');
+      alert('この本はすでに「読んだ本」に登録されています');
       return;
     }
 
@@ -78,7 +78,7 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
       contentType: 'application/json',
       data: JSON.stringify(readingData)
     });
-    alert('「読んでいる」に登録しました');
+    alert('「読んだ本」に登録しました');
     showPage('home'); // home画面に遷移
     location.reload(); // ページをリロードして最新情報を表示
   } catch (e) {
