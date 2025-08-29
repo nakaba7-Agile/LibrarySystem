@@ -8,8 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 <body>
-
-  <!-- タイトルの右にフィルタ -->
+  <!-- タイトル右にフィルタ -->
   <div class="header-bar">
     <div class="title-line">
       <span class="title">月間読書数ランキング</span>
@@ -21,12 +20,12 @@
     </div>
   </div>
 
+  <div id="empty" class="empty">該当データがありません</div>
+
   <div class="chart-wrap">
     <div id="chartInner" class="chart-inner">
       <canvas id="mainCanvas"></canvas>
     </div>
-    <!-- 空表示（中央に） -->
-    <div id="empty" class="empty">該当データがありません</div>
   </div>
 
   <script src="./ranking.js"></script>
