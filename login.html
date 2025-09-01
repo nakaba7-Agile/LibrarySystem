@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ログイン | 社内図書館</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="./login.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+  <div class="login-container">
+    <h2>ログイン</h2>
+    <div class="error" id="loginError"></div>
+    <form id="loginForm" autocomplete="off">
+      <label for="employeeId">社員ID</label>
+      <input type="number" id="employeeId" name="employeeId" required min="1" placeholder="社員IDを入力">
+      <label for="password">パスワード</label>
+      <input type="password" id="password" name="password" required placeholder="パスワードを入力">
+      <button type="submit">ログイン</button>
+    </form>
+  </div>
+  <script src="./login.js"></script>
+</body>
+</html>
