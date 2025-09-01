@@ -3,7 +3,7 @@ const $ = (s) => document.querySelector(s);
 
 /* ===== 設定 ===== */
 const API = "http://localhost:4000";
-const BAR_WIDTH_PX = 45;
+const BAR_WIDTH_PX = 75;
 const GAP_PX       = 40;
 const PADDING_PX   = 6;
 
@@ -57,7 +57,7 @@ const valueLabelPlugin = {
     const labels = chart.data.labels;
 
     ctx.save();
-    ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif';
+    ctx.font = '24px system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -142,7 +142,7 @@ function ensureChart(){
           offset: true,
           grid:   { display: false, drawBorder: false },
           border: { display: false },
-          ticks:  { minRotation: 0, maxRotation: 0, autoSkip: false, font: { size: 13 }, padding: 16, display: true }
+          ticks:  { minRotation: 0, maxRotation: 0, autoSkip: false, font: { size: 24 }, padding: 16, display: true }
         },
         y: {
           beginAtZero: true,

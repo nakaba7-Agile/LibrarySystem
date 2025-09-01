@@ -1,6 +1,6 @@
 // ==== 設定 ====
 const API_SEARCH = "http://localhost:4000";   // json-server のURL
-const LOGIN_USER_ID = 6;                       // 窓辺あかり
+const LOGIN_USER_ID = parseInt(localStorage.getItem('loginUserId')); // ログインユーザーID;
 
 // DOMヘルパ（jQueryの$と衝突しない）
 const qs = (sel) => document.querySelector(sel);
@@ -108,7 +108,7 @@ document.addEventListener("click", async (e)=>{
       body: JSON.stringify(readingData)
     });
 
-    alert(isDone ? "「読んだ本」に登録しました" : "「読んでいる本」に登録しました");
+    showToast(isDone ? "「読んだ本」に登録しました" : "「読んでいる本」に登録しました");
 
     // サイドバーの進捗を「ランキングの月」で再描画（無ければ登録月で）
     try {
@@ -121,10 +121,37 @@ document.addEventListener("click", async (e)=>{
     try { document.getElementById("rankingFrame")?.contentWindow?.postMessage({ type:"request-monthly-count" }, "*"); } catch(_){}
 
     // ホームへ戻る
-    if (typeof showPage === "function") showPage("home");
+    // if (typeof showPage === "function") showPage("home");
 
+    // showPage('home'); // home画面に遷移
+    // location.reload(); // ページをリロードして最新情報を表示
   } catch (e) {
     console.error(e);
-    alert("登録に失敗しました");
+    alert('登録に失敗しました');
   }
 });
+
+function showToast(message) {
+  console.log("showToast called:", message); // デバッグ用
+  const container = document.getElementById("toastContainer");
+  console.log("container:", container);       // null じゃないか確認
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+
+  container.appendChild(toast);
+
+  // 少し遅れて .show を付与 → アニメーションでフェードイン
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 100);
+
+  // 3秒後に削除
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      container.removeChild(toast);
+    }, 500); // アニメーションが終わるのを待って削除
+  }, 3000);
+}
+
