@@ -1,26 +1,27 @@
 // progressupdate.js
-// 進捗(100%未満)の本を「編集できるバー+スライダー」で表示し、PATCHで更新
+// タイトルは小さめで2行まで改行可、バーは1行、次の行に「%＋読んだ！」横並び
+// スライダー停止後に自動保存、100%で行を消す & ランキング冊数を更新
+
 (() => {
   'use strict';
 
-  // ===== 設定 =====
-  const API_HOME = "http://localhost:4000"; // json-server
-  const MY_USER_ID_HOME = 6;                // ログインユーザー（窓辺あかり）
+  const API_HOME = "http://localhost:4000";
+  const MY_USER_ID_HOME = 6;
   const DEBUG_PROGRESS = false;
 
-  // ===== Utils =====
   const pad = n => String(n).padStart(2,"0");
-  const $  = sel => document.querySelector(sel);
+  const $ = sel => document.querySelector(sel);
   const html = (s,...v)=> s.map((x,i)=>x+(v[i]??"")).join("");
-  const debounce = (fn,ms=400)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
 
   const ymOf = s => { const d=new Date(s); return isNaN(d)?null:`${d.getFullYear()}-${pad(d.getMonth()+1)}`; };
   const monthToRangeHome = ym => {
-    const d = ym ? new Date(ym+"-01") : new Date();
+    const d = ym ? new Date(`${ym}-01`) : new Date();
     const y=d.getFullYear(), m=d.getMonth();
     const s=new Date(y,m,1), e=new Date(y,m+1,0);
-    return { start:`${s.getFullYear()}-${pad(s.getMonth()+1)}-${pad(s.getDate())}`,
-             end:`${e.getFullYear()}-${pad(e.getMonth()+1)}-${pad(e.getDate())}` };
+    return {
+      start:`${s.getFullYear()}-${pad(s.getMonth()+1)}-${pad(s.getDate())}`,
+      end  :`${e.getFullYear()}-${pad(e.getMonth()+1)}-${pad(e.getDate())}`
+    };
   };
   const betweenHome = (dateStr,s,e)=>{
     if(!s && !e) return true;
@@ -28,13 +29,12 @@
     return (!s || dt >= new Date(s)) && (!e || dt <= new Date(e+"T23:59:59.999"));
   };
 
-  // ランキング iframe へ再集計依頼
-  const requestMonthlyCountFromRanking = ()=> {
+  const requestMonthlyCountFromRanking = ()=>{
     const f=document.getElementById("rankingFrame");
     try { f?.contentWindow?.postMessage({ type:"request-monthly-count" },"*"); } catch(_){}
   };
 
-  // ===== ランキング iframe からの月追従 =====
+  /* ===== ランキング iframe からの月追従 ===== */
   let currentYMFromRanking = null;
   window.addEventListener("message",(e)=>{
     const data=e?.data;
@@ -46,7 +46,11 @@
     }
   });
 
-  // ===== 初期描画（フォールバック：直近未完了 → 当月） =====
+  document.addEventListener("DOMContentLoaded", async ()=>{
+    const ym = await decideYMForSidebar(null);
+    renderInProgressArea(ym);
+  });
+
   async function decideYMForSidebar(fallbackYM=null){
     if(currentYMFromRanking) return currentYMFromRanking;
     if(fallbackYM) return fallbackYM;
@@ -59,31 +63,42 @@
     }catch(_){}
     const t=new Date(); return `${t.getFullYear()}-${pad(t.getMonth()+1)}`;
   }
-  document.addEventListener("DOMContentLoaded", async ()=>{
-    const ym = await decideYMForSidebar(null);
-    renderInProgressArea(ym);
-  });
 
-  // ===== 数値IDで PATCH するだけの安全版 =====
+  /* ===== PATCH（404フォールバック: ?id= 検索） ===== */
   async function patchProgressById(rawId, progress){
-    const idNum = Number(rawId);
-    if (!Number.isFinite(idNum)) throw new Error("invalid id");
-    const res = await fetch(`${API_HOME}/readings/${idNum}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ progress })   // ← ボディに id を含めない
-    });
-    if (!res.ok) throw new Error(`PATCH failed (${res.status})`);
+    const body = JSON.stringify({ progress: Number(progress) });
+
+    const asNum = Number(rawId);
+    if (Number.isFinite(asNum)) {
+      const res = await fetch(`${API_HOME}/readings/${asNum}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body
+      });
+      if (res.ok) return;
+      if (res.status !== 404) throw new Error(`PATCH failed (${res.status})`);
+    }
+
+    const found = await fetch(`${API_HOME}/readings?id=${encodeURIComponent(String(rawId))}`).then(r=>r.json());
+    if (Array.isArray(found) && found[0] && found[0].id != null) {
+      const realId = found[0].id;
+      const res2 = await fetch(`${API_HOME}/readings/${encodeURIComponent(String(realId))}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body
+      });
+      if (res2.ok) return;
+    }
+    throw new Error("PATCH failed (not found)");
   }
 
-  // ===== 進捗(100未満)一覧の描画 =====
+  /* ===== 描画 ===== */
   async function renderInProgressArea(ym){
     const area = $("#inProgressArea");
     if(!area) return;
 
     const useYM = ym || await decideYMForSidebar(null);
     const { start, end } = monthToRangeHome(useYM);
-    if (DEBUG_PROGRESS) console.log("[progress] render ym=", useYM, "range=", start, end);
 
     try{
       const [readings, books] = await Promise.all([
@@ -104,32 +119,34 @@
       }
 
       area.innerHTML = list.map(row=>{
-        const img=row.book?.image || "images/noimage.png";
-        const title=row.book?.title || "（タイトル不明）";
-        const prog=Number(row.progress??0);
-        const idNum=Number(row.id);     // ← 数値化して保持
+        const img   = row.book?.image || "images/noimage.png";
+        const title = row.book?.title || "（タイトル不明）";
+        const prog  = Number(row.progress ?? 0);
         return html`
-          <div class="inprog-row" data-id="${idNum}">
+          <div class="inprog-card" data-id="${row.id}">
             <img class="inprog-cover" src="${img}" alt="">
-            <div class="inprog-main">
+            <div class="inprog-right">
               <div class="inprog-title" title="${title}">${title}</div>
-              <div class="inprog-editor">
-                <div class="progress-track" aria-hidden="true">
-                  <div class="progress-fill" style="transform:scaleX(${prog/100});"></div>
-                </div>
+
+              <!-- 1行目：バーのみ -->
+              <div class="inprog-barrow">
                 <input class="progress-input" type="range" min="0" max="100" step="1" value="${prog}">
-                <span class="progress-num">${prog}%</span>
-                <button class="btn-ghost js-done">100%にする</button>
-                <button class="btn-ghost js-save" disabled>保存</button>
               </div>
+
+              <!-- 2行目：% と 読んだ！ -->
+              <div class="inprog-actions">
+                <span class="progress-num">${prog}%</span>
+                <button class="btn-ghost js-done">読んだ！</button>
+              </div>
+
+              <span class="save-status" role="status" aria-live="polite"></span>
             </div>
           </div>
         `;
       }).join("");
 
-      // 生成DOMに行データをアタッチ
-      const nodes = area.querySelectorAll(".inprog-row");
-      nodes.forEach((node,i)=>{ node.__row = list[i]; node.__idNum = Number(list[i].id); });
+      // 行データ保持
+      area.querySelectorAll(".inprog-card").forEach((node,i)=>{ node.__row = list[i]; node.__idRaw = list[i].id; });
 
       bindRowEvents(area);
 
@@ -139,73 +156,75 @@
     }
   }
 
-  // ===== 行イベント（スライダー→保存） =====
+  /* ===== 行イベント ===== */
   function bindRowEvents(area){
-    area.querySelectorAll(".inprog-row").forEach(row=>{
+    area.querySelectorAll(".inprog-card").forEach(row=>{
       const slider = row.querySelector(".progress-input");
       const num    = row.querySelector(".progress-num");
-      const fill   = row.querySelector(".progress-fill");
-      const btnSave= row.querySelector(".js-save");
-      const btnDone= row.querySelector(".js-done");
+      const btn    = row.querySelector(".js-done");
+      const status = row.querySelector(".save-status");
 
       let lastSaved = Number(slider.value);
-      const enableSave = ()=> btnSave.disabled = (Number(slider.value) === lastSaved);
+      let saving = false;
 
-      const onSlide = ()=>{
-        const v = Number(slider.value);
-        num.textContent = `${v}%`;
-        fill.style.transform = `scaleX(${v/100})`;
-        enableSave();
-        debouncedAutoSave();
+      const setStatus = t => { if (status) status.textContent = t || ""; };
+
+      let timer;
+      const queueSave = (v)=>{
+        clearTimeout(timer);
+        timer = setTimeout(async ()=>{ await doSave(v); }, 700);
       };
 
-      slider.addEventListener("input", onSlide);
-
-      btnDone.addEventListener("click", ()=>{
-        slider.value = "100";
-        onSlide();
-        btnSave.click();
-      });
-
-      btnSave.addEventListener("click", async ()=>{
-        const v = Number(slider.value);
+      const doSave = async (v)=>{
         try{
-          btnSave.disabled = true;
-
-          // ★ PATCH のみ／数値ID固定
-          await patchProgressById(row.__idNum, v);
-
+          saving = true;
+          slider.disabled = true;
+          setStatus("保存中…");
+          await patchProgressById(row.__idRaw, v);
           lastSaved = v;
+          setStatus("保存済み ✔");
 
           if (v >= 100){
             row.classList.add("row-fade");
             setTimeout(()=>{
               row.remove();
-              if (!area.querySelector(".inprog-row")) {
+              if (!area.querySelector(".inprog-card")){
                 area.innerHTML = `<div class="muted">（進行中の本はありません）</div>`;
               }
-            }, 250);
-          } else {
-            row.classList.add("row-done");
-            setTimeout(()=>row.classList.remove("row-done"), 250);
+            }, 220);
           }
-
           requestMonthlyCountFromRanking();
-
         }catch(e){
           console.error(e);
-          alert("保存に失敗しました");
-          btnSave.disabled = false;
+          setStatus("保存失敗。再試行してください");
+          slider.value = String(lastSaved);
+          num.textContent = `${lastSaved}%`;
+        }finally{
+          saving = false;
+          slider.disabled = false;
         }
+      };
+
+      // スライダー
+      slider.addEventListener("input", ()=>{
+        const v = Number(slider.value);
+        num.textContent = `${v}%`;
+        setStatus(v === lastSaved ? "" : "未保存の変更…");
+        queueSave(v);
       });
 
-      const debouncedAutoSave = debounce(()=>{
-        if (!btnSave.disabled) btnSave.click();
-      }, 800);
+      // 「読んだ！」 = 100% にして保存
+      btn.addEventListener("click", ()=>{
+        if (saving) return;
+        slider.value = "100";
+        num.textContent = "100%";
+        setStatus("未保存の変更…");
+        queueSave(100);
+      });
     });
   }
 
-  // 他スクリプトから呼べるように公開
+  // 公開
   window.renderInProgressArea = renderInProgressArea;
   window.getCurrentYMForSidebar = () => currentYMFromRanking;
 })();
