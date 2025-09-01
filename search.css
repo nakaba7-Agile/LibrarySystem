@@ -1,0 +1,29 @@
+/* 通知をまとめるコンテナ */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+}
+
+/* 通知1個の見た目 */
+.toast {
+    border: 2px solid green;
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    font-family: sans-serif;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+/* 表示状態 */
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}

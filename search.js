@@ -85,7 +85,7 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
       contentType: 'application/json',
       data: JSON.stringify(readingData)
     });
-    alert(isDone ? '「読んだ本」に登録しました' : '「読んでいる本」に登録しました');
+    showToast(isDone ? '「読んだ本」に登録しました' : '「読んでいる本」に登録しました');
     showPage('home'); // home画面に遷移
     location.reload(); // ページをリロードして最新情報を表示
   } catch (e) {
@@ -93,3 +93,25 @@ $('#bookSearchResults').on('click', '.register-btn', async function() {
     console.error(e);
   }
 });
+
+function showToast(message) {
+  const container = document.getElementById("toastContainer");
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+
+  container.appendChild(toast);
+
+  // 少し遅れて .show を付与 → アニメーションでフェードイン
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 100);
+
+  // 3秒後に削除
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      container.removeChild(toast);
+    }, 500); // アニメーションが終わるのを待って削除
+  }, 3000);
+}
