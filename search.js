@@ -53,7 +53,7 @@ $('#searchBookBtn').on('click', searchBooksByTitle);
 // ボタンクリック処理（読んでいる=progress0, 読んだ=progress100）
 $('#bookSearchResults').on('click', '.register-btn', async function() {
   const bookId = $(this).data('bookid');
-  const userId = 6; // 仮のユーザーID（必要に応じて動的に取得してください）
+  const userId = parseInt(localStorage.getItem('loginUserId')); //ユーザーID
   const isDone = $(this).hasClass('done'); // 「読んだ！」かどうか
   const progressValue = isDone ? 100 : 0;
 

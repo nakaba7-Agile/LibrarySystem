@@ -8,7 +8,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <!-- nippa -->
     <div class="container">
         <h1>プロフィール</h1>
         <section class="card profile-grid" aria-label="プロフィール詳細">
@@ -19,26 +18,20 @@
         <div class="bd">
             <dl>
             <dt>名前</dt>
-            <dd class="value">窓辺あかり</dd>
-
-            <dt>メール</dt>
-            <dd class="value">madobe.akari@jp.aaaaaa.bbbbb.com</dd>
+            <dd class="value" id="profileName"></dd>
 
             <dt>所属</dt>
-            <dd class="value">技術本部 シス研</dd>
+            <dd class="value" id="profileDept"></dd>
 
             <dt>年数</dt>
-            <dd class="value">3年目</dd>
+            <dd class="value" id="profileYears"></dd>
 
             <dt>役職</dt>
-            <dd class="value">副主任</dd>
+            <dd class="value" id="profilePosition"></dd>
 
             <dt>資格</dt>
             <dd>
-            <div class="chips">
-            <span class="chip">基本情報技術者</span>
-            <span class="chip">応用情報技術者</span>
-            </div>
+            <div class="chips" id="profileCerts"></div>
             </dd>
             </dl>
             </div>

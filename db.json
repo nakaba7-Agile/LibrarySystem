@@ -5,91 +5,169 @@
       "password": "pwd1",
       "name": "中林優樹",
       "departmentId": 1,
-      "positionId": 2
+      "positionId": 2,
+      "joinYear": 2022,
+      "certs": [
+        "基本情報技術者",
+        "応用情報技術者"
+      ]
     },
     {
       "id": 2,
       "password": "pwd2",
       "name": "村松優樹",
       "departmentId": 3,
-      "positionId": 2
+      "positionId": 2,
+      "joinYear": 2018,
+      "certs": [
+        "基本情報技術者",
+        "応用情報技術者",
+        "AWS"
+      ]
     },
     {
       "id": 3,
       "password": "pwd3",
       "name": "田北晃一郎",
       "departmentId": 2,
-      "positionId": 2
+      "positionId": 2,
+      "joinYear": 2015,
+      "certs": [
+        "応用情報技術者",
+        "AWS",
+        "データベーススペシャリスト"
+      ]
     },
     {
       "id": 4,
       "password": "pwd4",
       "name": "新葉星来",
       "departmentId": 1,
-      "positionId": 2
+      "positionId": 2,
+      "joinYear": 2016,
+      "certs": [
+        "基本情報技術者",
+        "応用情報技術者",
+        "AWS",
+        "データベーススペシャリスト"
+      ]
     },
     {
       "id": 5,
       "password": "pwd5",
       "name": "一ノ瀬音葉",
       "departmentId": 3,
-      "positionId": 2
+      "positionId": 2,
+      "joinYear": 2010,
+      "certs": [
+        "基本情報技術者",
+        "応用情報技術者",
+        "AWS",
+        "データベーススペシャリスト",
+        "ネットワークスペシャリスト"
+      ]
     },
     {
       "id": 6,
       "password": "pwd6",
       "name": "窓辺あかり",
       "departmentId": 3,
-      "positionId": 5
+      "positionId": 5,
+      "joinYear": 2014,
+      "certs": [
+        "基本情報技術者"
+      ]
     },
     {
       "id": 7,
       "password": "pwd7",
       "name": "佐藤翔太",
       "departmentId": 5,
-      "positionId": 1
+      "positionId": 1,
+      "joinYear": 2023,
+      "certs": []
     },
     {
       "id": 8,
       "password": "pwd8",
       "name": "高橋美咲",
       "departmentId": 6,
-      "positionId": 3
+      "positionId": 3,
+      "joinYear": 2020,
+      "certs": [
+        "基本情報技術者",
+        "応用情報技術者"
+      ]
     },
     {
       "id": 9,
       "password": "pwd9",
       "name": "中村健一",
       "departmentId": 7,
-      "positionId": 8
+      "positionId": 8,
+      "joinYear": 2008,
+      "certs": [
+        "基本情報技術者",
+        "応用情報技術者",
+        "AWS",
+        "データベーススペシャリスト",
+        "ネットワークスペシャリスト",
+        "情報セキュリティスペシャリスト"
+      ]
     },
     {
       "id": 10,
       "password": "pwd10",
       "name": "山本さくら",
       "departmentId": 5,
-      "positionId": 5
+      "positionId": 5,
+      "joinYear": 2012,
+      "certs": [
+        "基本情報技術者",
+        "応用情報技術者",
+        "AWS"
+      ]
     },
     {
       "id": 11,
       "password": "pwd11",
       "name": "伊藤大輝",
       "departmentId": 6,
-      "positionId": 7
+      "positionId": 7,
+      "joinYear": 2011,
+      "certs": [
+        "基本情報技術者",
+        "応用情報技術者",
+        "AWS",
+        "データベーススペシャリスト"
+      ]
     },
     {
       "id": 12,
       "password": "pwd12",
       "name": "小林結衣",
       "departmentId": 7,
-      "positionId": 4
+      "positionId": 4,
+      "joinYear": 2009,
+      "certs": [
+        "基本情報技術者",
+        "応用情報技術者",
+        "AWS",
+        "データベーススペシャリスト",
+        "ネットワークスペシャリスト"
+      ]
     },
     {
       "id": 13,
       "password": "pwd13",
       "name": "松本陸",
       "departmentId": 5,
-      "positionId": 4
+      "positionId": 4,
+      "joinYear": 2013,
+      "certs": [
+        "基本情報技術者",
+        "応用情報技術者"
+      ]
     }
   ],
   "departments": [
