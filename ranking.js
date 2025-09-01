@@ -55,15 +55,23 @@ const valueLabelPlugin = {
     for (let i = 0; i < data.length; i++) {
       const el = meta.data[i];
       if (!el) continue;
+
       const value = data[i];
-      const isMine = labels[i] === MY_NAME;
+      const label = labels[i];
+
+      // ★ 空棒グラフ（名前がない）はスキップ
+      if (!label || label.trim() === '') continue;
+
+      const isMine = label === MY_NAME;
       const centerY = (el.y + el.base) / 2;
       ctx.fillStyle = isMine ? '#fff' : '#666';
       ctx.fillText(`${value}冊`, el.x, centerY);
     }
+
     ctx.restore();
   }
 };
+
 
 /* ===== Utils ===== */
 // const $ = (s)=>document.querySelector(s);
@@ -337,8 +345,10 @@ function render(){
 
   const labels   = finalRows.map(r => r.name);
   const counts   = finalRows.map(r => r.count);
-  const colors   = finalRows.map(r => (String(r.id) === String(MY_USER_ID) || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
+  const colors   = finalRows.map(r => r.name === '' ? 'transparent' :
+                                 (String(r.id) === String(MY_USER_ID) || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
   const userMeta = finalRows.map(r => ({ dept: r.dept, pos: r.pos }));
+
 
   setInnerWidth(labels.length);
 
