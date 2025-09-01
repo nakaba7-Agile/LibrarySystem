@@ -57,7 +57,7 @@ const valueLabelPlugin = {
     const labels = chart.data.labels;
 
     ctx.save();
-    ctx.font = '15px system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif';
+    ctx.font = '18px system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -71,7 +71,7 @@ const valueLabelPlugin = {
 
       const isMine = label === MY_NAME;
       const centerY = (el.y + el.base) / 2;
-      ctx.fillStyle = isMine ? '#fff' : '#666';
+      ctx.fillStyle = isMine ? '#fff' : '#171717';
       ctx.fillText(`${value}冊`, el.x, centerY);
     }
     ctx.restore();
@@ -329,7 +329,8 @@ function render(){
   const labels   = finalRows.map(r => r.name);
   const counts   = finalRows.map(r => r.count);
   const colors   = finalRows.map(r => r.name === '' ? 'transparent' :
-                                 (String(r.id) === String(MY_USER_ID) || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
+    
+                                 (String(r.id) === String(MY_USER_ID) || r.name === MY_NAME) ? '#1FB9EF' : '#ACE9FF');
   const userMeta = finalRows.map(r => ({ dept: r.dept, pos: r.pos }));
 
   const c = ensureChart();
