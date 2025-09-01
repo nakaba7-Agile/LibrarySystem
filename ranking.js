@@ -123,17 +123,29 @@ function niceCeil(v) {
   return m * pow;
 }
 
-/* ===== 内部幅（横スクロール用） ===== */
-function setInnerWidth(count){
+/* ===== 内部幅 ===== */
+function setInnerWidth(count) {
   const CAT = BAR_WIDTH_PX + GAP_PX;
-  const needed = CAT * (count + 1) + (PADDING_PX * 2); // x.offset=true を考慮
+  const neededWidth = CAT * (count + 1) + (PADDING_PX * 2);
+  const aspectRatio = 2; // 横:縦比（例：2:1）
+
+  const neededHeight = neededWidth / aspectRatio;
+
   const inner  = $('#chartInner');
   const canvas = $('#mainCanvas');
-  const wrap   = $('.chart-inner');
-  if (inner) inner.style.width = `${needed}px`;
-  canvas.width  = needed;
-  canvas.height = wrap ? wrap.clientHeight : canvas.height;
+
+  // Canvasのピクセルサイズ（描画解像度）
+  canvas.width = neededWidth;
+  canvas.height = canvas.width / 2; // 比率を維持
+
+
+  // CSSサイズもピクセルで一致させる（ホバーずれ防止）
+  canvas.style.width = `${neededWidth}px`;
+  canvas.style.height = `${neededHeight}px`;
+
+  if (inner) inner.style.width = `${neededWidth}px`;
 }
+
 
 /* ===== Chart.js ===== */
 function ensureChart(){
@@ -155,7 +167,7 @@ function ensureChart(){
       borderWidth: 0
     }]},
     options:{
-      responsive:false,
+      responsive:true,
       maintainAspectRatio:true,
       aspectRatio:2,
       
