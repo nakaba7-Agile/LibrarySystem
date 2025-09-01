@@ -2,17 +2,24 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <title>進捗共有機能</title>
+  <title>みんなの進捗状況</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="./shareprogress.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <!-- タイトル右にフィルタ -->
+  <!-- タイトル + フィルタ -->
   <div class="header-bar">
     <div class="title-line">
       <span class="title">みんなの進捗状況</span>
-      
+      <div class="filters">
+        <label class="lbl">対象のタイトル</label>
+        <select id="selBook" class="pill">
+          <option value="">（選択してください）</option>
+        </select>
+        <select id="selDept" class="pill"><option value="">すべての部門</option></select>
+        <select id="selPos"  class="pill"><option value="">すべての役職</option></select>
+      </div>
     </div>
   </div>
 
@@ -20,14 +27,10 @@
     <div class="chart-nav">
       <button id="prevBtn" class="nav-btn">←</button>
       <div id="chartInner" class="chart-inner">
-        <canvas id="mainCanvas"></canvas>
+        <canvas id="spCanvas"></canvas>
       </div>
       <button id="nextBtn" class="nav-btn">→</button>
     </div>
-
-    <!-- <div id="chartInner" class="chart-inner">
-      <canvas id="mainCanvas"></canvas>
-    </div> -->
     <div id="empty" class="empty">該当データがありません</div>
   </div>
 
