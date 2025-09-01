@@ -123,8 +123,11 @@ document.addEventListener("click", async (e)=>{
     // ホームへ戻る
     if (typeof showPage === "function") showPage("home");
 
+    showToast(isDone ? '「読んだ本」に登録しました' : '「読んでいる本」に登録しました');
+    // showPage('home'); // home画面に遷移
+    // location.reload(); // ページをリロードして最新情報を表示
   } catch (e) {
     console.error(e);
-    alert("登録に失敗しました");
+    alert('登録に失敗しました');
   }
 });

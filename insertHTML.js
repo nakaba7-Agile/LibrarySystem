@@ -23,5 +23,10 @@ const sections = {
                         script.src = './mypage.js';
                         document.body.appendChild(script);
                 }
+                if (id === 'search') {
+                        const script = document.createElement('script');
+                        script.src = './search.js';
+                        document.body.appendChild(script);
+                }
         });
 }
