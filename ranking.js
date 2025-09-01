@@ -300,7 +300,7 @@ function render(){
   // 0冊は全員除外
   rows = rows.filter(r => r.count > 0);
 
-  // ✅ 自分を先頭に移動
+  // 窓辺あかり（後でログインユーザへ変更）を先頭に移動
   rows.sort((a, b) => {
     const isAme = String(a.id) === String(MY_USER_ID) || a.name === MY_NAME;
     const isBme = String(b.id) === String(MY_USER_ID) || b.name === MY_NAME;
@@ -309,11 +309,9 @@ function render(){
     return b.count - a.count;       // 残りは読書数の多い順
   });
 
-
-  // ✅ グローバルに保存（自分も含めて）
+  //グローバルに保存
   allRows = rows;
 
-  // ⛔ ここから先を上書きします（現在のページ計算など）
   const meRow = rows.find(r => String(r.id) === String(MY_USER_ID) || r.name === MY_NAME);
   const others = rows.filter(r => String(r.id) !== String(MY_USER_ID) && r.name !== MY_NAME);
 
@@ -327,16 +325,15 @@ function render(){
   const endIdx = startIdx + (BARS_PER_PAGE - 1);
   const pageRows = others.slice(startIdx, endIdx);
 
-  // ✅ 描画用のデータ：先頭に自分、その後に他人
+  // 描画用のデータ：先頭に自分、その後に他人
   let finalRows = meRow ? [meRow, ...pageRows] : [...pageRows];
 
-  // ✅ 不足分をダミーで埋めて、常に BARS_PER_PAGE（5）本表示
+  // 不足分をダミーで埋めて、常に BARS_PER_PAGE（5）本表示
   while (finalRows.length < BARS_PER_PAGE) {
     finalRows.push({
       id: '', name: '', count: 0, dept: '', pos: ''
     });
   }
-
 
   const labels   = finalRows.map(r => r.name);
   const counts   = finalRows.map(r => r.count);
@@ -344,7 +341,6 @@ function render(){
   const userMeta = finalRows.map(r => ({ dept: r.dept, pos: r.pos }));
 
   setInnerWidth(labels.length);
-
 
   const c = ensureChart();
   const cvs = $('#mainCanvas');
