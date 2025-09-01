@@ -126,25 +126,25 @@ function niceCeil(v) {
 /* ===== 内部幅 ===== */
 function setInnerWidth(count) {
   const CAT = BAR_WIDTH_PX + GAP_PX;
-  const neededWidth = CAT * (count + 1) + (PADDING_PX * 2);
-  const aspectRatio = 2; // 横:縦比（例：2:1）
+  const scale = 2.0; // ★ グラフ全体の拡大倍率
+
+  const neededWidth = (CAT * (count + 1) + (PADDING_PX * 2)) * scale;
+  const aspectRatio = 2; // 比率はそのまま
 
   const neededHeight = neededWidth / aspectRatio;
 
   const inner  = $('#chartInner');
   const canvas = $('#mainCanvas');
 
-  // Canvasのピクセルサイズ（描画解像度）
-  canvas.width = neededWidth;
-  canvas.height = canvas.width / 2; // 比率を維持
+  // canvas.width = neededWidth;
+  // canvas.height = neededHeight;
 
+  // canvas.style.width = `${neededWidth}px`;
+  // canvas.style.height = `${neededHeight}px`;
 
-  // CSSサイズもピクセルで一致させる（ホバーずれ防止）
-  canvas.style.width = `${neededWidth}px`;
-  canvas.style.height = `${neededHeight}px`;
-
-  if (inner) inner.style.width = `${neededWidth}px`;
+  // if (inner) inner.style.width = `${neededWidth}px`;
 }
+
 
 
 /* ===== Chart.js ===== */
@@ -168,8 +168,8 @@ function ensureChart(){
     }]},
     options:{
       responsive:true,
-      maintainAspectRatio:true,
-      aspectRatio:2,
+      maintainAspectRatio:false,
+      // aspectRatio:2,
       
       
       layout: { padding: { left: 6, right: PADDING_PX, bottom: 8 } },
@@ -381,7 +381,7 @@ function render(){
 
   const c = ensureChart();
   const cvs = $('#mainCanvas');
-  c.resize(cvs.width, cvs.height);
+  // c.resize(cvs.width, cvs.height);
 
   c.data.labels = labels;
   c.data.datasets[0].data = counts;
