@@ -70,6 +70,11 @@ const valueLabelPlugin = {
       if (!label || label.trim() === '') continue; // ダミー棒は無視
 
       const isMine = label === MY_NAME;
+       if (i === 0 && isMine) {
+        ctx.font = '600 18px system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif';
+      } else {
+        ctx.font = '18px system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif';
+      }
       const centerY = (el.y + el.base) / 2;
       ctx.fillStyle = isMine ? '#fff' : '#171717';
       ctx.fillText(`${value}冊`, el.x, centerY);
