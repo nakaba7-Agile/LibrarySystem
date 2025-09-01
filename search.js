@@ -1,32 +1,40 @@
 // ==== 設定 ====
-// json-server のポートに合わせてください
-const API = "http://localhost:4000";
+const API_SEARCH = "http://localhost:4000";   // json-server のURL
+const LOGIN_USER_ID = 6;                       // 窓辺あかり
 
-// 本のタイトル検索機能（db.jsonのbooksを利用）
+// DOMヘルパ（jQueryの$と衝突しない）
+const qs = (sel) => document.querySelector(sel);
+
+// 便利: HTML生成
+const html = (s, ...v) => s.map((x,i)=>x + (v[i]??"")).join("");
+
+// 検索本体
 async function searchBooksByTitle() {
-  const keyword = $('#bookTitleInput').val().trim();
+  const input = qs("#bookTitleInput");
+  if (!input) return;
+  const keyword = input.value.trim();
+  const resultsEl = qs("#bookSearchResults");
+  if (!resultsEl) return;
+
   if (!keyword) {
-    $('#bookSearchResults').empty();
+    resultsEl.innerHTML = "";
     return;
   }
+
   try {
-    const books = await $.getJSON(`${API}/books`);
-    const results = books.filter(book => book.title.includes(keyword));
-    // 検索結果ページへ遷移
-    showPage('kensaku');
-    const $results = $('#bookSearchResults');
-    $results.empty();
-    // 検索結果の見出しを追加
-    $results.append(`<h2>「${keyword}」の検索結果（${results.length}件）</h2>`);
-    if (results.length === 0) {
-      $results.append('<div>該当する本がありません。</div>');
-    } else {
-      results.forEach(book => {
-        // サムネ画像がなければダミー画像
-        const img = book.image ? book.image : 'images/noimage.png';
-        // 著者名がなければ空欄
-        const author = book.author ? book.author : '';
-        $results.append(`
+    const books = await fetch(`${API_SEARCH}/books`).then(r=>r.json());
+    const results = books.filter(b => String(b.title || "").includes(keyword));
+
+    // ページ遷移
+    if (typeof showPage === "function") showPage("kensaku");
+
+    resultsEl.innerHTML = html`
+      <h2>「${keyword}」の検索結果（${results.length}件）</h2>
+      ${results.length === 0 ? "<div>該当する本がありません。</div>" : ""}
+      ${results.map(book=>{
+        const img = book.image || "images/noimage.png";
+        const author = book.author || "";
+        return html`
           <div class="book-result" style="display:flex;align-items:flex-start;gap:16px;margin-bottom:32px;">
             <img src="${img}" alt="${book.title}" style="width:80px;height:110px;object-fit:cover;border-radius:8px;background:#eee;">
             <div>
@@ -39,12 +47,12 @@ async function searchBooksByTitle() {
               </div>
             </div>
           </div>
-        `);
-      });
-    }
+        `;
+      }).join("")}
+    `;
   } catch (e) {
-    $('#bookSearchResults').html('<div>本データの取得に失敗しました。</div>');
     console.error(e);
+    resultsEl.innerHTML = "<div>本データの取得に失敗しました。</div>";
   }
 }
 
