@@ -192,7 +192,13 @@
             : { progress: Number(v) };
 
           setStatus("保存中…");
-          await patchReadingById(row.__idRaw, payload);
+
+          showToast("「読んだ本」に登録しました");
+
+          setTimeout(async () => {
+            await patchReadingById(row.__idRaw, payload);
+          }, 1500);
+
           lastSaved = v;
           setStatus("保存済み ✔");
 

@@ -110,7 +110,7 @@ document.addEventListener("click", async (e)=>{
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify(readingData)
     });
-    }, 2000);
+    }, 1500);
 
     // サイドバーの進捗を「ランキングの月」で再描画（無ければ登録月で）
     try {
