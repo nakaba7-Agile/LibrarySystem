@@ -1,117 +1,130 @@
 // ==== 設定 ====
-// json-server のポートに合わせてください
-const API = "http://localhost:4000";
+const API_SEARCH = "http://localhost:4000";   // json-server のURL
+const LOGIN_USER_ID = 6;                       // 窓辺あかり
 
-// 本のタイトル検索機能（db.jsonのbooksを利用）
+// DOMヘルパ（jQueryの$と衝突しない）
+const qs = (sel) => document.querySelector(sel);
+
+// 便利: HTML生成
+const html = (s, ...v) => s.map((x,i)=>x + (v[i]??"")).join("");
+
+// 検索本体
 async function searchBooksByTitle() {
-  const keyword = $('#bookTitleInput').val().trim();
+  const input = qs("#bookTitleInput");
+  if (!input) return;
+  const keyword = input.value.trim();
+  const resultsEl = qs("#bookSearchResults");
+  if (!resultsEl) return;
+
   if (!keyword) {
-    $('#bookSearchResults').empty();
+    resultsEl.innerHTML = "";
     return;
   }
+
   try {
-    const books = await $.getJSON(`${API}/books`);
-    const results = books.filter(book => book.title.includes(keyword));
-    // 検索結果ページへ遷移
-    showPage('kensaku');
-    const $results = $('#bookSearchResults');
-    $results.empty();
-    // 検索結果の見出しを追加
-    $results.append(`<h2>「${keyword}」の検索結果（${results.length}件）</h2>`);
-    if (results.length === 0) {
-      $results.append('<div>該当する本がありません。</div>');
-    } else {
-      results.forEach(book => {
-        // サムネ画像がなければダミー画像
-        const img = book.image ? book.image : 'images/noimage.png';
-        // 著者名がなければ空欄
-        const author = book.author ? book.author : '';
-        $results.append(`
+    const books = await fetch(`${API_SEARCH}/books`).then(r=>r.json());
+    const results = books.filter(b => String(b.title || "").includes(keyword));
+
+    // ページ遷移
+    if (typeof showPage === "function") showPage("kensaku");
+
+    resultsEl.innerHTML = html`
+      <h2>「${keyword}」の検索結果（${results.length}件）</h2>
+      ${results.length === 0 ? "<div>該当する本がありません。</div>" : ""}
+      ${results.map(book=>{
+        const img = book.image || "images/noimage.png";
+        const author = book.author || "";
+        return html`
           <div class="book-result" style="display:flex;align-items:flex-start;gap:16px;margin-bottom:32px;">
             <img src="${img}" alt="${book.title}" style="width:80px;height:110px;object-fit:cover;border-radius:8px;background:#eee;">
             <div>
               <div style="font-size:1.1em;font-weight:bold;margin-bottom:4px;">${book.title}</div>
               <div style="color:#555;margin-bottom:10px;">${author}</div>
               <div style="display:flex; gap:8px;">
-                <!-- 左に読んでいる、右に読んだ！ -->
                 <button class="register-btn reading" data-bookid="${book.id}">読んでいる</button>
                 <button class="register-btn done"    data-bookid="${book.id}">読んだ！</button>
               </div>
             </div>
           </div>
-        `);
-      });
-    }
+        `;
+      }).join("")}
+    `;
   } catch (e) {
-    $('#bookSearchResults').html('<div>本データの取得に失敗しました。</div>');
     console.error(e);
+    resultsEl.innerHTML = "<div>本データの取得に失敗しました。</div>";
   }
 }
 
-$('#searchBookBtn').on('click', searchBooksByTitle);
+// 検索ボタン
+document.addEventListener("DOMContentLoaded", ()=>{
+  const btn = qs("#searchBookBtn");
+  const input = qs("#bookTitleInput");
 
-// ボタンクリック処理（読んでいる=progress0, 読んだ=progress100）
-$('#bookSearchResults').on('click', '.register-btn', async function() {
-  const bookId = $(this).data('bookid');
-  const userId = parseInt(localStorage.getItem('loginUserId')); //ユーザーID
-  const isDone = $(this).hasClass('done'); // 「読んだ！」かどうか
+  btn?.addEventListener("click", (e)=>{
+    e.preventDefault();
+    searchBooksByTitle();
+  });
+
+  // Enter でも検索
+  input?.addEventListener("keydown", (e)=>{
+    if (e.key === "Enter") {
+      e.preventDefault();
+      searchBooksByTitle();
+    }
+  });
+});
+
+// 検索結果の「読んでいる / 読んだ！」登録
+document.addEventListener("click", async (e)=>{
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return;
+  if (!target.classList.contains("register-btn")) return;
+
+  const bookId = Number(target.dataset.bookid);
+  const isDone = target.classList.contains("done");
   const progressValue = isDone ? 100 : 0;
 
   try {
-    // 既存のreadingsを取得
-    const readings = await $.getJSON(`${API}/readings`);
-    // すでに同じuserIdとbookIdの組み合わせが存在するかチェック
-    const exists = readings.some(r => r.userId === userId && r.bookId === bookId);
-    if (exists) {
-      alert('この本はすでに登録されています');
+    // 重複登録チェック
+    const readings = await fetch(`${API_SEARCH}/readings`).then(r=>r.json());
+    if (readings.some(r => Number(r.userId) === LOGIN_USER_ID && Number(r.bookId) === bookId)) {
+      alert("この本はすでに登録されています");
       return;
     }
 
-    // 最大idを取得して+1
-    const maxId = readings.length > 0 ? Math.max(...readings.map(r => r.id || 0)) : 0;
-    const newId = maxId + 1;
-
+    // 新ID採番
+    const maxId = readings.length ? Math.max(...readings.map(r => Number(r.id)||0)) : 0;
     const readingData = {
-      id: newId,
-      userId: userId,
-      bookId: bookId,
-      date: new Date().toISOString().split('T')[0],
+      id: maxId + 1,
+      userId: LOGIN_USER_ID,
+      bookId,
+      date: new Date().toISOString().split("T")[0],
       progress: progressValue
     };
 
-    await $.ajax({
-      url: `${API}/readings`,
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(readingData)
+    await fetch(`${API_SEARCH}/readings`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(readingData)
     });
-    showToast(isDone ? '「読んだ本」に登録しました' : '「読んでいる本」に登録しました');
-    showPage('home'); // home画面に遷移
-    location.reload(); // ページをリロードして最新情報を表示
+
+    alert(isDone ? "「読んだ本」に登録しました" : "「読んでいる本」に登録しました");
+
+    // サイドバーの進捗を「ランキングの月」で再描画（無ければ登録月で）
+    try {
+      const ymFromRanking = (typeof getCurrentYMForSidebar === "function") ? getCurrentYMForSidebar() : null;
+      const ym = ymFromRanking || readingData.date.slice(0,7);
+      if (typeof renderInProgressArea === "function") renderInProgressArea(ym);
+    } catch(_){}
+
+    // ランキングの今月冊数を再計算依頼
+    try { document.getElementById("rankingFrame")?.contentWindow?.postMessage({ type:"request-monthly-count" }, "*"); } catch(_){}
+
+    // ホームへ戻る
+    if (typeof showPage === "function") showPage("home");
+
   } catch (e) {
-    alert('登録に失敗しました');
     console.error(e);
+    alert("登録に失敗しました");
   }
 });
-
-function showToast(message) {
-  const container = document.getElementById("toastContainer");
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = message;
-
-  container.appendChild(toast);
-
-  // 少し遅れて .show を付与 → アニメーションでフェードイン
-  setTimeout(() => {
-    toast.classList.add("show");
-  }, 100);
-
-  // 3秒後に削除
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => {
-      container.removeChild(toast);
-    }, 500); // アニメーションが終わるのを待って削除
-  }, 3000);
-}
