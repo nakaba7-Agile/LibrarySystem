@@ -476,7 +476,7 @@
       "userId": 3,
       "bookId": 103,
       "date": "2025-09-05",
-      "progress": 100,
+      "progress": 80,
       "comment":"AWSの基礎がよくわかる。"
     },
     {
@@ -491,7 +491,7 @@
       "userId": 1,
       "bookId": 103,
       "date": "2025-09-28",
-      "progress": 100
+      "progress": 60
     },
     {
       "id": 1029,
@@ -514,7 +514,7 @@
       "userId": 2,
       "bookId": 103,
       "date": "2025-09-04",
-      "progress": 100
+      "progress": 40
     },
     {
       "id": 1032,
@@ -559,7 +559,7 @@
       "userId": 6,
       "bookId": 103,
       "date": "2025-09-27",
-      "progress": 100,
+      "progress": 20,
       "comment":"Very informative.とても勉強になりました。"
     },
     {
@@ -597,7 +597,7 @@
       "userId": 7,
       "bookId": 103,
       "date": "2025-09-30",
-      "progress": 100
+      "progress": 0
     },
     {
       "id": 1043,

@@ -99,26 +99,16 @@
         <div id="home" class="page active">
           <!-- ランキング（iframe） -->
           <section class="panel">
+            <!-- グラフ切替用タブ -->
+            <div class="graph-tabs">
+                <button class="tab-button active" data-src="ranking.html">読書数</button>
+                <button class="tab-button" data-src="shareprogress.html">みんなの進捗</button>
+            </div>
             <iframe id="rankingFrame" src="ranking.html" width="100%"
                     style="border:none; display:block; padding:0; margin:0;"></iframe>
 
-            <script>
-              // iframe の高さを中身に合わせて自動調整 + 初回の冊数送信を依頼
-              function resizeIframe() {
-                const iframe = document.getElementById('rankingFrame');
-                if (iframe?.contentWindow?.document?.body) {
-                  const height = iframe.contentWindow.document.body.scrollHeight;
-                  iframe.style.height = (height + 30) + 'px';
-                }
-              }
-              document.getElementById('rankingFrame').addEventListener('load', () => {
-                resizeIframe();
-                try {
-                  document.getElementById('rankingFrame')
-                    .contentWindow?.postMessage({ type: 'request-monthly-count' }, '*');
-                } catch (_) {}
-              });
-            </script>
+            <script src="./home.js"></script>
+
           </section>
         </div>
         <div id="toastContainer" class="toast-container"></div>
