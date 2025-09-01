@@ -580,13 +580,6 @@
       "bookId": 101,
       "date": "2025-08-29",
       "progress": 100
-    },
-    {
-      "id": 1055,
-      "userId": 6,
-      "bookId": 113,
-      "date": "2025-08-29",
-      "progress": 0
     }
   ],
   "positions": [
