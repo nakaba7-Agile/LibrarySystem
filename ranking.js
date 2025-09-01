@@ -3,7 +3,7 @@ const $ = (s) => document.querySelector(s);
 
 /* ===== 設定 ===== */
 const API = "http://localhost:4000";
-const BAR_WIDTH_PX = 45;
+const BAR_WIDTH_PX = 75;
 const GAP_PX       = 40;
 const PADDING_PX   = 6;
 
