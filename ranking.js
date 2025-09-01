@@ -1,3 +1,6 @@
+// ==== DOM取得ショートカット関数（最優先で定義）====
+const $ = (s) => document.querySelector(s);
+
 /* ===== 設定 ===== */
 const API = "http://localhost:4000";
 const BAR_WIDTH_PX = 45;
@@ -11,6 +14,29 @@ const MY_USER_ID = 6;
 /* ===== 状態 ===== */
 let RAW = { users: [], departments: [], positions: [], readings: [] };
 let chart;
+let allRows = [];
+
+
+let currentPage = 0;      // 現在のページ（0スタート）
+const BARS_PER_PAGE = 5;  // 1ページに表示する棒の数
+
+$('#nextBtn').addEventListener('click', () => {
+  const totalPages = Math.ceil(allRows.length / BARS_PER_PAGE);
+  if (currentPage < totalPages - 1) {
+    currentPage++;
+    render(); // 再描画
+  }
+});
+
+$('#prevBtn').addEventListener('click', () => {
+  if (currentPage > 0) {
+    currentPage--;
+    render(); // 再描画
+  }
+});
+
+
+
 
 /* ===== 値ラベル（棒の中央に “n冊”） ===== */
 const valueLabelPlugin = {
@@ -40,7 +66,7 @@ const valueLabelPlugin = {
 };
 
 /* ===== Utils ===== */
-const $ = (s)=>document.querySelector(s);
+// const $ = (s)=>document.querySelector(s);
 function toggleEmpty(show){
   const el=$('#empty');
   if(el) el.style.display = show ? 'flex':'none';
@@ -274,19 +300,43 @@ function render(){
   // 0冊は全員除外
   rows = rows.filter(r => r.count > 0);
 
-  // 自分を先頭へ
-  const mineIdx = rows.findIndex(r => String(r.id) === String(MY_USER_ID) || r.name === MY_NAME);
-  let mine = null;
-  if (mineIdx > -1) mine = rows.splice(mineIdx, 1)[0];
-  rows.sort((a,b)=> b.count - a.count || a.name.localeCompare(b.name,'ja'));
-  if (mine) rows = [mine, ...rows];
+  // ✅ 自分を先頭に移動
+  rows.sort((a, b) => {
+    const isAme = String(a.id) === String(MY_USER_ID) || a.name === MY_NAME;
+    const isBme = String(b.id) === String(MY_USER_ID) || b.name === MY_NAME;
+    if (isAme && !isBme) return -1; // aが自分 → 先頭
+    if (!isAme && isBme) return 1;  // bが自分 → 先頭
+    return b.count - a.count;       // 残りは読書数の多い順
+  });
 
-  const labels   = rows.map(r => r.name);
-  const counts   = rows.map(r => r.count);
-  const colors   = rows.map(r => (String(r.id) === String(MY_USER_ID) || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
-  const userMeta = rows.map(r => ({ dept: r.dept, pos: r.pos }));
+
+  // ✅ グローバルに保存（自分も含めて）
+  allRows = rows;
+
+  // ⛔ ここから先を上書きします（現在のページ計算など）
+  const meRow = rows.find(r => String(r.id) === String(MY_USER_ID) || r.name === MY_NAME);
+  const others = rows.filter(r => String(r.id) !== String(MY_USER_ID) && r.name !== MY_NAME);
+
+  // ページングは他人だけ
+  const totalPages = Math.ceil(others.length / (BARS_PER_PAGE - 1));
+  if (currentPage >= totalPages) currentPage = totalPages - 1;
+  if (currentPage < 0) currentPage = 0;
+
+  // 今のページの他人だけ
+  const startIdx = currentPage * (BARS_PER_PAGE - 1);
+  const endIdx = startIdx + (BARS_PER_PAGE - 1);
+  const pageRows = others.slice(startIdx, endIdx);
+
+  // ✅ 描画用のデータ：先頭に自分、その後に他人
+  const finalRows = meRow ? [meRow, ...pageRows] : [...pageRows];
+
+  const labels   = finalRows.map(r => r.name);
+  const counts   = finalRows.map(r => r.count);
+  const colors   = finalRows.map(r => (String(r.id) === String(MY_USER_ID) || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
+  const userMeta = finalRows.map(r => ({ dept: r.dept, pos: r.pos }));
 
   setInnerWidth(labels.length);
+
 
   const c = ensureChart();
   const cvs = $('#mainCanvas');
@@ -300,13 +350,21 @@ function render(){
   const maxVal = counts.length ? Math.max(...counts) : 0;
   const yopt = c.options.scales.y;
   yopt.min = 0;
-  if (maxVal <= 10) { yopt.max = 10; yopt.suggestedMax = undefined; }
-  else { const upper = niceCeil(maxVal); yopt.max = upper; yopt.suggestedMax = undefined; }
+  if (maxVal <= 10) {
+    yopt.max = 10;
+    yopt.suggestedMax = undefined;
+  } else {
+    const upper = niceCeil(maxVal);
+    yopt.max = upper;
+    yopt.suggestedMax = undefined;
+  }
 
   c.update();
-  toggleEmpty(labels.length===0);
+  toggleEmpty(labels.length === 0);
 
-  // 親へ冊数通知（必要に応じて）
+  $('#prevBtn').disabled = (currentPage === 0);
+  $('#nextBtn').disabled = (currentPage >= totalPages - 1);
+
   postMonthlyCountToParent();
 }
 
