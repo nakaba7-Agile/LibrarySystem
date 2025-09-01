@@ -79,6 +79,8 @@ function ensureChart(){
         legend:{ display:false },
         tooltip:{
           enabled:true,
+          displayColors:false,
+          titleSpacing:2, bodySpacing:2, footerSpacing:0, padding:6,
           callbacks:{
             title(items){
               const i=items[0].dataIndex;
@@ -92,13 +94,12 @@ function ensureChart(){
             },
             afterLabel(item){
               const m = chart.data.datasets[0].userMeta?.[item.dataIndex];
-              return m?.comment ? `「${m.comment}」` : '';
+              return m?.comment ? `「${m.comment}」` : undefined; // 先頭に改行を入れない
             }
           }
         }
       },
-      onClick: (evt, activeEls) => handleBarTouch(evt),   // クリック
-      onHover: (evt, activeEls) => { /* 任意で hover を使うならここ */ }
+      onClick: (evt) => handleBarTouch(evt)
     },
     plugins:[valueLabelPlugin]
   });
@@ -126,9 +127,10 @@ function ensureChart(){
 
     buildSelectors(); // 本/部門/役職
     ensureDefaultBook(); // いい感じの初期本
+    updateCover();      // ← カバー表示
     render();
 
-    // タッチ端末でも反応するように
+    // タッチ端末
     $('#spCanvas').addEventListener('touchstart', handleBarTouch, {passive:true});
     document.addEventListener('click', (e)=>{
       const pop = $('#commentPop');
@@ -163,7 +165,7 @@ function buildSelectors(){
   RAW.positions  .forEach(p=>{ const o=document.createElement('option'); o.value=String(p.id); o.textContent=p.name; selPos.appendChild(o); });
 
   // 変更イベント
-  selBook.addEventListener('change', ()=>{ currentPage=0; render(); });
+  selBook.addEventListener('change', ()=>{ currentPage=0; updateCover(); render(); });
   selDept.addEventListener('change', ()=>{ currentPage=0; render(); });
   selPos .addEventListener('change', ()=>{ currentPage=0; render(); });
 
@@ -181,6 +183,16 @@ function ensureDefaultBook(){
     const defId = latest ? String(latest.bookId) : (RAW.books[0] ? String(RAW.books[0].id) : "");
     if (defId) sel.value = defId;
   }
+}
+
+/* ===== カバー画像の更新 ===== */
+function updateCover(){
+  const cover = $('#bookCover');
+  if (!cover) return;
+  const id = $('#selBook').value;
+  const book = RAW.books.find(b => String(b.id)===String(id));
+  cover.src = (book?.image || 'images/noimage.png');
+  cover.alt = book?.title || '';
 }
 
 /* ===== 集計＆描画 ===== */
@@ -291,13 +303,12 @@ function handleBarTouch(evt){
   // 位置計算（chart-wrap 内座標）
   const canvasRect = c.canvas.getBoundingClientRect();
   const wrapRect = $('.chart-wrap').getBoundingClientRect();
-  // Chart.js の座標は CSS px と一致するので、そのまま足し算でOK
   const left = canvasRect.left - wrapRect.left + el.element.x;
   const top  = canvasRect.top  - wrapRect.top  + el.element.y;
 
-  const popW = 280;   // CSS の max-width と合わせる
+  const popW = 280;
   const x = clamp(left - popW/2, 8, wrapRect.width - popW - 8);
-  const y = top - 64; // 棒の少し上
+  const y = top - 64;
 
   pop.style.left = `${x}px`;
   pop.style.top  = `${y}px`;

@@ -8,34 +8,38 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <!-- タイトル + フィルタ -->
   <div class="header-bar">
     <div class="title-line">
       <span class="title">みんなの進捗状況</span>
-      <div class="filters">
-        <label class="lbl">対象のタイトル</label>
-        <select id="selBook" class="pill">
-          <option value="">（選択してください）</option>
-        </select>
-        <select id="selDept" class="pill"><option value="">すべての部門</option></select>
-        <select id="selPos"  class="pill"><option value="">すべての役職</option></select>
-      </div>
+    </div>
+
+    <div class="filters">
+      <span class="lbl">対象のタイトル</span>
+      <select id="selBook" class="pill"><option value="">選択してください</option></select>
+      <select id="selDept" class="pill"><option value="">すべての部署</option></select>
+      <select id="selPos"  class="pill"><option value="">すべての役職</option></select>
     </div>
   </div>
 
   <div class="chart-wrap">
-    <div class="chart-nav">
-      <button id="prevBtn" class="nav-btn">←</button>
-      <div id="chartInner" class="chart-inner">
-        <canvas id="spCanvas"></canvas>
+    <div class="chart-layout">
+      <!-- 左：カバー -->
+      <div class="cover-box" aria-label="選択中の本のカバー">
+        <img id="bookCover" alt="" />
       </div>
-      <button id="nextBtn" class="nav-btn">→</button>
+
+      <!-- 右：グラフ（ナビ付き） -->
+      <div class="chart-nav">
+        <button id="prevBtn" class="nav-btn" title="前へ">←</button>
+        <div id="chartInner" class="chart-inner">
+          <canvas id="spCanvas"></canvas>
+        </div>
+        <button id="nextBtn" class="nav-btn" title="次へ">→</button>
+      </div>
     </div>
 
-    <!-- クリック時に表示するコメント吹き出し -->
-    <div id="commentPop" class="comment-pop" hidden></div>
-
     <div id="empty" class="empty">該当データがありません</div>
+    <div id="commentPop" class="comment-pop" hidden></div>
   </div>
 
   <script src="./shareprogress.js"></script>

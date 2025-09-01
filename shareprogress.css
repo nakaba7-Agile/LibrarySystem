@@ -1,5 +1,13 @@
 /* ベース（ranking.css に準拠） */
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:20px;color:#222}
+:root{
+  --cover-w: 120px;        /* ← 画像（表紙）の横幅。ここを変えるだけでサイズ変更 */
+  --cover-nudge-y: -6px;   /* ← 画像の上下微調整。負で少し上、正で下へ */
+}
+
+body{
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+  margin:20px; color:#222;
+}
 
 .header-bar{margin-bottom:12px;padding-top:1%;padding-left:2%}
 .title-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -8,48 +16,86 @@ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic P
 .lbl{color:#444;font-size:14px}
 .pill{padding:8px 12px;border:1px solid #cfcfcf;border-radius:999px;background:#fff;font-size:14px}
 
-.chart-wrap{position:relative;width:90%;height:auto;overflow-x:auto;overflow-y:hidden;border:none;border-radius:16px;background:#fff}
-.chart-nav{display:flex;align-items:center;width:100%;height:auto;background:#fff;border-radius:16px;overflow:hidden;position:relative}
-.chart-inner{width:100%;max-width:2000px}
-.nav-btn{width:40px;height:100%;background:#eee;border:none;font-size:20px;cursor:pointer;transition:background .2s}
-.nav-btn:hover{background:#ddd}
-.nav-btn:disabled{opacity:.3;cursor:default}
-
-#spCanvas{display:block;width:100% !important;height:100% !important}
-
-.empty{
-  position:absolute;inset:0;display:none;align-items:center;justify-content:center;
-  text-align:center;font-size:18px;font-weight:600;color:#666;pointer-events:none;
+/* レイアウト：左カバー＋右グラフ */
+.chart-wrap{
+  position:relative;
+  width:90%;
+  height:auto;
+  overflow:visible;
+  border:none;
+  border-radius:16px;
+  background:#fff;
+}
+.chart-layout{
+  display:flex;
+  align-items:center;       /* 画像の中心＝グラフの中心 */
+  gap:16px;
+  width:100%;
 }
 
-/* コメントの吹き出し */
-.comment-pop{
-  position:absolute;
-  max-width:280px;
-  background:#f7f7f7;
+/* カバー */
+.cover-box{
+  flex:0 0 var(--cover-w);  /* ← 幅は変数で管理 */
+  aspect-ratio: 2 / 3;      /* 高さは自動で 3/2 倍（表紙比率） */
+  height:auto;
   border:1px solid #e5e7eb;
   border-radius:12px;
-  padding:10px 12px;
+  background:#eee;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  transform: translateY(var(--cover-nudge-y));  /* ← 上下位置の微調整 */
+}
+.cover-box img{
+  width:100%; height:100%;
+  object-fit:cover; display:block;
+}
+
+/* グラフ（ナビ付き） */
+.chart-nav{
+  display:flex; align-items:center;
+  flex:1 1 auto; height:auto;
+  background:#fff; border-radius:16px;
+  overflow:hidden; position:relative;
+}
+.chart-inner{width:100%; max-width:2000px}
+.nav-btn{
+  width:40px; height:100%;
+  background:#eee; border:none; font-size:20px;
+  cursor:pointer; transition:background .2s;
+}
+.nav-btn:hover{background:#ddd}
+.nav-btn:disabled{opacity:.3; cursor:default}
+
+#spCanvas{display:block; width:100% !important; height:100% !important}
+
+/* 空データ時のオーバーレイ */
+.empty{
+  position:absolute; inset:0;
+  display:none; align-items:center; justify-content:center;
+  text-align:center; font-size:18px; font-weight:600;
+  color:#666; pointer-events:none;
+}
+
+/* コメントの吹き出し（行間詰め） */
+.comment-pop{
+  position:absolute; z-index:10;
+  max-width:280px;
+  background:#f7f7f7;
+  border:1px solid #e5e7eb; border-radius:12px;
+  padding:8px 10px;          /* ちょい詰め */
   box-shadow:0 8px 20px rgba(0,0,0,.08);
-  color:#333;
-  line-height:1.5;
-  font-size:13px;
-  z-index:10;
+  color:#333; font-size:13px; line-height:1.4;  /* ← 行間 */
 }
 .comment-pop::after{
-  content:"";
-  position:absolute;
-  left:18px;
-  bottom:-8px;
-  width:12px;height:12px;
-  background:#f7f7f7;
-  border-left:1px solid #e5e7eb;
-  border-bottom:1px solid #e5e7eb;
+  content:""; position:absolute; left:18px; bottom:-8px;
+  width:12px; height:12px; background:#f7f7f7;
+  border-left:1px solid #e5e7eb; border-bottom:1px solid #e5e7eb;
   transform:rotate(45deg);
 }
 
+/* 小さめ画面は自動で縮小 */
 @media (max-width: 680px){
   .chart-wrap{width:100%}
   .title-line{gap:10px}
+  :root{ --cover-w: 140px; }   /* ← モバイルでは表紙を小さく */
 }
-
