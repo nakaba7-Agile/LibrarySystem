@@ -1,107 +1,28 @@
-/* ベース */
-body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; margin: 20px; color:#222; }
+/* ベースは ranking.css に合わせています */
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;margin:20px;color:#222}
 
-.chart-wrap { position: relative; } /* すでに指定済みならOK */
+.header-bar{margin-bottom:12px;padding-top:1%;padding-left:2%}
+.title-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.title{font-weight:700;font-size:20px}
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lbl{color:#444;font-size:14px}
+.pill{padding:8px 12px;border:1px solid #cfcfcf;border-radius:999px;background:#fff;font-size:14px}
+
+.chart-wrap{position:relative;width:90%;height:auto;overflow-x:auto;overflow-y:hidden;border:none;border-radius:16px;background:#fff}
+.chart-nav{display:flex;align-items:center;width:100%;height:auto;background:#fff;border-radius:16px;overflow:hidden;position:relative}
+.chart-inner{width:100%;max-width:2000px}
+.nav-btn{width:40px;height:100%;background:#eee;border:none;font-size:20px;cursor:pointer;transition:background .2s}
+.nav-btn:hover{background:#ddd}
+.nav-btn:disabled{opacity:.3;cursor:default}
+
+#spCanvas{display:block;width:100% !important;height:100% !important}
+
 .empty{
-  position: absolute;
-  inset: 0;                 /* 親（chart-wrap）いっぱい */
-  display: none;            /* JSでflexに切替 */
-  align-items: center;      /* 縦中央 */
-  justify-content: center;  /* 横中央 */
-  text-align: center;
-  font-size: 18px;
-  font-weight: 600;
-  color: #666;
-  pointer-events: none;     /* クリック妨げない */
+  position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  text-align:center;font-size:18px;font-weight:600;color:#666;pointer-events:none;
 }
 
-/* ヘッダー行（タイトルのすぐ右にフィルタを並べる） */
-.header-bar{ 
-  margin-bottom:12px; 
-  padding-top: 1%;
-  padding-left: 2%;
-}
-.title-line{
-  display:flex;
-  align-items:center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.title{ font-weight:700; font-size:20px; }
-
-.filters{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-wrap: nowrap;
-}
-.pill{
-  padding:8px 12px; border:1px solid #cfcfcf; border-radius:999px; background:#fff; font-size:14px;
-}
-
-/* グラフエリア（枠内で横スクロール） */
-.chart-wrap{
-  position: relative;
-  width: 90%;
-  height: auto;
-  overflow-x: auto;
-  overflow-y: hidden;
-  border: none;
-  border-radius: 16px;
-  background: #fff;
-}
-/* .chart-inner {
-  display: inline-block;
-  height: 100%;
-  border-radius: 16px;
-  overflow: hidden;
-} */
- /* ナビゲーションボタン付きのチャートエリア */
-.chart-nav {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: auto;
-  background: #fff;
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-}
-
-.chart-inner {
-  width: 100%;
-  max-width: 2000px; /* 必要なら上限を指定 */
-}
-
-.nav-btn {
-  width: 40px;
-  height: 100%;
-  background: #eee;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.nav-btn:hover {
-  background: #ddd;
-}
-.nav-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-#mainCanvas{
-  display:block;
-  width:100% !important;
-  height:100% !important;
-}
-
-/* 小さめ画面 */
 @media (max-width: 680px){
-  .chart-wrap{ width:100%; }
-  .title-line{ gap:10px; }
-  .filters{
-    flex-wrap: wrap;
-    row-gap: 6px;
-  }
+  .chart-wrap{width:100%}
+  .title-line{gap:10px}
 }

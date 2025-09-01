@@ -1,380 +1,250 @@
-// ==== DOM取得ショートカット関数（最優先で定義）====
+// ==== DOM取得ショートカット ====
 const $ = (s) => document.querySelector(s);
 
 /* ===== 設定 ===== */
 const API = "http://localhost:4000";
 const BAR_WIDTH_PX = 75;
-const GAP_PX       = 40;
 const PADDING_PX   = 6;
+const BARS_PER_PAGE = 5;
 
-// 自分（左端＆黒）
+// 自分（黒棒＆ラベルは「自分」）
+let MY_USER_ID = parseInt(localStorage.getItem('loginUserId')) || null;
 let MY_NAME = "";
-let MY_USER_ID = parseInt(localStorage.getItem('loginUserId')); // ログインユーザーID
 
-if (MY_USER_ID) {
-  fetch(`${API}/users/${MY_USER_ID}`)
-    .then(res => res.json())
-    .then(user => {
-      MY_NAME = user?.name || "";
-      fetchAll();
-    })
-    .catch(()=> fetchAll());
-} else {
-  // 未ログイン（念のため起動）
-  fetchAll();
-}
-
-/* ===== 状態 ===== */
-let RAW = { users: [], departments: [], positions: [], readings: [] };
+// 状態
+let RAW = { users:[], departments:[], positions:[], books:[], readings:[] };
 let chart;
-let allRows = [];
+let currentPage = 0;
+let allRows = []; // 並び替え後の全行（ページング用）
 
-let currentPage = 0;      // 現在のページ（0スタート）
-const BARS_PER_PAGE = 5;  // 1ページに表示する棒の数
-
-$('#nextBtn')?.addEventListener('click', () => {
-  const totalPages = Math.ceil(allRows.length / BARS_PER_PAGE);
-  if (currentPage < totalPages - 1) {
-    currentPage++;
-    render();
-  }
-});
-
-$('#prevBtn')?.addEventListener('click', () => {
-  if (currentPage > 0) {
-    currentPage--;
-    render();
-  }
-});
-
-/* ===== 値ラベル（棒の中央に “n冊”） ===== */
+/* ===== 値ラベル（％） ===== */
 const valueLabelPlugin = {
   id: 'valueLabel',
-  afterDatasetsDraw(chart) {
-    const { ctx } = chart;
-    const meta   = chart.getDatasetMeta(0);
-    const data   = chart.data.datasets[0].data;
-    const labels = chart.data.labels;
-
+  afterDatasetsDraw(c) {
+    const ctx = c.ctx;
+    const meta = c.getDatasetMeta(0);
+    const data = c.data.datasets[0].data;
+    const labels = c.data.labels;
     ctx.save();
     ctx.font = '15px system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-
-    for (let i = 0; i < data.length; i++) {
+    for (let i=0;i<data.length;i++){
       const el = meta.data[i];
       if (!el) continue;
-
-      const value = data[i];
+      const val = data[i];
       const label = labels[i];
-      if (!label || label.trim() === '') continue; // ダミー棒は無視
-
-      const isMine = label === MY_NAME;
-      const centerY = (el.y + el.base) / 2;
+      if (!label || label.trim() === '') continue; // ダミー無視
+      const isMine = (label === '自分');
+      const cy = (el.y + el.base) / 2;
       ctx.fillStyle = isMine ? '#fff' : '#666';
-      ctx.fillText(`${value}冊`, el.x, centerY);
+      ctx.fillText(`${val}%`, el.x, cy);
     }
     ctx.restore();
   }
 };
 
 /* ===== Utils ===== */
-function toggleEmpty(show){
-  const el=$('#empty');
-  if(el) el.style.display = show ? 'flex':'none';
-}
-function parseDate(s){ if(!s) return null; const [y,m,d]=String(s).split('-').map(Number); return new Date(y,m-1,d); }
-function between(dateStr, startStr, endStr){
-  if(!startStr && !endStr) return true;
-  const dt=parseDate(dateStr); if(!dt) return false;
-  const s=parseDate(startStr); const e=parseDate(endStr);
-  if(s && dt < s) return false;
-  if(e){ const ee=new Date(e.getFullYear(),e.getMonth(),e.getDate(),23,59,59,999); if(dt>ee) return false; }
-  return true;
-}
-function monthToRange(ym) {
-  if (!ym) return { start: "", end: "" };
-  const [y,m] = ym.split('-').map(Number);
-  const start = new Date(y, m-1, 1);
-  const end   = new Date(y, m, 0);
-  const pad = n => String(n).padStart(2,'0');
-  return {
-    start: `${start.getFullYear()}-${pad(start.getMonth()+1)}-${pad(start.getDate())}`,
-    end:   `${end.getFullYear()}-${pad(end.getMonth()+1)}-${pad(end.getDate())}`
-  };
-}
-function niceCeil(v) {
-  if (v <= 10) return 10;
-  const pow = Math.pow(10, Math.floor(Math.log10(v)));
-  const n = v / pow;
-  let m = 10;
-  if (n <= 1) m = 1;
-  else if (n <= 2) m = 2;
-  else if (n <= 5) m = 5;
-  return m * pow;
-}
+function toggleEmpty(show){ const el=$('#empty'); if (el) el.style.display = show ? 'flex':'none'; }
+function pickLatest(list){ return list.slice().sort((a,b)=> new Date(b.date)-new Date(a.date))[0] || null; }
 
-/* ===== Chart.js ===== */
+/* ===== Chart.js 準備 ===== */
 function ensureChart(){
-  if(chart) return chart;
-  const ctx = $('#mainCanvas').getContext('2d');
+  if (chart) return chart;
+  const ctx = $('#spCanvas').getContext('2d');
   chart = new Chart(ctx, {
     type:'bar',
     data:{ labels:[], datasets:[{
-      label:'読書数',
+      label:'進捗',
       data:[],
-      categoryPercentage:1.0,
-      barPercentage:1.0,
       barThickness: BAR_WIDTH_PX,
       maxBarThickness: BAR_WIDTH_PX,
       backgroundColor: [],
       userMeta: [],
-      borderRadius: 10,
-      borderSkipped: false,
-      borderWidth: 0
+      borderRadius:10,
+      borderSkipped:false,
+      borderWidth:0
     }]},
     options:{
       responsive:true,
       maintainAspectRatio:false,
-      layout: { padding: { left: 6, right: PADDING_PX, bottom: 8 } },
+      layout:{ padding:{ left:6, right:PADDING_PX, bottom:8 } },
       scales:{
-        x: {
-          offset: true,
-          grid:   { display: false, drawBorder: false },
-          border: { display: false },
-          ticks:  { minRotation: 0, maxRotation: 0, autoSkip: false, font: { size: 15 }, padding: 16, display: true }
-        },
-        y: {
-          beginAtZero: true,
-          min: 0,
-          suggestedMax: 10,
-          display: false,
-          grid:   { drawBorder: false },
-          border: { display: false }
-        }
+        x:{ offset:true, grid:{display:false, drawBorder:false}, border:{display:false},
+            ticks:{minRotation:0,maxRotation:0,autoSkip:false,font:{size:15},padding:16,display:true} },
+        y:{ beginAtZero:true, min:0, max:100, display:false, grid:{drawBorder:false}, border:{display:false} }
       },
       plugins:{
         legend:{ display:false },
         tooltip:{
-          enabled: true,
-          callbacks: {
-            title(items){
-              const i = items[0].dataIndex;
-              const ch = items[0].chart;
-              const name = ch.data.labels[i];
-              const cnt  = ch.data.datasets[0].data[i];
-              return `${name}：${cnt}冊`;
-            },
-            label(item){
-              const i = item.dataIndex;
-              const meta = item.chart.data.datasets[0].userMeta?.[i];
-              if (!meta) return '';
-              return `${meta.dept}／${meta.pos}`;
-            }
+          enabled:true,
+          callbacks:{
+            title(items){ const i=items[0].dataIndex; const name = chart.data.labels[i]; const v = chart.data.datasets[0].data[i]; return `${name}：${v}%`; },
+            label(item){ const m = chart.data.datasets[0].userMeta?.[item.dataIndex]; return m ? `${m.dept}／${m.pos}` : ''; }
           }
         }
       }
     },
-    plugins: [valueLabelPlugin]
+    plugins:[valueLabelPlugin]
   });
   return chart;
 }
 
-/* ===== 親へ“当月の自分の冊数”を通知（堅牢版） ===== */
-function postMonthlyCountToParent() {
-  // 選択中の月（未選択なら今日）
-  let ym = $('#month')?.value;
-  if (!ym) {
-    const t = new Date();
-    ym = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
-  }
-  const { start: sd, end: ed } = monthToRange(ym);
-
-  // ★ users に依存せず、userId だけで判定
-  const myIdStr = String(MY_USER_ID);
-  const myCompleted = RAW.readings.filter(r =>
-    String(r.userId) === myIdStr &&
-    between(r.date, sd, ed) &&
-    Number(r.progress ?? 0) >= 100
-  );
-
-  // 同じ本は 1 冊として数える
-  const count = new Set(myCompleted.map(r => r.bookId)).size;
-  window.parent?.postMessage({ type:'monthly-count', ym, count }, '*');
-}
-
-/* ===== データ取得 ===== */
-async function fetchAll(){
-  try {
-    const [users,depts,poses,reads] = await Promise.all([
+/* ===== 初期ロード ===== */
+(async function init(){
+  try{
+    const [users,depts,poses,books,reads] = await Promise.all([
       fetch(`${API}/users`).then(r=>r.json()),
       fetch(`${API}/departments`).then(r=>r.json()),
       fetch(`${API}/positions`).then(r=>r.json()),
+      fetch(`${API}/books`).then(r=>r.json()),
       fetch(`${API}/readings`).then(r=>r.json())
     ]);
-    RAW={users,departments:depts,positions:poses,readings:reads};
+    RAW = { users, departments:depts, positions:poses, books, readings:reads };
 
-    // 初期月＝今日
-    const t = new Date();
-    const monthEl = $('#month');
-    if (monthEl) monthEl.value = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
+    if (MY_USER_ID) {
+      try{
+        const u = await fetch(`${API}/users/${MY_USER_ID}`).then(r=>r.json());
+        MY_NAME = u?.name || "";
+      }catch(_){}
+    }
 
-    buildSelectors();
+    buildSelectors(); // 本/部門/役職
+    ensureDefaultBook(); // いい感じの初期本
     render();
-    postMonthlyCountToParent();
-  } catch (e) {
-    console.error('取得失敗', e);
+  }catch(e){
+    console.error('初期取得失敗', e);
   }
-}
+})();
 
+/* ===== セレクタ構築 ===== */
 function buildSelectors(){
-  const selDept=$('#selDept'), selPos=$('#selPos');
-  if (!selDept || !selPos) return;
+  const selBook = $('#selBook');
+  const selDept = $('#selDept');
+  const selPos  = $('#selPos');
+
+  // 本
+  selBook.querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
+  const byTitle = RAW.books.slice().sort((a,b)=> (a.title||'').localeCompare(b.title||'','ja'));
+  byTitle.forEach(b=>{
+    const o=document.createElement('option');
+    o.value=String(b.id);
+    o.textContent=b.title || '(無題)';
+    selBook.appendChild(o);
+  });
+
+  // 部門・役職
   selDept.querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
   selPos .querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
-  RAW.departments.forEach(d=>{ let o=document.createElement('option'); o.value=String(d.id); o.textContent=d.name; selDept.appendChild(o); });
-  RAW.positions  .forEach(p=>{ let o=document.createElement('option'); o.value=String(p.id); o.textContent=p.name; selPos.appendChild(o); });
+  RAW.departments.forEach(d=>{ const o=document.createElement('option'); o.value=String(d.id); o.textContent=d.name; selDept.appendChild(o); });
+  RAW.positions  .forEach(p=>{ const o=document.createElement('option'); o.value=String(p.id); o.textContent=p.name; selPos.appendChild(o); });
+
+  // 変更イベント
+  selBook.addEventListener('change', ()=>{ currentPage=0; render(); });
+  selDept.addEventListener('change', ()=>{ currentPage=0; render(); });
+  selPos .addEventListener('change', ()=>{ currentPage=0; render(); });
+
+  // ページング
+  $('#nextBtn').addEventListener('click', ()=>{ const tp = Math.ceil(allRows.length / BARS_PER_PAGE); if (currentPage < tp-1){ currentPage++; render(); } });
+  $('#prevBtn').addEventListener('click', ()=>{ if (currentPage > 0){ currentPage--; render(); } });
 }
 
-/* ===== 集計＆描画（progress==100のみ） ===== */
-function render(){
-  const selDept=$('#selDept'), selPos=$('#selPos'), monthEl=$('#month');
-  const deptId=selDept ? selDept.value || null : null;
-  const posId =selPos  ? selPos.value  || null : null;
-
-  // 月（空なら今日）
-  let ym = monthEl?.value;
-  if (!ym) {
-    const t = new Date();
-    ym = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
+/* ===== 初期表示用の本（自分の最新 or 先頭） ===== */
+function ensureDefaultBook(){
+  const sel = $('#selBook');
+  if (!sel.value) {
+    const mine = RAW.readings.filter(r => !isNaN(MY_USER_ID) && Number(r.userId)===Number(MY_USER_ID));
+    const latest = pickLatest(mine);
+    const defId = latest ? String(latest.bookId) : (RAW.books[0] ? String(RAW.books[0].id) : "");
+    if (defId) sel.value = defId;
   }
-  const { start: sd, end: ed } = monthToRange(ym);
+}
 
-  // ユーザーフィルタ
+/* ===== 集計＆描画 ===== */
+function render(){
+  const bookId = $('#selBook').value;
+  if (!bookId) { toggleEmpty(true); paint([],[]); return; }
+
+  // フィルタユーザー
+  const deptId = $('#selDept').value || null;
+  const posId  = $('#selPos').value  || null;
   let users = RAW.users.filter(u=>{
     if (deptId && String(u.departmentId) !== String(deptId)) return false;
     if (posId  && String(u.positionId)  !== String(posId) ) return false;
     return true;
   });
 
-  // 本人は必ず候補に含める（0冊なら後で落ちる）
-  const me = RAW.users.find(u => String(u.id) === String(MY_USER_ID) || u.name === MY_NAME);
-  if (me && !users.some(u => String(u.id) === String(me.id))) users = [me, ...users];
-
-  const uids=new Set(users.map(u=>String(u.id)));
-
-  // 完了のみ
-  const reads = RAW.readings.filter(
-    r => uids.has(String(r.userId)) &&
-         between(r.date, sd, ed) &&
-         Number(r.progress ?? 0) >= 100
-  );
-
-  // userId → 冊数
-  const map=new Map();
-  reads.forEach(r=>{
-    const k = String(r.userId);
-    map.set(k,(map.get(k)||0)+1);
-  });
-
-  // 部署/役職名
+  // 対象本の“そのユーザーの最新レコード”を拾う
+  const rows = [];
   const deptById = new Map(RAW.departments.map(d => [String(d.id), d.name]));
   const posById  = new Map(RAW.positions.map(p => [String(p.id), p.name]));
 
-  // rows
-  let rows = users.map(u => {
-    const key = String(u.id);
-    return {
-      id: key,
-      name: u.name,
-      count: map.get(key) ?? 0,
+  users.forEach(u=>{
+    const list = RAW.readings.filter(r => String(r.userId)===String(u.id) && String(r.bookId)===String(bookId));
+    if (!list.length) return;                                  // その本を読んでいない人は除外
+    const latest = pickLatest(list);
+    const prog = Number(latest.progress ?? 0);
+    if (isNaN(prog)) return;
+    rows.push({
+      id: String(u.id),
+      name: (String(u.id)===String(MY_USER_ID) ? '自分' : u.name),
+      progress: Math.max(0, Math.min(100, Math.round(prog))),  // 0–100に丸め
       dept: deptById.get(String(u.departmentId)) || '',
       pos:  posById.get(String(u.positionId))  || ''
-    };
+    });
   });
 
-  // 0冊は除外
-  rows = rows.filter(r => r.count > 0);
-
-  // 自分を先頭、それ以外は降順
-  rows.sort((a, b) => {
-    const isAme = String(a.id) === String(MY_USER_ID) || a.name === MY_NAME;
-    const isBme = String(b.id) === String(MY_USER_ID) || b.name === MY_NAME;
-    if (isAme && !isBme) return -1;
-    if (!isAme && isBme) return 1;
-    return b.count - a.count;
+  // 自分を先頭 → 残りは降順
+  rows.sort((a,b)=>{
+    const aMe = String(a.id)===String(MY_USER_ID);
+    const bMe = String(b.id)===String(MY_USER_ID);
+    if (aMe && !bMe) return -1;
+    if (!aMe && bMe) return 1;
+    return b.progress - a.progress;
   });
 
   allRows = rows;
 
-  const meRow = rows.find(r => String(r.id) === String(MY_USER_ID) || r.name === MY_NAME);
-  const others = rows.filter(r => String(r.id) !== String(MY_USER_ID) && r.name !== MY_NAME);
-
-  // ページングは他人だけ（自分 + 4人 = 5本）
+  // ページング：自分 + （他 4人）
+  const meRow = rows.find(r => String(r.id)===String(MY_USER_ID));
+  const others = rows.filter(r => String(r.id)!==String(MY_USER_ID));
   const totalPages = Math.ceil(others.length / (BARS_PER_PAGE - 1)) || 1;
   if (currentPage >= totalPages) currentPage = totalPages - 1;
   if (currentPage < 0) currentPage = 0;
-
-  const startIdx = currentPage * (BARS_PER_PAGE - 1);
-  const endIdx = startIdx + (BARS_PER_PAGE - 1);
-  const pageRows = others.slice(startIdx, endIdx);
-
+  const start = currentPage * (BARS_PER_PAGE - 1);
+  const pageRows = others.slice(start, start + (BARS_PER_PAGE - 1));
   let finalRows = meRow ? [meRow, ...pageRows] : [...pageRows];
+  while (finalRows.length < BARS_PER_PAGE) finalRows.push({ id:'', name:'', progress:0, dept:'', pos:'' });
 
-  // 足りない分はダミー（透明）で埋める
-  while (finalRows.length < BARS_PER_PAGE) {
-    finalRows.push({ id:'', name:'', count:0, dept:'', pos:'' });
-  }
+  const labels = finalRows.map(r=>r.name);
+  const vals   = finalRows.map(r=>r.name===''?0:r.progress);
+  const colors = finalRows.map(r=>{
+    if (r.name==='') return 'transparent';
+    return (String(r.id)===String(MY_USER_ID)) ? '#000000' : '#dedcdc';
+  });
+  const meta   = finalRows.map(r=>({dept:r.dept,pos:r.pos}));
 
-  const labels   = finalRows.map(r => r.name);
-  const counts   = finalRows.map(r => r.count);
-  const colors   = finalRows.map(r => r.name === '' ? 'transparent' :
-                                 (String(r.id) === String(MY_USER_ID) || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
-  const userMeta = finalRows.map(r => ({ dept: r.dept, pos: r.pos }));
+  // 塗り
+  paint(labels, vals, colors, meta);
 
-  const c = ensureChart();
-  c.data.labels = labels;
-  c.data.datasets[0].data = counts;
-  c.data.datasets[0].backgroundColor = colors;
-  c.data.datasets[0].userMeta = userMeta;
+  // 空表示
+  const hasReal = rows.length > 0;
+  toggleEmpty(!hasReal);
 
-  const maxVal = counts.length ? Math.max(...counts) : 0;
-  const yopt = c.options.scales.y;
-  yopt.min = 0;
-  if (maxVal <= 10) { yopt.max = 10; yopt.suggestedMax = undefined; }
-  else { const upper = niceCeil(maxVal); yopt.max = upper; yopt.suggestedMax = undefined; }
-
-  c.update();
-  toggleEmpty(labels.length === 0);
-
-  $('#prevBtn') && ($('#prevBtn').disabled = (currentPage === 0));
-  $('#nextBtn') && ($('#nextBtn').disabled = (currentPage >= totalPages - 1));
-
-  // 親へ冊数通知
-  postMonthlyCountToParent();
+  // ナビ有効/無効
+  $('#prevBtn').disabled = (currentPage===0);
+  $('#nextBtn').disabled = (currentPage>=totalPages-1);
 }
 
-/* ===== 親(ホーム) からの再集計依頼に応答 ===== */
-window.addEventListener("message", async (e) => {
-  const data = e?.data;
-  if (!data || typeof data !== "object") return;
-
-  if (data.type === "request-monthly-count") {
-    try {
-      RAW.readings = await fetch(`${API}/readings`).then(r => r.json());
-      render();
-      postMonthlyCountToParent();
-    } catch (err) {
-      console.error("recalc monthly-count failed:", err);
-    }
-  }
-});
-
-/* ===== イベント ===== */
-$('#selDept')?.addEventListener('change', render);
-$('#selPos') ?.addEventListener('change', render);
-$('#month')  ?.addEventListener('change', () => {
-  const ym = $('#month').value;
-  window.parent?.postMessage({ type:'month-change', ym }, '*');
-  render();
-});
+/* ===== グラフに流し込む ===== */
+function paint(labels, values, colors=[], meta=[]){
+  const c = ensureChart();
+  c.data.labels = labels;
+  c.data.datasets[0].data = values;
+  c.data.datasets[0].backgroundColor = colors;
+  c.data.datasets[0].userMeta = meta;
+  // y軸は 0–100 固定
+  c.options.scales.y.min = 0;
+  c.options.scales.y.max = 100;
+  c.update();
+}

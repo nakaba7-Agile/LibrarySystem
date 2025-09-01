@@ -286,42 +286,48 @@
       "userId": 1,
       "bookId": 101,
       "date": "2025-09-27",
-      "progress": 100
+      "progress": 100,
+      "comment":"Great book!"
     },
     {
       "id": 1002,
       "userId": 1,
       "bookId": 102,
       "date": "2025-09-29",
-      "progress": 100
+      "progress": 100,
+      "comment":"Very informative."
     },
     {
       "id": 1003,
       "userId": 2,
       "bookId": 101,
       "date": "2025-09-27",
-      "progress": 100
+      "progress": 100,
+      "comment":"最高に面白い！"
     },
     {
       "id": 1004,
       "userId": 2,
       "bookId": 102,
       "date": "2025-09-27",
-      "progress": 100
+      "progress": 100,
+      "comment":"勉強になりました。"
     },
     {
       "id": 1005,
       "userId": 3,
       "bookId": 106,
       "date": "2025-09-27",
-      "progress": 100
+      "progress": 100,
+      "comment":"Deep learningの基礎がよくわかる。"
     },
     {
       "id": 1006,
       "userId": 3,
       "bookId": 107,
       "date": "2025-09-27",
-      "progress": 100
+      "progress": 100,
+      "comment":"内容が難しいが、理解できると面白い。"
     },
     {
       "id": 1007,
@@ -335,7 +341,8 @@
       "userId": 4,
       "bookId": 102,
       "date": "2025-09-28",
-      "progress": 100
+      "progress": 100,
+      "comment":"応用情報技術者の内容がよくまとまっている。"
     },
     {
       "id": 1009,
@@ -356,35 +363,40 @@
       "userId": 4,
       "bookId": 105,
       "date": "2025-09-28",
-      "progress": 100
+      "progress": 100,
+      "comment":"C言語の基礎がよくわかる。"
     },
     {
       "id": 1012,
       "userId": 4,
       "bookId": 106,
       "date": "2025-09-28",
-      "progress": 100
+      "progress": 100,
+      "comment":"Deep learningの基礎がよくわかる。"
     },
     {
       "id": 1013,
       "userId": 4,
       "bookId": 107,
       "date": "2025-09-28",
-      "progress": 100
+      "progress": 100,
+      "comment":"内容が難しいが、理解できると面白い。"
     },
     {
       "id": 1014,
       "userId": 4,
       "bookId": 108,
       "date": "2025-09-28",
-      "progress": 100
+      "progress": 100,
+      "comment":"３章で挫折しそう。"
     },
     {
       "id": 1015,
       "userId": 4,
       "bookId": 109,
       "date": "2025-09-29",
-      "progress": 100
+      "progress": 100,
+      "comment":"Pythonの基礎がよくわかる。"
     },
     {
       "id": 1016,
@@ -405,7 +417,8 @@
       "userId": 5,
       "bookId": 105,
       "date": "2025-09-27",
-      "progress": 100
+      "progress": 100,
+      "comment":"C言語の基礎がよくわかる。"
     },
     {
       "id": 1019,
@@ -419,7 +432,8 @@
       "userId": 5,
       "bookId": 107,
       "date": "2025-09-28",
-      "progress": 100
+      "progress": 100,
+      "comment":"なかなか理解が追いつかない部分があったが、非常に有益だった。"
     },
     {
       "id": 1021,
@@ -440,7 +454,8 @@
       "userId": 5,
       "bookId": 110,
       "date": "2025-09-01",
-      "progress": 100
+      "progress": 100,
+      "comment":"HTMLとCSSの基本がよくわかる。"
     },
     {
       "id": 1024,
@@ -461,7 +476,8 @@
       "userId": 3,
       "bookId": 103,
       "date": "2025-09-05",
-      "progress": 100
+      "progress": 80,
+      "comment":"AWSの基礎がよくわかる。"
     },
     {
       "id": 1027,
@@ -475,42 +491,46 @@
       "userId": 1,
       "bookId": 103,
       "date": "2025-09-28",
-      "progress": 100
+      "progress": 60
     },
     {
       "id": 1029,
       "userId": 1,
       "bookId": 104,
       "date": "2025-09-15",
-      "progress": 100
+      "progress": 100,
+      "comment":"データベースの基礎がよくわかる。"
     },
     {
       "id": 1030,
       "userId": 3,
       "bookId": 105,
       "date": "2025-09-26",
-      "progress": 100
+      "progress": 100,
+      "comment":"業務に使用する上で、勉強になった！"
     },
     {
       "id": 1031,
       "userId": 2,
       "bookId": 103,
       "date": "2025-09-04",
-      "progress": 100
+      "progress": 40
     },
     {
       "id": 1032,
       "userId": 2,
       "bookId": 104,
       "date": "2025-09-07",
-      "progress": 100
+      "progress": 100,
+      "comment":"データベースの復習に最適！"
     },
     {
       "id": 1033,
       "userId": 2,
       "bookId": 105,
       "date": "2025-09-09",
-      "progress": 100
+      "progress": 100,
+      "comment":"C言語の復習に良かった。"
     },
     {
       "id": 1034,
@@ -524,7 +544,8 @@
       "userId": 6,
       "bookId": 101,
       "date": "2025-09-27",
-      "progress": 100
+      "progress": 100,
+      "comment":"Great book!最高ー！"
     },
     {
       "id": 1036,
@@ -538,7 +559,8 @@
       "userId": 6,
       "bookId": 103,
       "date": "2025-09-27",
-      "progress": 100
+      "progress": 20,
+      "comment":"Very informative.とても勉強になりました。"
     },
     {
       "id": 1038,
@@ -552,14 +574,16 @@
       "userId": 6,
       "bookId": 105,
       "date": "2025-09-29",
-      "progress": 100
+      "progress": 100,
+      "comment":"C言語の基礎がよくまとまっている。"
     },
     {
       "id": 1040,
       "userId": 7,
       "bookId": 101,
       "date": "2025-09-30",
-      "progress": 100
+      "progress": 100,
+      "comment":"Great !"
     },
     {
       "id": 1041,
@@ -573,14 +597,15 @@
       "userId": 7,
       "bookId": 103,
       "date": "2025-09-30",
-      "progress": 100
+      "progress": 0
     },
     {
       "id": 1043,
       "userId": 8,
       "bookId": 101,
       "date": "2025-09-05",
-      "progress": 100
+      "progress": 100,
+      "comment":"Great book!"
     },
     {
       "id": 1044,
@@ -594,14 +619,16 @@
       "userId": 8,
       "bookId": 103,
       "date": "2025-09-02",
-      "progress": 100
+      "progress": 100,
+      "comment":"Very informative."
     },
     {
       "id": 1046,
       "userId": 9,
       "bookId": 101,
       "date": "2025-09-27",
-      "progress": 100
+      "progress": 100,
+      "comment":"最高に面白い！"
     },
     {
       "id": 1047,
@@ -629,14 +656,16 @@
       "userId": 11,
       "bookId": 102,
       "date": "2025-09-28",
-      "progress": 100
+      "progress": 100,
+      "comment":"応用情報技術者の内容がよくまとまっている。"
     },
     {
       "id": 1051,
       "userId": 11,
       "bookId": 103,
       "date": "2025-09-28",
-      "progress": 100
+      "progress": 100,
+      "comment":"AWSの基礎がよくわかる。"
     },
     {
       "id": 1052,
