@@ -2,78 +2,91 @@
   "users": [
     {
       "id": 1,
+      "password": "pwd1",
       "name": "中林優樹",
       "departmentId": 1,
       "positionId": 2
     },
     {
       "id": 2,
+      "password": "pwd2",
       "name": "村松優樹",
       "departmentId": 3,
       "positionId": 2
     },
     {
       "id": 3,
+      "password": "pwd3",
       "name": "田北晃一郎",
       "departmentId": 2,
       "positionId": 2
     },
     {
       "id": 4,
+      "password": "pwd4",
       "name": "新葉星来",
       "departmentId": 1,
       "positionId": 2
     },
     {
       "id": 5,
+      "password": "pwd5",
       "name": "一ノ瀬音葉",
       "departmentId": 3,
       "positionId": 2
     },
     {
       "id": 6,
+      "password": "pwd6",
       "name": "窓辺あかり",
       "departmentId": 3,
       "positionId": 5
     },
     {
       "id": 7,
+      "password": "pwd7",
       "name": "佐藤翔太",
       "departmentId": 5,
       "positionId": 1
     },
     {
       "id": 8,
+      "password": "pwd8",
       "name": "高橋美咲",
       "departmentId": 6,
       "positionId": 3
     },
     {
       "id": 9,
+      "password": "pwd9",
       "name": "中村健一",
       "departmentId": 7,
       "positionId": 8
     },
     {
       "id": 10,
+      "password": "pwd10",
       "name": "山本さくら",
       "departmentId": 5,
       "positionId": 5
     },
     {
       "id": 11,
+      "password": "pwd11",
       "name": "伊藤大輝",
       "departmentId": 6,
       "positionId": 7
     },
     {
       "id": 12,
+      "password": "pwd12",
       "name": "小林結衣",
       "departmentId": 7,
       "positionId": 4
     },
     {
       "id": 13,
+      "password": "pwd13",
       "name": "松本陸",
       "departmentId": 5,
       "positionId": 4
@@ -567,6 +580,13 @@
       "bookId": 101,
       "date": "2025-08-29",
       "progress": 100
+    },
+    {
+      "id": 1055,
+      "userId": 6,
+      "bookId": 113,
+      "date": "2025-08-29",
+      "progress": 0
     }
   ],
   "positions": [
