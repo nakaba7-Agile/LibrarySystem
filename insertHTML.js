@@ -12,5 +12,8 @@ const sections = {
                 .then(res => res.text())
                 .then(html => {
                 document.getElementById(id).innerHTML = html;
+                const script = document.createElement('script');
+                script.src = './header.js';
+                document.body.appendChild(script);
                 });
         }
