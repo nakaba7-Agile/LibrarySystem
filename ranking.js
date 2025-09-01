@@ -155,13 +155,17 @@ function ensureChart(){
   return chart;
 }
 
-/* ===== 今月の冊数（MY_USER の progress==100 をカウント） ===== */
+/* ===== 親へ“当月の自分の冊数”を通知（任意） ===== */
 function postMonthlyCountToParent() {
-  // 月
-  let ym = $('#month')?.value || '2025-08';
+  // 月（未選択なら本日）
+  let ym = $('#month')?.value;
+  if (!ym) {
+    const t = new Date();
+    ym = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
+  }
   const { start: sd, end: ed } = monthToRange(ym);
 
-  // 自分（ID/名前で一致・型は文字列で比較）
+  // 自分（ID/名前・型は文字列で比較）
   const me = RAW.users.find(u => String(u.id) === String(MY_USER_ID)) 
           || RAW.users.find(u => u.name === MY_NAME);
   if (!me) return;
@@ -188,8 +192,9 @@ async function fetchAll(){
     RAW={users,departments:depts,positions:poses,readings:reads};
     buildSelectors();
 
-    // ★ 初期表示の月は 2025-08 に固定
-    $('#month').value = '2025-08';
+    // ★ 初期月＝本日が属する年月
+    const t = new Date();
+    $('#month').value = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
 
     render();
     postMonthlyCountToParent();
@@ -208,13 +213,18 @@ function buildSelectors(){
   RAW.positions  .forEach(p=>{ let o=document.createElement('option'); o.value=String(p.id); o.textContent=p.name; selPos.appendChild(o); });
 }
 
-/* ===== 集計＆描画（progress==100のみ・型は文字列で一致） ===== */
+/* ===== 集計＆描画（progress==100のみ・IDは文字列キー一致） ===== */
 function render(){
   // セレクト値は文字列で受ける
   const deptId=$('#selDept').value || null;
   const posId=$('#selPos').value || null;
 
-  const ym = $('#month').value || '2025-08';
+  // 月（空なら本日でフォールバック）
+  let ym = $('#month').value;
+  if (!ym) {
+    const t = new Date();
+    ym = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
+  }
   const { start: sd, end: ed } = monthToRange(ym);
 
   // ユーザーフィルタ（型は文字列で比較）
@@ -261,10 +271,10 @@ function render(){
     };
   });
 
-  // 0冊は全員除外（本人も含む）
+  // 0冊は全員除外
   rows = rows.filter(r => r.count > 0);
 
-  // 自分を抜いて、残りは降順→名前、最後に自分を先頭へ
+  // 自分を先頭へ
   const mineIdx = rows.findIndex(r => String(r.id) === String(MY_USER_ID) || r.name === MY_NAME);
   let mine = null;
   if (mineIdx > -1) mine = rows.splice(mineIdx, 1)[0];
