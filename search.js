@@ -88,7 +88,7 @@ document.addEventListener("click", async (e)=>{
     // 重複登録チェック
     const readings = await fetch(`${API_SEARCH}/readings`).then(r=>r.json());
     if (readings.some(r => Number(r.userId) === LOGIN_USER_ID && Number(r.bookId) === bookId)) {
-      alert("この本はすでに登録されています");
+      showToast("この本はすでに登録されています");
       return;
     }
 
@@ -102,13 +102,15 @@ document.addEventListener("click", async (e)=>{
       progress: progressValue
     };
 
-    await fetch(`${API_SEARCH}/readings`, {
+    showToast(isDone ? "「読んだ本」に登録しました" : "「読んでいる本」に登録しました");
+
+    setTimeout(async () => {
+      await fetch(`${API_SEARCH}/readings`, {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify(readingData)
     });
-
-    showToast(isDone ? "「読んだ本」に登録しました" : "「読んでいる本」に登録しました");
+    }, 2000);
 
     // サイドバーの進捗を「ランキングの月」で再描画（無ければ登録月で）
     try {
@@ -125,9 +127,10 @@ document.addEventListener("click", async (e)=>{
 
     // showPage('home'); // home画面に遷移
     // location.reload(); // ページをリロードして最新情報を表示
+
   } catch (e) {
     console.error(e);
-    alert('登録に失敗しました');
+    showToast('登録に失敗しました');
   }
 });
 
@@ -152,6 +155,6 @@ function showToast(message) {
     setTimeout(() => {
       container.removeChild(toast);
     }, 500); // アニメーションが終わるのを待って削除
-  }, 3000);
+  }, 5000);
 }
 
