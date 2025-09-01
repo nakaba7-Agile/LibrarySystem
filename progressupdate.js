@@ -16,7 +16,7 @@ slider.addEventListener('input', () => {
     percentLabel.textContent = slider.value + '%';
 });
 
-// 読んだ！ボタン → 強制的に100%にする
+// 読んだ！ボタンを押すと強制的に100%にする
 readBtn.addEventListener("click", async () => {
     try {
         const res = await fetch(`http://localhost:4000/readings/${id}`, {
