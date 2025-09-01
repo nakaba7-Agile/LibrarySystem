@@ -23,15 +23,14 @@ $(async function() {
     }
 
     // 資格（例: user.certsが配列なら表示）
-    // let certHtml = "";
-    // if (Array.isArray(user.certs)) {
-    //     certHtml = user.certs.map(c => `<span class="chip">${c}</span>`).join('');
-    // }
+    let certHtml = "";
+    if (Array.isArray(user.certs)) {
+        certHtml = user.certs.map(c => `<span class="chip">${c}</span>`).join('');
+    }
 
     $('#profileName').text(user.name || "");
-    $('#profileMail').text(user.email || "");
     $('#profileDept').text(dept ? dept.name : "");
     $('#profileYears').text(years);
     $('#profilePosition').text(pos ? pos.name : "");
-    // $('#profileCerts').html(certHtml);
+    $('#profileCerts').html(certHtml);
 });
