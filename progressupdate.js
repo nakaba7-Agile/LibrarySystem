@@ -193,7 +193,7 @@
 
           setStatus("保存中…");
 
-          showToast("「読んだ本」に登録しました");
+          if(v >= 100) showToast("「読んだ本」に登録しました");
 
           setTimeout(async () => {
             await patchReadingById(row.__idRaw, payload);
