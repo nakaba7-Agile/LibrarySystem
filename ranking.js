@@ -43,7 +43,7 @@ const valueLabelPlugin = {
 const $ = (s)=>document.querySelector(s);
 function toggleEmpty(show){
   const el=$('#empty');
-  if(el) el.style.display = show ? 'block':'none';
+  if(el) el.style.display = show ? 'flex':'none';
 }
 function parseDate(s){ if(!s) return null; const [y,m,d]=String(s).split('-').map(Number); return new Date(y,m-1,d); }
 function between(dateStr, startStr, endStr){

@@ -1,6 +1,19 @@
 /* ベース */
 body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; margin: 20px; color:#222; }
-.empty { margin: 12px 0; color:#666; display:none; }
+
+.chart-wrap { position: relative; } /* すでに指定済みならOK */
+.empty{
+  position: absolute;
+  inset: 0;                 /* 親（chart-wrap）いっぱい */
+  display: none;            /* JSでflexに切替 */
+  align-items: center;      /* 縦中央 */
+  justify-content: center;  /* 横中央 */
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #666;
+  pointer-events: none;     /* クリック妨げない */
+}
 
 /* ヘッダー行（タイトルのすぐ右にフィルタを並べる） */
 .header-bar{ 
