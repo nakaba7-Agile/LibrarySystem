@@ -10,8 +10,8 @@
 }
 
 /* 通知1個の見た目 */
-.toast {
-    border: 2px solid green;
+/* .toast {
+    border: 2px solid rgb(254, 244, 58);
     background-color: white;
     padding: 10px 15px;
     border-radius: 8px;
@@ -20,10 +20,27 @@
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.5s, transform 0.5s;
+} */
+ .toast {
+    position: fixed;          /* 画面に固定 */
+    top: 50%;                 /* 上から50% */
+    left: 50%;                /* 左から50% */
+    transform: translate(-50%, -50%) translateY(20px); 
+    border: 2px solid rgb(254, 244, 58);
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    font-family: sans-serif;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
+    z-index: 9999;            /* 他要素の上に */
 }
 
 /* 表示状態 */
 .toast.show {
     opacity: 1;
-    transform: translateY(0);
+    /* transform: translateY(0); */
+    transform: translate(-50%, -50%) translateY(0); 
 }
