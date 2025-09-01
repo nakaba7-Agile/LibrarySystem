@@ -40,9 +40,9 @@ const valueLabelPlugin = {
 };
 
 /* ===== Utils ===== */
-const $ = (s)=>document.querySelector(s);
+const qs = (s)=>document.querySelector(s);
 function toggleEmpty(show){
-  const el=$('#empty');
+  const el=qs('#empty');
   if(el) el.style.display = show ? 'flex':'none';
 }
 function parseDate(s){ if(!s) return null; const [y,m,d]=String(s).split('-').map(Number); return new Date(y,m-1,d); }
@@ -80,9 +80,9 @@ function niceCeil(v) {
 function setInnerWidth(count){
   const CAT = BAR_WIDTH_PX + GAP_PX;
   const needed = CAT * (count + 1) + (PADDING_PX * 2); // x.offset=true を考慮
-  const inner  = $('#chartInner');
-  const canvas = $('#mainCanvas');
-  const wrap   = $('.chart-inner');
+  const inner  = qs('#chartInner');
+  const canvas = qs('#mainCanvas');
+  const wrap   = qs('.chart-inner');
   if (inner) inner.style.width = `${needed}px`;
   canvas.width  = needed;
   canvas.height = wrap ? wrap.clientHeight : canvas.height;
@@ -91,7 +91,7 @@ function setInnerWidth(count){
 /* ===== Chart.js ===== */
 function ensureChart(){
   if(chart) return chart;
-  const ctx = $('#mainCanvas').getContext('2d');
+  const ctx = qs('#mainCanvas').getContext('2d');
   chart = new Chart(ctx, {
     type:'bar',
     data:{ labels:[], datasets:[{
@@ -155,17 +155,15 @@ function ensureChart(){
   return chart;
 }
 
-/* ===== 親へ“当月の自分の冊数”を通知（任意） ===== */
+/* ===== 親へ“当月の自分の冊数”を通知 ===== */
 function postMonthlyCountToParent() {
-  // 月（未選択なら本日）
-  let ym = $('#month')?.value;
+  let ym = qs('#month')?.value;
   if (!ym) {
     const t = new Date();
     ym = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
   }
   const { start: sd, end: ed } = monthToRange(ym);
 
-  // 自分（ID/名前・型は文字列で比較）
   const me = RAW.users.find(u => String(u.id) === String(MY_USER_ID)) 
           || RAW.users.find(u => u.name === MY_NAME);
   if (!me) return;
@@ -192,9 +190,9 @@ async function fetchAll(){
     RAW={users,departments:depts,positions:poses,readings:reads};
     buildSelectors();
 
-    // ★ 初期月＝本日が属する年月
+    // 初期月＝本日
     const t = new Date();
-    $('#month').value = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
+    qs('#month').value = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
 
     render();
     postMonthlyCountToParent();
@@ -205,61 +203,51 @@ async function fetchAll(){
 }
 
 function buildSelectors(){
-  const selDept=$('#selDept'), selPos=$('#selPos');
+  const selDept=qs('#selDept'), selPos=qs('#selPos');
   selDept.querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
   selPos .querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
-  // 値は文字列で入れる（型統一）
   RAW.departments.forEach(d=>{ let o=document.createElement('option'); o.value=String(d.id); o.textContent=d.name; selDept.appendChild(o); });
   RAW.positions  .forEach(p=>{ let o=document.createElement('option'); o.value=String(p.id); o.textContent=p.name; selPos.appendChild(o); });
 }
 
-/* ===== 集計＆描画（progress==100のみ・IDは文字列キー一致） ===== */
+/* ===== 集計＆描画 ===== */
 function render(){
-  // セレクト値は文字列で受ける
-  const deptId=$('#selDept').value || null;
-  const posId=$('#selPos').value || null;
+  const deptId=qs('#selDept').value || null;
+  const posId =qs('#selPos').value || null;
 
-  // 月（空なら本日でフォールバック）
-  let ym = $('#month').value;
+  let ym = qs('#month').value;
   if (!ym) {
     const t = new Date();
     ym = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
   }
   const { start: sd, end: ed } = monthToRange(ym);
 
-  // ユーザーフィルタ（型は文字列で比較）
   let users = RAW.users.filter(u=>{
     if (deptId && String(u.departmentId) !== String(deptId)) return false;
     if (posId  && String(u.positionId)  !== String(posId) ) return false;
     return true;
   });
 
-  // 本人は必ず候補に含める（0冊なら後で落ちる）
   const me = RAW.users.find(u => String(u.id) === String(MY_USER_ID) || u.name === MY_NAME);
   if (me && !users.some(u => String(u.id) === String(me.id))) users = [me, ...users];
 
-  // IDは文字列キーで扱う
   const uids=new Set(users.map(u=>String(u.id)));
 
-  // 完了のみ
   const reads = RAW.readings.filter(
     r => uids.has(String(r.userId)) &&
          between(r.date, sd, ed) &&
          Number(r.progress ?? 0) >= 100
   );
 
-  // userId(文字列)→冊数
   const map=new Map();
   reads.forEach(r=>{
     const k = String(r.userId);
     map.set(k,(map.get(k)||0)+1);
   });
 
-  // id→部門/役職名（キーは文字列）
   const deptById = new Map(RAW.departments.map(d => [String(d.id), d.name]));
   const posById  = new Map(RAW.positions.map(p => [String(p.id), p.name]));
 
-  // rows
   let rows = users.map(u => {
     const key = String(u.id);
     return {
@@ -271,10 +259,8 @@ function render(){
     };
   });
 
-  // 0冊は全員除外
   rows = rows.filter(r => r.count > 0);
 
-  // 自分を先頭へ
   const mineIdx = rows.findIndex(r => String(r.id) === String(MY_USER_ID) || r.name === MY_NAME);
   let mine = null;
   if (mineIdx > -1) mine = rows.splice(mineIdx, 1)[0];
@@ -289,7 +275,7 @@ function render(){
   setInnerWidth(labels.length);
 
   const c = ensureChart();
-  const cvs = $('#mainCanvas');
+  const cvs = qs('#mainCanvas');
   c.resize(cvs.width, cvs.height);
 
   c.data.labels = labels;
@@ -306,17 +292,31 @@ function render(){
   c.update();
   toggleEmpty(labels.length===0);
 
-  // 親へ冊数通知（必要に応じて）
   postMonthlyCountToParent();
 }
 
 /* ===== イベント ===== */
-$('#selDept').addEventListener('change', render);
-$('#selPos').addEventListener('change', render);
-$('#month').addEventListener('change', () => {
-  const ym = $('#month').value;
+qs('#selDept').addEventListener('change', render);
+qs('#selPos').addEventListener('change', render);
+qs('#month').addEventListener('change', () => {
+  const ym = qs('#month').value;
   window.parent?.postMessage({ type:'month-change', ym }, '*');
   render();
+});
+
+/* ==== 親ページからの指示を受ける（任意） ==== */
+window.addEventListener("message", (e) => {
+  const data = e?.data;
+  if (!data || typeof data !== "object") return;
+
+  if (data.type === "request-monthly-count") {
+    try { postMonthlyCountToParent(); } catch(_) {}
+  }
+
+  if (data.type === "set-month" && typeof data.ym === "string") {
+    const m = qs("#month");
+    if (m) { m.value = data.ym; m.dispatchEvent(new Event("change")); }
+  }
 });
 
 /* ===== 初回 ===== */

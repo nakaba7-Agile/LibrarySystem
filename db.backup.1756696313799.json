@@ -1,0 +1,626 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "password": "pwd1",
+      "name": "中林優樹",
+      "departmentId": 1,
+      "positionId": 2
+    },
+    {
+      "id": "2",
+      "password": "pwd2",
+      "name": "村松優樹",
+      "departmentId": 3,
+      "positionId": 2
+    },
+    {
+      "id": "3",
+      "password": "pwd3",
+      "name": "田北晃一郎",
+      "departmentId": 2,
+      "positionId": 2
+    },
+    {
+      "id": "4",
+      "password": "pwd4",
+      "name": "新葉星来",
+      "departmentId": 1,
+      "positionId": 2
+    },
+    {
+      "id": "5",
+      "password": "pwd5",
+      "name": "一ノ瀬音葉",
+      "departmentId": 3,
+      "positionId": 2
+    },
+    {
+      "id": "6",
+      "password": "pwd6",
+      "name": "窓辺あかり",
+      "departmentId": 3,
+      "positionId": 5
+    },
+    {
+      "id": "7",
+      "password": "pwd7",
+      "name": "佐藤翔太",
+      "departmentId": 5,
+      "positionId": 1
+    },
+    {
+      "id": "8",
+      "password": "pwd8",
+      "name": "高橋美咲",
+      "departmentId": 6,
+      "positionId": 3
+    },
+    {
+      "id": "9",
+      "password": "pwd9",
+      "name": "中村健一",
+      "departmentId": 7,
+      "positionId": 8
+    },
+    {
+      "id": "10",
+      "password": "pwd10",
+      "name": "山本さくら",
+      "departmentId": 5,
+      "positionId": 5
+    },
+    {
+      "id": "11",
+      "password": "pwd11",
+      "name": "伊藤大輝",
+      "departmentId": 6,
+      "positionId": 7
+    },
+    {
+      "id": "12",
+      "password": "pwd12",
+      "name": "小林結衣",
+      "departmentId": 7,
+      "positionId": 4
+    },
+    {
+      "id": "13",
+      "password": "pwd13",
+      "name": "松本陸",
+      "departmentId": 5,
+      "positionId": 4
+    }
+  ],
+  "departments": [
+    {
+      "id": "1",
+      "name": "シス研"
+    },
+    {
+      "id": "2",
+      "name": "DSC"
+    },
+    {
+      "id": "3",
+      "name": "金融"
+    },
+    {
+      "id": "4",
+      "name": "鉄鋼"
+    },
+    {
+      "id": "5",
+      "name": "産業"
+    },
+    {
+      "id": "6",
+      "name": "流通"
+    },
+    {
+      "id": "7",
+      "name": "ITSE"
+    }
+  ],
+  "books": [
+    {
+      "id": "101",
+      "title": "基本情報技術者",
+      "author": "山田 太郎",
+      "image": "images/book_101.png"
+    },
+    {
+      "id": "102",
+      "title": "応用情報技術者",
+      "author": "佐藤 次郎",
+      "image": "images/book_102.png"
+    },
+    {
+      "id": "103",
+      "title": "AWS",
+      "author": "佐藤 ハナコ",
+      "image": "images/book_103.png"
+    },
+    {
+      "id": "104",
+      "title": "データベーススペシャリスト問題集",
+      "author": "矢田 直子",
+      "image": "images/book_104.png"
+    },
+    {
+      "id": "105",
+      "title": "苦しんで覚えるC言語",
+      "author": "窓辺 あかり",
+      "image": "images/book_105.png"
+    },
+    {
+      "id": "106",
+      "title": "ゼロから作るdeep learning 1",
+      "author": "長野 さとみ",
+      "image": "images/book_106.png"
+    },
+    {
+      "id": "107",
+      "title": "パターン認識と機械学習 上",
+      "author": "内田 幸喜",
+      "image": "images/book_107.png"
+    },
+    {
+      "id": "108",
+      "title": "パターン認識と機械学習 下",
+      "author": "灘 奈々子",
+      "image": "images/book_108.png"
+    },
+    {
+      "id": "109",
+      "title": "python入門",
+      "author": "河田 はじめ",
+      "image": "images/book_109.png"
+    },
+    {
+      "id": "110",
+      "title": "HTML&CSS デザインレシピ集",
+      "author": "山口 優斗",
+      "image": "images/book_110.png"
+    },
+    {
+      "id": "111",
+      "title": "チームが勝手に動く仕組み",
+      "author": "佐藤 勇気",
+      "image": "images/book_111.png"
+    },
+    {
+      "id": "112",
+      "title": "起業3年目の崖",
+      "author": "花 ゆめ",
+      "image": "images/book_112.png"
+    },
+    {
+      "id": "113",
+      "title": "メンタルの筋トレ、していますか？",
+      "author": "香田 あかり",
+      "image": "images/book_113.png"
+    }
+  ],
+  "readings": [
+    {
+      "id": "1001",
+      "userId": 1,
+      "bookId": 101,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1002",
+      "userId": 1,
+      "bookId": 102,
+      "date": "2025-09-29",
+      "progress": 100
+    },
+    {
+      "id": "1003",
+      "userId": 2,
+      "bookId": 101,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1004",
+      "userId": 2,
+      "bookId": 102,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1005",
+      "userId": 3,
+      "bookId": 106,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1006",
+      "userId": 3,
+      "bookId": 107,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1007",
+      "userId": 3,
+      "bookId": 109,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1008",
+      "userId": 4,
+      "bookId": 102,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1009",
+      "userId": 4,
+      "bookId": 103,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1010",
+      "userId": 4,
+      "bookId": 104,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1011",
+      "userId": 4,
+      "bookId": 105,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1012",
+      "userId": 4,
+      "bookId": 106,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1013",
+      "userId": 4,
+      "bookId": 107,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1014",
+      "userId": 4,
+      "bookId": 108,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1015",
+      "userId": 4,
+      "bookId": 109,
+      "date": "2025-09-29",
+      "progress": 100
+    },
+    {
+      "id": "1016",
+      "userId": 4,
+      "bookId": 110,
+      "date": "2025-09-29",
+      "progress": 100
+    },
+    {
+      "id": "1017",
+      "userId": 5,
+      "bookId": 104,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1018",
+      "userId": 5,
+      "bookId": 105,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1019",
+      "userId": 5,
+      "bookId": 106,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1020",
+      "userId": 5,
+      "bookId": 107,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1021",
+      "userId": 5,
+      "bookId": 108,
+      "date": "2025-09-29",
+      "progress": 100
+    },
+    {
+      "id": "1022",
+      "userId": 5,
+      "bookId": 109,
+      "date": "2025-09-29",
+      "progress": 100
+    },
+    {
+      "id": "1023",
+      "userId": 5,
+      "bookId": 110,
+      "date": "2025-09-01",
+      "progress": 100
+    },
+    {
+      "id": "1024",
+      "userId": 3,
+      "bookId": 101,
+      "date": "2025-09-02",
+      "progress": 100
+    },
+    {
+      "id": "1025",
+      "userId": 3,
+      "bookId": 102,
+      "date": "2025-09-03",
+      "progress": 100
+    },
+    {
+      "id": "1026",
+      "userId": 3,
+      "bookId": 103,
+      "date": "2025-09-05",
+      "progress": 100
+    },
+    {
+      "id": "1027",
+      "userId": 3,
+      "bookId": 104,
+      "date": "2025-09-10",
+      "progress": 100
+    },
+    {
+      "id": "1028",
+      "userId": 1,
+      "bookId": 103,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1029",
+      "userId": 1,
+      "bookId": 104,
+      "date": "2025-09-15",
+      "progress": 100
+    },
+    {
+      "id": "1030",
+      "userId": 3,
+      "bookId": 105,
+      "date": "2025-09-26",
+      "progress": 100
+    },
+    {
+      "id": "1031",
+      "userId": 2,
+      "bookId": 103,
+      "date": "2025-09-04",
+      "progress": 100
+    },
+    {
+      "id": "1032",
+      "userId": 2,
+      "bookId": 104,
+      "date": "2025-09-07",
+      "progress": 100
+    },
+    {
+      "id": "1033",
+      "userId": 2,
+      "bookId": 105,
+      "date": "2025-09-09",
+      "progress": 100
+    },
+    {
+      "id": "1034",
+      "userId": 2,
+      "bookId": 106,
+      "date": "2025-09-30",
+      "progress": 100
+    },
+    {
+      "id": "1035",
+      "userId": 6,
+      "bookId": 101,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1036",
+      "userId": 6,
+      "bookId": 102,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1037",
+      "userId": 6,
+      "bookId": 103,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1038",
+      "userId": 6,
+      "bookId": 104,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1039",
+      "userId": 6,
+      "bookId": 105,
+      "date": "2025-09-29",
+      "progress": 100
+    },
+    {
+      "id": "1040",
+      "userId": 7,
+      "bookId": 101,
+      "date": "2025-09-30",
+      "progress": 100
+    },
+    {
+      "id": "1041",
+      "userId": 7,
+      "bookId": 102,
+      "date": "2025-09-30",
+      "progress": 100
+    },
+    {
+      "id": "1042",
+      "userId": 7,
+      "bookId": 103,
+      "date": "2025-09-30",
+      "progress": 100
+    },
+    {
+      "id": "1043",
+      "userId": 8,
+      "bookId": 101,
+      "date": "2025-09-05",
+      "progress": 100
+    },
+    {
+      "id": "1044",
+      "userId": 8,
+      "bookId": 102,
+      "date": "2025-09-01",
+      "progress": 100
+    },
+    {
+      "id": "1045",
+      "userId": 8,
+      "bookId": 103,
+      "date": "2025-09-02",
+      "progress": 100
+    },
+    {
+      "id": "1046",
+      "userId": 9,
+      "bookId": 101,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1047",
+      "userId": 9,
+      "bookId": 102,
+      "date": "2025-09-27",
+      "progress": 100
+    },
+    {
+      "id": "1048",
+      "userId": 10,
+      "bookId": 101,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1049",
+      "userId": 11,
+      "bookId": 101,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1050",
+      "userId": 11,
+      "bookId": 102,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1051",
+      "userId": 11,
+      "bookId": 103,
+      "date": "2025-09-28",
+      "progress": 100
+    },
+    {
+      "id": "1052",
+      "userId": 12,
+      "bookId": 101,
+      "date": "2025-09-29",
+      "progress": 100
+    },
+    {
+      "id": "1053",
+      "userId": 12,
+      "bookId": 102,
+      "date": "2025-09-29",
+      "progress": 100
+    },
+    {
+      "id": "1054",
+      "userId": 13,
+      "bookId": 101,
+      "date": "2025-09-29",
+      "progress": 100
+    },
+    {
+      "id": "1055",
+      "userId": 6,
+      "bookId": 110,
+      "date": "2025-09-01",
+      "progress": 49
+    }
+  ],
+  "positions": [
+    {
+      "id": "1",
+      "name": "社員一級"
+    },
+    {
+      "id": "2",
+      "name": "副主任"
+    },
+    {
+      "id": "3",
+      "name": "主任"
+    },
+    {
+      "id": "4",
+      "name": "主査"
+    },
+    {
+      "id": "5",
+      "name": "主幹"
+    },
+    {
+      "id": "6",
+      "name": "GL"
+    },
+    {
+      "id": "7",
+      "name": "部長"
+    },
+    {
+      "id": "8",
+      "name": "執行役員"
+    }
+  ]
+}

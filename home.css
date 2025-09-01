@@ -177,3 +177,29 @@ main{grid-template-columns: 1fr}
 .rail{grid-template-columns: repeat(2, minmax(120px,1fr))}
 .bars{height:160px}
 }
+
+/* ==== In-Progress editor ==== */
+.inprog-row{display:flex;align-items:center;gap:12px}
+.inprog-cover{width:36px;height:48px;object-fit:cover;border-radius:8px;background:#eee}
+.inprog-main{flex:1;min-width:0}
+.inprog-title{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.inprog-editor{display:flex;align-items:center;gap:10px;margin-top:6px}
+
+/* 視覚バー */
+.progress-track{flex:1;height:8px;border-radius:999px;background:#ececec;overflow:hidden;position:relative}
+.progress-fill{position:absolute;inset:0 0 0 0;transform-origin:left center;background:#8aa9ff}
+
+/* スライダー */
+.progress-input{width:140px;height:22px;accent-color:#8aa9ff}
+
+/* 数値＆ボタン */
+.progress-num{width:42px;text-align:right;color:var(--muted, #666)}
+.btn-ghost{border:1px solid #d0d0d0;background:#fff;padding:4px 8px;border-radius:999px;font-size:12px;cursor:pointer}
+.btn-ghost[disabled]{opacity:.5;cursor:default}
+
+/* 保存直後の軽いフィードバック */
+.row-done{opacity:.65;transition:opacity .2s ease}
+
+/* 完了(100%)でフェードアウト */
+.row-fade{opacity:0;transition:opacity .25s ease}
