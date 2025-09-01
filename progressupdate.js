@@ -7,7 +7,7 @@
 
   // ===== 設定 =====
   const API_HOME = "http://localhost:4000"; // json-server
-  const MY_USER_ID_HOME = 6;                // ログインユーザー（窓辺あかり）
+  const MY_USER_ID_HOME = parseInt(localStorage.getItem('loginUserId')); // ← search.js と同じ取得方法
   const DEBUG_PROGRESS = false;
 
   // ===== Utils =====
@@ -15,6 +15,14 @@
   const $    = sel => document.querySelector(sel);
   const html = (s,...v)=> s.map((x,i)=>x+(v[i]??"")).join("");
   const debounce = (fn,ms=400)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
+
+  const ready = (fn) => {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fn, { once:true });
+    } else {
+      fn();
+    }
+  };
 
   const ymOf = s => { const d=new Date(s); return isNaN(d)?null:`${d.getFullYear()}-${pad(d.getMonth()+1)}`; };
   const monthToRangeHome = ym => {
@@ -61,18 +69,18 @@
     }catch(_){}
     const t=new Date(); return `${t.getFullYear()}-${pad(t.getMonth()+1)}`;
   }
-  document.addEventListener("DOMContentLoaded", async ()=>{
+
+  // DOMContentLoaded 済みでも必ず初期描画される
+  ready(async () => {
     const ym = await decideYMForSidebar(null);
     renderInProgressArea(ym);
   });
 
   // ===== PATCH（404回避ロジック付き） =====
-  // payload は { progress, ...(必要に応じて date 等) } を渡す
   async function patchReadingById(rawId, payload){
     const asNum = Number(rawId);
     const body = JSON.stringify(payload);
 
-    // まず /readings/:id（数値化できるなら数値で）
     if (Number.isFinite(asNum)) {
       const r1 = await fetch(`${API_HOME}/readings/${asNum}`, {
         method: "PATCH",
@@ -83,10 +91,9 @@
       if (r1.status !== 404) throw new Error(`PATCH failed (${r1.status})`);
     }
 
-    // 見つからなければ ?id= で拾い直し
     const found = await fetch(`${API_HOME}/readings?id=${encodeURIComponent(String(rawId))}`).then(r=>r.json());
     if (Array.isArray(found) && found[0] && found[0].id != null) {
-      const realId = found[0].id; // ここは json-server の内部表現（文字列なら文字列）
+      const realId = found[0].id;
       const r2 = await fetch(`${API_HOME}/readings/${encodeURIComponent(String(realId))}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -134,12 +141,10 @@
             <div class="inprog-right">
               <div class="inprog-title" title="${title}">${title}</div>
 
-              <!-- 1行目：バー -->
               <div class="inprog-barrow">
                 <input class="progress-input" type="range" min="0" max="100" step="1" value="${prog}">
               </div>
 
-              <!-- 2行目：％ と 読んだ！ -->
               <div class="inprog-actions">
                 <span class="progress-num">${prog}%</span>
                 <button class="btn-ghost js-done">読んだ！</button>
@@ -151,7 +156,6 @@
         `;
       }).join("");
 
-      // 行にデータを持たせる
       area.querySelectorAll(".inprog-card").forEach((node,i)=>{ node.__row = list[i]; node.__idRaw = list[i].id; });
 
       bindRowEvents(area);
@@ -175,7 +179,6 @@
 
       const setStatus = (text) => { if (status) status.textContent = text || ""; };
 
-      // v を保存：100% のときは date を今日に上書き
       const doSave = async (v) => {
         try{
           saving = true;
@@ -194,18 +197,15 @@
           setStatus("保存済み ✔");
 
           if (v >= 100){
-            // カードを消しつつ、すぐに月間冊数を再集計させる
             row.classList.add("row-fade");
             setTimeout(()=>{
               row.remove();
               if (!area.querySelector(".inprog-card")) {
                 area.innerHTML = `<div class="muted">（進行中の本はありません）</div>`;
               }
-              // ここで即、ランキングへ再集計依頼（→ 親が monthly-count を受け取り表示更新）
               requestMonthlyCountFromRanking();
             }, 220);
           }else{
-            // 進行中の微フィードバック
             row.classList.add("row-done");
             setTimeout(()=>row.classList.remove("row-done"), 220);
           }
@@ -225,7 +225,7 @@
         let t;
         return (v) => {
           clearTimeout(t);
-          t = setTimeout(()=>doSave(v), 700); // 入力停止で自動保存
+          t = setTimeout(()=>doSave(v), 700);
         };
       })();
 
@@ -238,12 +238,10 @@
 
       slider.addEventListener("input", onSlide);
 
-      // 「読んだ！」＝即 100% にして保存（date も今日に）
       btnDone.addEventListener("click", ()=>{
         if (saving) return;
         slider.value = "100";
         num.textContent = "100%";
-        // デバウンスを待たず即保存
         doSave(100);
       });
     });
