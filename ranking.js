@@ -9,19 +9,19 @@ const PADDING_PX   = 6;
 
 // 自分（左端＆黒）
 let MY_NAME = "";
-let MY_USER_ID = parseInt(localStorage.getItem('loginUserId')); // ログインユーザーID;
+let MY_USER_ID = parseInt(localStorage.getItem('loginUserId')); // ログインユーザーID
 
 if (MY_USER_ID) {
   fetch(`${API}/users/${MY_USER_ID}`)
     .then(res => res.json())
     .then(user => {
-      MY_NAME = user.name;
-      // ここで必要なら再描画やデータ取得を呼び出す
+      MY_NAME = user?.name || "";
       fetchAll();
-    });
+    })
+    .catch(()=> fetchAll());
 } else {
-  // 未ログイン時の処理
-  // fetchAll(); // 必要なら呼ぶ
+  // 未ログイン（念のため起動）
+  fetchAll();
 }
 
 /* ===== 状態 ===== */
@@ -29,27 +29,23 @@ let RAW = { users: [], departments: [], positions: [], readings: [] };
 let chart;
 let allRows = [];
 
-
 let currentPage = 0;      // 現在のページ（0スタート）
 const BARS_PER_PAGE = 5;  // 1ページに表示する棒の数
 
-$('#nextBtn').addEventListener('click', () => {
+$('#nextBtn')?.addEventListener('click', () => {
   const totalPages = Math.ceil(allRows.length / BARS_PER_PAGE);
   if (currentPage < totalPages - 1) {
     currentPage++;
-    render(); // 再描画
+    render();
   }
 });
 
-$('#prevBtn').addEventListener('click', () => {
+$('#prevBtn')?.addEventListener('click', () => {
   if (currentPage > 0) {
     currentPage--;
-    render(); // 再描画
+    render();
   }
 });
-
-
-
 
 /* ===== 値ラベル（棒の中央に “n冊”） ===== */
 const valueLabelPlugin = {
@@ -71,23 +67,18 @@ const valueLabelPlugin = {
 
       const value = data[i];
       const label = labels[i];
-
-      // ★ 空棒グラフ（名前がない）はスキップ
-      if (!label || label.trim() === '') continue;
+      if (!label || label.trim() === '') continue; // ダミー棒は無視
 
       const isMine = label === MY_NAME;
       const centerY = (el.y + el.base) / 2;
       ctx.fillStyle = isMine ? '#fff' : '#666';
       ctx.fillText(`${value}冊`, el.x, centerY);
     }
-
     ctx.restore();
   }
 };
 
-
 /* ===== Utils ===== */
-// const $ = (s)=>document.querySelector(s);
 function toggleEmpty(show){
   const el=$('#empty');
   if(el) el.style.display = show ? 'flex':'none';
@@ -123,30 +114,6 @@ function niceCeil(v) {
   return m * pow;
 }
 
-/* ===== 内部幅 ===== */
-function setInnerWidth(count) {
-  const CAT = BAR_WIDTH_PX + GAP_PX;
-  const scale = 2.0; // ★ グラフ全体の拡大倍率
-
-  const neededWidth = (CAT * (count + 1) + (PADDING_PX * 2)) * scale;
-  const aspectRatio = 2; // 比率はそのまま
-
-  const neededHeight = neededWidth / aspectRatio;
-
-  const inner  = $('#chartInner');
-  const canvas = $('#mainCanvas');
-
-  // canvas.width = neededWidth;
-  // canvas.height = neededHeight;
-
-  // canvas.style.width = `${neededWidth}px`;
-  // canvas.style.height = `${neededHeight}px`;
-
-  // if (inner) inner.style.width = `${neededWidth}px`;
-}
-
-
-
 /* ===== Chart.js ===== */
 function ensureChart(){
   if(chart) return chart;
@@ -160,8 +127,8 @@ function ensureChart(){
       barPercentage:1.0,
       barThickness: BAR_WIDTH_PX,
       maxBarThickness: BAR_WIDTH_PX,
-      backgroundColor: [],            // renderで設定
-      userMeta: [],                   // ツールチップ用
+      backgroundColor: [],
+      userMeta: [],
       borderRadius: 10,
       borderSkipped: false,
       borderWidth: 0
@@ -169,9 +136,6 @@ function ensureChart(){
     options:{
       responsive:true,
       maintainAspectRatio:false,
-      // aspectRatio:2,
-      
-      
       layout: { padding: { left: 6, right: PADDING_PX, bottom: 8 } },
       scales:{
         x: {
@@ -216,9 +180,9 @@ function ensureChart(){
   return chart;
 }
 
-/* ===== 親へ“当月の自分の冊数”を通知（任意） ===== */
+/* ===== 親へ“当月の自分の冊数”を通知（堅牢版） ===== */
 function postMonthlyCountToParent() {
-  // 月（未選択なら本日）
+  // 選択中の月（未選択なら今日）
   let ym = $('#month')?.value;
   if (!ym) {
     const t = new Date();
@@ -226,17 +190,15 @@ function postMonthlyCountToParent() {
   }
   const { start: sd, end: ed } = monthToRange(ym);
 
-  // 自分（ID/名前・型は文字列で比較）
-  const me = RAW.users.find(u => String(u.id) === String(MY_USER_ID)) 
-          || RAW.users.find(u => u.name === MY_NAME);
-  if (!me) return;
-
+  // ★ users に依存せず、userId だけで判定
+  const myIdStr = String(MY_USER_ID);
   const myCompleted = RAW.readings.filter(r =>
-    String(r.userId) === String(me.id) &&
+    String(r.userId) === myIdStr &&
     between(r.date, sd, ed) &&
     Number(r.progress ?? 0) >= 100
   );
 
+  // 同じ本は 1 冊として数える
   const count = new Set(myCompleted.map(r => r.bookId)).size;
   window.parent?.postMessage({ type:'monthly-count', ym, count }, '*');
 }
@@ -251,15 +213,15 @@ async function fetchAll(){
       fetch(`${API}/readings`).then(r=>r.json())
     ]);
     RAW={users,departments:depts,positions:poses,readings:reads};
-    buildSelectors();
 
-    // ★ 初期月＝本日が属する年月
+    // 初期月＝今日
     const t = new Date();
-    $('#month').value = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
+    const monthEl = $('#month');
+    if (monthEl) monthEl.value = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
 
+    buildSelectors();
     render();
     postMonthlyCountToParent();
-
   } catch (e) {
     console.error('取得失敗', e);
   }
@@ -267,28 +229,28 @@ async function fetchAll(){
 
 function buildSelectors(){
   const selDept=$('#selDept'), selPos=$('#selPos');
+  if (!selDept || !selPos) return;
   selDept.querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
   selPos .querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
-  // 値は文字列で入れる（型統一）
   RAW.departments.forEach(d=>{ let o=document.createElement('option'); o.value=String(d.id); o.textContent=d.name; selDept.appendChild(o); });
   RAW.positions  .forEach(p=>{ let o=document.createElement('option'); o.value=String(p.id); o.textContent=p.name; selPos.appendChild(o); });
 }
 
-/* ===== 集計＆描画（progress==100のみ・IDは文字列キー一致） ===== */
+/* ===== 集計＆描画（progress==100のみ） ===== */
 function render(){
-  // セレクト値は文字列で受ける
-  const deptId=$('#selDept').value || null;
-  const posId=$('#selPos').value || null;
+  const selDept=$('#selDept'), selPos=$('#selPos'), monthEl=$('#month');
+  const deptId=selDept ? selDept.value || null : null;
+  const posId =selPos  ? selPos.value  || null : null;
 
-  // 月（空なら本日でフォールバック）
-  let ym = $('#month').value;
+  // 月（空なら今日）
+  let ym = monthEl?.value;
   if (!ym) {
     const t = new Date();
     ym = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
   }
   const { start: sd, end: ed } = monthToRange(ym);
 
-  // ユーザーフィルタ（型は文字列で比較）
+  // ユーザーフィルタ
   let users = RAW.users.filter(u=>{
     if (deptId && String(u.departmentId) !== String(deptId)) return false;
     if (posId  && String(u.positionId)  !== String(posId) ) return false;
@@ -299,7 +261,6 @@ function render(){
   const me = RAW.users.find(u => String(u.id) === String(MY_USER_ID) || u.name === MY_NAME);
   if (me && !users.some(u => String(u.id) === String(me.id))) users = [me, ...users];
 
-  // IDは文字列キーで扱う
   const uids=new Set(users.map(u=>String(u.id)));
 
   // 完了のみ
@@ -309,14 +270,14 @@ function render(){
          Number(r.progress ?? 0) >= 100
   );
 
-  // userId(文字列)→冊数
+  // userId → 冊数
   const map=new Map();
   reads.forEach(r=>{
     const k = String(r.userId);
     map.set(k,(map.get(k)||0)+1);
   });
 
-  // id→部門/役職名（キーは文字列）
+  // 部署/役職名
   const deptById = new Map(RAW.departments.map(d => [String(d.id), d.name]));
   const posById  = new Map(RAW.positions.map(p => [String(p.id), p.name]));
 
@@ -332,42 +293,37 @@ function render(){
     };
   });
 
-  // 0冊は全員除外
+  // 0冊は除外
   rows = rows.filter(r => r.count > 0);
 
-  // 窓辺あかり（後でログインユーザへ変更）を先頭に移動
+  // 自分を先頭、それ以外は降順
   rows.sort((a, b) => {
     const isAme = String(a.id) === String(MY_USER_ID) || a.name === MY_NAME;
     const isBme = String(b.id) === String(MY_USER_ID) || b.name === MY_NAME;
-    if (isAme && !isBme) return -1; // aが自分 → 先頭
-    if (!isAme && isBme) return 1;  // bが自分 → 先頭
-    return b.count - a.count;       // 残りは読書数の多い順
+    if (isAme && !isBme) return -1;
+    if (!isAme && isBme) return 1;
+    return b.count - a.count;
   });
 
-  //グローバルに保存
   allRows = rows;
 
   const meRow = rows.find(r => String(r.id) === String(MY_USER_ID) || r.name === MY_NAME);
   const others = rows.filter(r => String(r.id) !== String(MY_USER_ID) && r.name !== MY_NAME);
 
-  // ページングは他人だけ
-  const totalPages = Math.ceil(others.length / (BARS_PER_PAGE - 1));
+  // ページングは他人だけ（自分 + 4人 = 5本）
+  const totalPages = Math.ceil(others.length / (BARS_PER_PAGE - 1)) || 1;
   if (currentPage >= totalPages) currentPage = totalPages - 1;
   if (currentPage < 0) currentPage = 0;
 
-  // 今のページの他人だけ
   const startIdx = currentPage * (BARS_PER_PAGE - 1);
   const endIdx = startIdx + (BARS_PER_PAGE - 1);
   const pageRows = others.slice(startIdx, endIdx);
 
-  // 描画用のデータ：先頭に自分、その後に他人
   let finalRows = meRow ? [meRow, ...pageRows] : [...pageRows];
 
-  // 不足分をダミーで埋めて、常に BARS_PER_PAGE（5）本表示
+  // 足りない分はダミー（透明）で埋める
   while (finalRows.length < BARS_PER_PAGE) {
-    finalRows.push({
-      id: '', name: '', count: 0, dept: '', pos: ''
-    });
+    finalRows.push({ id:'', name:'', count:0, dept:'', pos:'' });
   }
 
   const labels   = finalRows.map(r => r.name);
@@ -376,13 +332,7 @@ function render(){
                                  (String(r.id) === String(MY_USER_ID) || r.name === MY_NAME) ? '#000000' : '#dedcdcff');
   const userMeta = finalRows.map(r => ({ dept: r.dept, pos: r.pos }));
 
-
-  setInnerWidth(labels.length);
-
   const c = ensureChart();
-  const cvs = $('#mainCanvas');
-  // c.resize(cvs.width, cvs.height);
-
   c.data.labels = labels;
   c.data.datasets[0].data = counts;
   c.data.datasets[0].backgroundColor = colors;
@@ -391,32 +341,40 @@ function render(){
   const maxVal = counts.length ? Math.max(...counts) : 0;
   const yopt = c.options.scales.y;
   yopt.min = 0;
-  if (maxVal <= 10) {
-    yopt.max = 10;
-    yopt.suggestedMax = undefined;
-  } else {
-    const upper = niceCeil(maxVal);
-    yopt.max = upper;
-    yopt.suggestedMax = undefined;
-  }
+  if (maxVal <= 10) { yopt.max = 10; yopt.suggestedMax = undefined; }
+  else { const upper = niceCeil(maxVal); yopt.max = upper; yopt.suggestedMax = undefined; }
 
   c.update();
   toggleEmpty(labels.length === 0);
 
-  $('#prevBtn').disabled = (currentPage === 0);
-  $('#nextBtn').disabled = (currentPage >= totalPages - 1);
+  $('#prevBtn') && ($('#prevBtn').disabled = (currentPage === 0));
+  $('#nextBtn') && ($('#nextBtn').disabled = (currentPage >= totalPages - 1));
 
+  // 親へ冊数通知
   postMonthlyCountToParent();
 }
 
+/* ===== 親(ホーム) からの再集計依頼に応答 ===== */
+window.addEventListener("message", async (e) => {
+  const data = e?.data;
+  if (!data || typeof data !== "object") return;
+
+  if (data.type === "request-monthly-count") {
+    try {
+      RAW.readings = await fetch(`${API}/readings`).then(r => r.json());
+      render();
+      postMonthlyCountToParent();
+    } catch (err) {
+      console.error("recalc monthly-count failed:", err);
+    }
+  }
+});
+
 /* ===== イベント ===== */
-$('#selDept').addEventListener('change', render);
-$('#selPos').addEventListener('change', render);
-$('#month').addEventListener('change', () => {
+$('#selDept')?.addEventListener('change', render);
+$('#selPos') ?.addEventListener('change', render);
+$('#month')  ?.addEventListener('change', () => {
   const ym = $('#month').value;
   window.parent?.postMessage({ type:'month-change', ym }, '*');
   render();
 });
-
-/* ===== 初回 ===== */
-fetchAll();
