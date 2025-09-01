@@ -328,7 +328,15 @@ function render(){
   const pageRows = others.slice(startIdx, endIdx);
 
   // ✅ 描画用のデータ：先頭に自分、その後に他人
-  const finalRows = meRow ? [meRow, ...pageRows] : [...pageRows];
+  let finalRows = meRow ? [meRow, ...pageRows] : [...pageRows];
+
+  // ✅ 不足分をダミーで埋めて、常に BARS_PER_PAGE（5）本表示
+  while (finalRows.length < BARS_PER_PAGE) {
+    finalRows.push({
+      id: '', name: '', count: 0, dept: '', pos: ''
+    });
+  }
+
 
   const labels   = finalRows.map(r => r.name);
   const counts   = finalRows.map(r => r.count);
