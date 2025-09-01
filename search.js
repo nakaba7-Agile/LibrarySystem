@@ -41,7 +41,6 @@ async function searchBooksByTitle() {
               <div style="font-size:1.1em;font-weight:bold;margin-bottom:4px;">${book.title}</div>
               <div style="color:#555;margin-bottom:10px;">${author}</div>
               <div style="display:flex; gap:8px;">
-                <!-- 左に読んでいる、右に読んだ！ -->
                 <button class="register-btn reading" data-bookid="${book.id}">読んでいる</button>
                 <button class="register-btn done"    data-bookid="${book.id}">読んだ！</button>
               </div>
@@ -56,70 +55,79 @@ async function searchBooksByTitle() {
   }
 }
 
-$('#searchBookBtn').on('click', searchBooksByTitle);
+// 検索ボタン
+document.addEventListener("DOMContentLoaded", ()=>{
+  const btn = qs("#searchBookBtn");
+  const input = qs("#bookTitleInput");
 
-function showToast(message) {
-  const container = document.getElementById("toastContainer");
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = message;
+  btn?.addEventListener("click", (e)=>{
+    e.preventDefault();
+    searchBooksByTitle();
+  });
 
-  container.appendChild(toast);
+  // Enter でも検索
+  input?.addEventListener("keydown", (e)=>{
+    if (e.key === "Enter") {
+      e.preventDefault();
+      searchBooksByTitle();
+    }
+  });
+});
 
-  // 少し遅れて .show を付与 → アニメーションでフェードイン
-  setTimeout(() => {
-    toast.classList.add("show");
-  }, 100);
+// 検索結果の「読んでいる / 読んだ！」登録
+document.addEventListener("click", async (e)=>{
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return;
+  if (!target.classList.contains("register-btn")) return;
 
-  // 3秒後に削除
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => {
-      container.removeChild(toast);
-    }, 500); // アニメーションが終わるのを待って削除
-  }, 3000);
-}
-
-// ボタンクリック処理（読んでいる=progress0, 読んだ=progress100）
-$('#bookSearchResults').on('click', '.register-btn', async function() {
-  const bookId = $(this).data('bookid');
-  const userId = parseInt(localStorage.getItem('loginUserId')); //ユーザーID
-  const isDone = $(this).hasClass('done'); // 「読んだ！」かどうか
+  const bookId = Number(target.dataset.bookid);
+  const isDone = target.classList.contains("done");
   const progressValue = isDone ? 100 : 0;
 
   try {
-    // 既存のreadingsを取得
-    const readings = await $.getJSON(`${API}/readings`);
-    // すでに同じuserIdとbookIdの組み合わせが存在するかチェック
-    const exists = readings.some(r => r.userId === userId && r.bookId === bookId);
-    if (exists) {
-      alert('この本はすでに登録されています');
+    // 重複登録チェック
+    const readings = await fetch(`${API_SEARCH}/readings`).then(r=>r.json());
+    if (readings.some(r => Number(r.userId) === LOGIN_USER_ID && Number(r.bookId) === bookId)) {
+      alert("この本はすでに登録されています");
       return;
     }
 
-    // 最大idを取得して+1
-    const maxId = readings.length > 0 ? Math.max(...readings.map(r => r.id || 0)) : 0;
-    const newId = maxId + 1;
-
+    // 新ID採番
+    const maxId = readings.length ? Math.max(...readings.map(r => Number(r.id)||0)) : 0;
     const readingData = {
-      id: newId,
-      userId: userId,
-      bookId: bookId,
-      date: new Date().toISOString().split('T')[0],
+      id: maxId + 1,
+      userId: LOGIN_USER_ID,
+      bookId,
+      date: new Date().toISOString().split("T")[0],
       progress: progressValue
     };
 
-    await $.ajax({
-      url: `${API}/readings`,
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(readingData)
+    await fetch(`${API_SEARCH}/readings`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(readingData)
     });
+
+    alert(isDone ? "「読んだ本」に登録しました" : "「読んでいる本」に登録しました");
+
+    // サイドバーの進捗を「ランキングの月」で再描画（無ければ登録月で）
+    try {
+      const ymFromRanking = (typeof getCurrentYMForSidebar === "function") ? getCurrentYMForSidebar() : null;
+      const ym = ymFromRanking || readingData.date.slice(0,7);
+      if (typeof renderInProgressArea === "function") renderInProgressArea(ym);
+    } catch(_){}
+
+    // ランキングの今月冊数を再計算依頼
+    try { document.getElementById("rankingFrame")?.contentWindow?.postMessage({ type:"request-monthly-count" }, "*"); } catch(_){}
+
+    // ホームへ戻る
+    if (typeof showPage === "function") showPage("home");
+
     showToast(isDone ? '「読んだ本」に登録しました' : '「読んでいる本」に登録しました');
     // showPage('home'); // home画面に遷移
     // location.reload(); // ページをリロードして最新情報を表示
   } catch (e) {
-    alert('登録に失敗しました');
     console.error(e);
+    alert('登録に失敗しました');
   }
 });
