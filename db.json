@@ -658,6 +658,13 @@
       "bookId": 101,
       "date": "2025-09-29",
       "progress": 100
+    },
+    {
+      "id": 1055,
+      "userId": 3,
+      "bookId": 108,
+      "date": "2025-09-01",
+      "progress": 100
     }
   ],
   "positions": [
