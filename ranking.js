@@ -8,8 +8,21 @@ const GAP_PX       = 40;
 const PADDING_PX   = 6;
 
 // 自分（左端＆黒）
-const MY_NAME = "窓辺あかり";
-const MY_USER_ID = 6;
+let MY_NAME = "";
+let MY_USER_ID = parseInt(localStorage.getItem('loginUserId')); // ログインユーザーID;
+
+if (MY_USER_ID) {
+  fetch(`${API}/users/${MY_USER_ID}`)
+    .then(res => res.json())
+    .then(user => {
+      MY_NAME = user.name;
+      // ここで必要なら再描画やデータ取得を呼び出す
+      fetchAll();
+    });
+} else {
+  // 未ログイン時の処理
+  // fetchAll(); // 必要なら呼ぶ
+}
 
 /* ===== 状態 ===== */
 let RAW = { users: [], departments: [], positions: [], readings: [] };
