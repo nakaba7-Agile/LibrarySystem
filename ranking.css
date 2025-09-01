@@ -28,7 +28,7 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku G
 
 /* グラフエリア（枠内で横スクロール） */
 .chart-wrap{
-  position: relative;            /* empty を中央表示するため */
+  position: relative;
   width: 70%;
   height: 260px;
   overflow-x: auto;
@@ -38,7 +38,7 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku G
   background: #fff;
 }
 .chart-inner {
-  display: inline-block;   /* ← スクロールに自然に追従 */
+  display: inline-block;
   height: 100%;
   border-radius: 16px;
   overflow: hidden;
