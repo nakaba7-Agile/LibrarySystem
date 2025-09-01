@@ -143,8 +143,10 @@ function ensureChart(){
     }]},
     options:{
       responsive:false,
-      maintainAspectRatio:false,
-      animation:false,
+      maintainAspectRatio:true,
+      aspectRatio:2,
+      
+      
       layout: { padding: { left: 6, right: PADDING_PX, bottom: 8 } },
       scales:{
         x: {
