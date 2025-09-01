@@ -1,27 +1,27 @@
 /* ========= Theme ========= */
 :root{
---bg:#f5f6f7;
---panel:#ffffff;
---text:#222;
---muted:#6b7280;
---line:#e5e7eb;
---primary:#3b82f6;
---accent:#9ca3af;
---chip:#f3f4f6;
---radius:14px;
---shadow:0 6px 20px rgba(0,0,0,.06);
---gap:16px;
---sidebar:300px;          /* ← サイド幅 */
---content-max:1200px;     /* ← 本文の最大幅 */
+  --bg:#f5f6f7;
+  --panel:#ffffff;
+  --text:#222;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --primary:#3b82f6;
+  --accent:#9ca3af;
+  --chip:#f3f4f6;
+  --radius:14px;
+  --shadow:0 6px 20px rgba(0,0,0,.06);
+  --gap:16px;
+  --sidebar:300px;          /* ← サイド幅 */
+  --content-max:1200px;     /* ← 本文の最大幅 */
 }
 
 /* ========= Reset (最低限) ========= */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto,
-"Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-background:var(--bg); color:var(--text); letter-spacing:.02em;
+  margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto,
+  "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  background:var(--bg); color:var(--text); letter-spacing:.02em;
 }
 h1,h2,h3,p{margin:0}
 button,input,select{font:inherit}
@@ -29,13 +29,13 @@ button,input,select{font:inherit}
 /* ========= App Shell ========= */
 .app{min-height:100%}
 header{
-background:#fff; border-bottom:1px solid var(--line);
-position:sticky; top:0; z-index:50;
+  background:#fff; border-bottom:1px solid var(--line);
+  position:sticky; top:0; z-index:50;
 }
 .topbar{
-max-width:calc(var(--content-max) + var(--sidebar) + 80px);
-margin:auto; display:flex; align-items:center; justify-content:space-between;
-padding:12px 20px;
+  max-width:calc(var(--content-max) + var(--sidebar) + 80px);
+  margin:auto; display:flex; align-items:center; justify-content:space-between;
+  padding:12px 20px;
 }
 .logo{font-weight:700; letter-spacing:.12em}
 .nav{display:flex; gap:18px; align-items:center; color:#555}
@@ -46,23 +46,23 @@ padding:12px 20px;
 .crumbs b{color:#111}
 
 main{
-display:grid; gap:var(--gap);
-grid-template-columns: var(--sidebar) 1fr;
-max-width:calc(var(--content-max) + var(--sidebar));
-margin:18px auto 60px; padding:0 20px;
+  display:grid; gap:var(--gap);
+  grid-template-columns: var(--sidebar) 1fr;
+  max-width:calc(var(--content-max) + var(--sidebar));
+  margin:18px auto 60px; padding:0 20px;
 }
 
 /* ========= Panels / Cards ========= */
 .panel{
-background:var(--panel); border:1px solid var(--line);
-border-radius:var(--radius); box-shadow:var(--shadow);
+  background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--radius); box-shadow:var(--shadow);
 }
 .panel .hd{
-padding:14px 16px; border-bottom:1px solid var(--line);
-font-weight:700; font-size:15px;
+  padding:14px 16px; border-bottom:1px solid var(--line);
+  font-weight:700; font-size:15px;
 }
 .panel .bd{
-    padding:14px 16px;
+  padding:14px 16px;
 }
 
 /* 本のタイトル検索だけカスタム */
@@ -71,12 +71,10 @@ font-weight:700; font-size:15px;
   gap:8px;        /* ← input と button の余白 */
   align-items:center;
 }
-
 .search-bd input {
   flex: 1;             /* 残り幅いっぱいに広げる */
   min-width: 0;        /* はみ出し防止 */
 }
-
 .search-bd button {
   white-space: nowrap; /* ボタン内改行しない */
 }
@@ -90,28 +88,14 @@ nav button{margin-right: 10px;}
 
 /* ========= Sidebar ========= */
 .sidebar{display:flex; flex-direction:column; gap:var(--gap)}
-.progress-wrap{display:grid; grid-template-columns:80px 1fr; gap:12px; align-items:center}
-.progress-box{
-width:80px; height:90px; border-radius:10px;
-background:#efefef; border:1px solid var(--line); display:grid; place-items:center;
-}
-.progress-label{display:flex; align-items:center; gap:8px; justify-content:space-between}
-.progress{
-width:100%; height:8px; background:#eef2ff; border-radius:999px; overflow:hidden; margin-top:6px;
-}
-.progress > i{display:block; height:100%; width:65%; background:var(--primary)}
-.row{display:flex; gap:8px; margin-top:8px}
-.row .btn{padding:6px 10px; border:1px solid var(--line); background:#fff; border-radius:10px; cursor:pointer}
-.row .btn:hover{background:#f8fafc}
-
 .search input{
-width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line);
-outline:none;
+  width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line);
+  outline:none;
 }
 .chips{display:flex; flex-wrap:wrap; gap:8px}
 .chip{
-background:var(--chip); border:1px solid var(--line); color:#333;
-border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; user-select:none;
+  background:var(--chip); border:1px solid var(--line); color:#333;
+  border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; user-select:none;
 }
 .chip:hover{background:#eef2f7}
 
@@ -119,7 +103,7 @@ border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; user-sele
 .content{display:flex; flex-direction:column; gap:var(--gap)}
 .tabs{display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--line)}
 .tab{
-font-size:13px; padding:8px 12px; border-radius:999px; cursor:pointer; color:#555;
+  font-size:13px; padding:8px 12px; border-radius:999px; cursor:pointer; color:#555;
 }
 .tab.active{background:#eef2ff; color:#1d4ed8; font-weight:600}
 
@@ -127,25 +111,25 @@ font-size:13px; padding:8px 12px; border-radius:999px; cursor:pointer; color:#55
 .rank-wrap{display:flex; flex-direction:column; gap:10px}
 .rank-head{display:flex; align-items:center; gap:10px; color:#374151; font-size:14px}
 .bars{
-display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:12px;
-align-items:end; height:180px; padding:10px 4px; border:1px dashed var(--line);
-border-radius:12px; background:linear-gradient(to bottom, #fff, #fafafa);
+  display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:12px;
+  align-items:end; height:180px; padding:10px 4px; border:1px dashed var(--line);
+  border-radius:12px; background:linear-gradient(to bottom, #fff, #fafafa);
 }
 .bar{
-position:relative; display:flex; flex-direction:column; align-items:center; gap:8px;
+  position:relative; display:flex; flex-direction:column; align-items:center; gap:8px;
 }
 .bar .stick{
-width:34px; border-radius:8px; background:#d1d5db; display:flex; align-items:flex-end;
-overflow:hidden; border:1px solid #c9ced6;
+  width:34px; border-radius:8px; background:#d1d5db; display:flex; align-items:flex-end;
+  overflow:hidden; border:1px solid #c9ced6;
 }
 .bar .fill{width:100%; background:#4b5563; border-bottom-left-radius:8px; border-bottom-right-radius:8px}
 .bar .me .stick{background:#dbeafe; border-color:#c7dcfb}
 .bar .me .fill{background:#3b82f6}
 .bar .label{font-size:12px; color:#4b5563}
 .bar .value{
-position:absolute; top:-26px; padding:3px 6px; font-size:11px; background:#111; color:#fff;
-border-radius:6px; opacity:.0; transform:translateY(6px); transition:.2s;
-white-space:nowrap;
+  position:absolute; top:-26px; padding:3px 6px; font-size:11px; background:#111; color:#fff;
+  border-radius:6px; opacity:.0; transform:translateY(6px); transition:.2s;
+  white-space:nowrap;
 }
 .bar:hover .value{opacity:1; transform:translateY(0)}
 .legend{display:flex; gap:12px; color:#6b7280; font-size:12px}
@@ -156,24 +140,124 @@ white-space:nowrap;
 /* ---- Card rails ---- */
 .rail{display:grid; grid-template-columns: repeat(5, minmax(120px,1fr)); gap:12px}
 .book{
-height:140px; border-radius:12px; border:1px solid var(--line); background:linear-gradient(#fafafa,#f3f4f6);
-box-shadow:var(--shadow);
+  height:140px; border-radius:12px; border:1px solid var(--line); background:linear-gradient(#fafafa,#f3f4f6);
+  box-shadow:var(--shadow);
 }
 .section-hd{
-display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; color:#374151;
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; color:#374151;
 }
 
 /* ========= Responsive ========= */
 @media (max-width: 1100px){
-:root{ --sidebar: 260px; }
-.rail{grid-template-columns: repeat(4, minmax(120px,1fr))}
+  :root{ --sidebar: 260px; }
+  .rail{grid-template-columns: repeat(4, minmax(120px,1fr))}
 }
 @media (max-width: 920px){
-main{grid-template-columns: 1fr}
-.rail{grid-template-columns: repeat(3, minmax(120px,1fr))}
+  main{grid-template-columns: 1fr}
+  .rail{grid-template-columns: repeat(3, minmax(120px,1fr))}
 }
 @media (max-width: 600px){
-.topbar{padding:10px 14px}
-.rail{grid-template-columns: repeat(2, minmax(120px,1fr))}
-.bars{height:160px}
+  .topbar{padding:10px 14px}
+  .rail{grid-template-columns: repeat(2, minmax(120px,1fr))}
+  .bars{height:160px}
+}
+
+/* ========= In-Progress（枠なし・2段構成） ========= */
+
+/* リスト */
+#inProgressArea{
+  display:grid;
+  gap:12px;
+  padding:6px 2px;          /* 角丸の内側で少し余裕を作る */
+  box-sizing:border-box;
+}
+
+/* 1アイテム横並び */
+.inprog-card{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  width:100%;
+  background:transparent;
+  border:none;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+
+/* 左：カバー（小さめ・左寄せ） */
+.inprog-cover{
+  width:72px;
+  height:96px;
+  object-fit:cover;
+  border-radius:8px;
+  background:#eee;
+  flex:0 0 auto;
+}
+
+/* 右：本文 */
+.inprog-right{
+  flex:1 1 0%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+/* タイトル：小さめ＆必要なら改行（最大2行） */
+.inprog-title{
+  font-weight:700;
+  font-size:15px;               /* 小さめ */
+  line-height:1.35;
+
+  /* 2行まで表示（WebKit） */
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+
+  /* フォールバック（Firefox 等） */
+  overflow:hidden;
+  max-height:calc(1.35em * 2);
+  word-break:break-word;
+}
+
+/* 1行目：バーのみを幅いっぱいに */
+.inprog-barrow{ width:100%; }
+.progress-input{
+  width:100%;
+  height:22px;
+  accent-color:#6f86ff;
+}
+
+/* 2行目：％ と 読んだ！ を横並び（改行したうえで横並び） */
+.inprog-actions{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.progress-num{
+  width:52px;
+  text-align:right;
+  color:var(--muted);
+}
+.btn-ghost{
+  padding:6px 12px;
+  border:1px solid #ddd;
+  border-radius:999px;
+  background:#fff;
+  white-space:nowrap;            /* ボタンは改行しない */
+  cursor:pointer;
+}
+.btn-ghost:hover{ background:#fafafa; }
+.btn-ghost:disabled{ opacity:.5; cursor:default; }
+
+/* 保存メッセージ */
+.save-status{ font-size:12px; color:var(--muted); }
+
+/* 完了フェードアウト */
+.row-fade{ opacity:0; transition:opacity .25s ease; }
+
+/* 狭い時はさらに縮小 */
+@media (max-width: 420px){
+  .inprog-cover{ width:60px; height:80px; }
+  .inprog-title{ font-size:14px; }
 }
