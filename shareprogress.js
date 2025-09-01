@@ -47,6 +47,7 @@ const valueLabelPlugin = {
 /* ===== Utils ===== */
 function toggleEmpty(show){ const el=$('#empty'); if (el) el.style.display = show ? 'flex':'none'; }
 function pickLatest(list){ return list.slice().sort((a,b)=> new Date(b.date)-new Date(a.date))[0] || null; }
+const clamp = (v,min,max)=> Math.min(Math.max(v,min),max);
 
 /* ===== Chart.js 準備 ===== */
 function ensureChart(){
@@ -60,7 +61,7 @@ function ensureChart(){
       barThickness: BAR_WIDTH_PX,
       maxBarThickness: BAR_WIDTH_PX,
       backgroundColor: [],
-      userMeta: [],
+      userMeta: [],   // {dept,pos,comment,isMe}
       borderRadius:10,
       borderSkipped:false,
       borderWidth:0
@@ -79,11 +80,25 @@ function ensureChart(){
         tooltip:{
           enabled:true,
           callbacks:{
-            title(items){ const i=items[0].dataIndex; const name = chart.data.labels[i]; const v = chart.data.datasets[0].data[i]; return `${name}：${v}%`; },
-            label(item){ const m = chart.data.datasets[0].userMeta?.[item.dataIndex]; return m ? `${m.dept}／${m.pos}` : ''; }
+            title(items){
+              const i=items[0].dataIndex;
+              const name = chart.data.labels[i];
+              const v = chart.data.datasets[0].data[i];
+              return `${name}：${v}%`;
+            },
+            label(item){
+              const m = chart.data.datasets[0].userMeta?.[item.dataIndex];
+              return m ? `${m.dept || ''}${m.dept && m.pos ? '／' : ''}${m.pos || ''}` : '';
+            },
+            afterLabel(item){
+              const m = chart.data.datasets[0].userMeta?.[item.dataIndex];
+              return m?.comment ? `「${m.comment}」` : '';
+            }
           }
         }
-      }
+      },
+      onClick: (evt, activeEls) => handleBarTouch(evt),   // クリック
+      onHover: (evt, activeEls) => { /* 任意で hover を使うならここ */ }
     },
     plugins:[valueLabelPlugin]
   });
@@ -112,6 +127,14 @@ function ensureChart(){
     buildSelectors(); // 本/部門/役職
     ensureDefaultBook(); // いい感じの初期本
     render();
+
+    // タッチ端末でも反応するように
+    $('#spCanvas').addEventListener('touchstart', handleBarTouch, {passive:true});
+    document.addEventListener('click', (e)=>{
+      const pop = $('#commentPop');
+      if (!pop || pop.hidden) return;
+      if (!pop.contains(e.target)) pop.hidden = true;
+    });
   }catch(e){
     console.error('初期取得失敗', e);
   }
@@ -153,7 +176,7 @@ function buildSelectors(){
 function ensureDefaultBook(){
   const sel = $('#selBook');
   if (!sel.value) {
-    const mine = RAW.readings.filter(r => !isNaN(MY_USER_ID) && Number(r.userId)===Number(MY_USER_ID));
+    const mine = RAW.readings.filter(r => !isNaN(MY_USER_ID) && String(r.userId)===String(MY_USER_ID));
     const latest = pickLatest(mine);
     const defId = latest ? String(latest.bookId) : (RAW.books[0] ? String(RAW.books[0].id) : "");
     if (defId) sel.value = defId;
@@ -174,23 +197,24 @@ function render(){
     return true;
   });
 
-  // 対象本の“そのユーザーの最新レコード”を拾う
+  // 対象本の“そのユーザーの最新レコード”を拾う（comment 付き）
   const rows = [];
   const deptById = new Map(RAW.departments.map(d => [String(d.id), d.name]));
   const posById  = new Map(RAW.positions.map(p => [String(p.id), p.name]));
 
   users.forEach(u=>{
     const list = RAW.readings.filter(r => String(r.userId)===String(u.id) && String(r.bookId)===String(bookId));
-    if (!list.length) return;                                  // その本を読んでいない人は除外
+    if (!list.length) return;
     const latest = pickLatest(list);
     const prog = Number(latest.progress ?? 0);
-    if (isNaN(prog)) return;
+    const comment = (latest.comment ?? "").trim();
     rows.push({
       id: String(u.id),
       name: (String(u.id)===String(MY_USER_ID) ? '自分' : u.name),
-      progress: Math.max(0, Math.min(100, Math.round(prog))),  // 0–100に丸め
+      progress: Math.max(0, Math.min(100, Math.round(isNaN(prog)?0:prog))),
       dept: deptById.get(String(u.departmentId)) || '',
-      pos:  posById.get(String(u.positionId))  || ''
+      pos:  posById.get(String(u.positionId))  || '',
+      comment
     });
   });
 
@@ -214,7 +238,7 @@ function render(){
   const start = currentPage * (BARS_PER_PAGE - 1);
   const pageRows = others.slice(start, start + (BARS_PER_PAGE - 1));
   let finalRows = meRow ? [meRow, ...pageRows] : [...pageRows];
-  while (finalRows.length < BARS_PER_PAGE) finalRows.push({ id:'', name:'', progress:0, dept:'', pos:'' });
+  while (finalRows.length < BARS_PER_PAGE) finalRows.push({ id:'', name:'', progress:0, dept:'', pos:'', comment:'' });
 
   const labels = finalRows.map(r=>r.name);
   const vals   = finalRows.map(r=>r.name===''?0:r.progress);
@@ -222,18 +246,20 @@ function render(){
     if (r.name==='') return 'transparent';
     return (String(r.id)===String(MY_USER_ID)) ? '#000000' : '#dedcdc';
   });
-  const meta   = finalRows.map(r=>({dept:r.dept,pos:r.pos}));
+  const meta   = finalRows.map(r=>({dept:r.dept,pos:r.pos,comment:r.comment,isMe:String(r.id)===String(MY_USER_ID)}));
 
   // 塗り
   paint(labels, vals, colors, meta);
 
   // 空表示
-  const hasReal = rows.length > 0;
-  toggleEmpty(!hasReal);
+  toggleEmpty(rows.length === 0);
 
   // ナビ有効/無効
   $('#prevBtn').disabled = (currentPage===0);
   $('#nextBtn').disabled = (currentPage>=totalPages-1);
+
+  // コメントポップは一旦閉じる
+  const pop = $('#commentPop'); if (pop) pop.hidden = true;
 }
 
 /* ===== グラフに流し込む ===== */
@@ -243,8 +269,37 @@ function paint(labels, values, colors=[], meta=[]){
   c.data.datasets[0].data = values;
   c.data.datasets[0].backgroundColor = colors;
   c.data.datasets[0].userMeta = meta;
-  // y軸は 0–100 固定
-  c.options.scales.y.min = 0;
-  c.options.scales.y.max = 100;
   c.update();
+}
+
+/* ===== バーを触ったらコメント表示 ===== */
+function handleBarTouch(evt){
+  const c = ensureChart();
+  const els = c.getElementsAtEventForMode(evt, 'nearest', {intersect:true}, true);
+  const pop = $('#commentPop');
+  if (!els || !els.length || !pop) { if(pop) pop.hidden = true; return; }
+
+  const el = els[0];
+  const idx = el.index;
+  const meta = c.data.datasets[0].userMeta?.[idx] || {};
+  const label = c.data.labels?.[idx] || '';
+  if (!label || label.trim()==='') { pop.hidden = true; return; } // ダミー
+
+  const comment = (meta.comment || '').trim() || '（コメントはまだありません）';
+  pop.textContent = comment;
+
+  // 位置計算（chart-wrap 内座標）
+  const canvasRect = c.canvas.getBoundingClientRect();
+  const wrapRect = $('.chart-wrap').getBoundingClientRect();
+  // Chart.js の座標は CSS px と一致するので、そのまま足し算でOK
+  const left = canvasRect.left - wrapRect.left + el.element.x;
+  const top  = canvasRect.top  - wrapRect.top  + el.element.y;
+
+  const popW = 280;   // CSS の max-width と合わせる
+  const x = clamp(left - popW/2, 8, wrapRect.width - popW - 8);
+  const y = top - 64; // 棒の少し上
+
+  pop.style.left = `${x}px`;
+  pop.style.top  = `${y}px`;
+  pop.hidden = false;
 }
