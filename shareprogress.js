@@ -256,7 +256,7 @@ function render(){
   const vals   = finalRows.map(r=>r.name===''?0:r.progress);
   const colors = finalRows.map(r=>{
     if (r.name==='') return 'transparent';
-    return (String(r.id)===String(MY_USER_ID)) ? '#000000' : '#dedcdc';
+    return (String(r.id)===String(MY_USER_ID)) ? '#1FB9EF' : '#ACE9FF';
   });
   const meta   = finalRows.map(r=>({dept:r.dept,pos:r.pos,comment:r.comment,isMe:String(r.id)===String(MY_USER_ID)}));
 

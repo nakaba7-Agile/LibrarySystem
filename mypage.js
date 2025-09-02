@@ -53,7 +53,7 @@ $(async function () {
   if (Array.isArray(user.certs)) {
     certHtml = user.certs.map((c) => `<span class="chip">${c}</span>`).join("");
   }
-
+  $("#profileName").text(user. || "");
   $("#profileName").text(user.name || "");
   $("#profileDept").text(dept ? dept.name : "");
   $("#profileYears").text(years);

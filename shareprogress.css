@@ -59,11 +59,21 @@ body{
 }
 .chart-inner{width:100%; max-width:2000px}
 .nav-btn{
-  width:40px; height:100%;
-  background:#eee; border:none; font-size:20px;
-  cursor:pointer; transition:background .2s;
+  padding-right: 60px;  
+  padding-left: 25px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  min-width: 60px;       /* 最低幅を指定（必要に応じて） */
+  min-height: 60px; 
+  width:40px; 
+  height:100%;
+  background:none; 
+  border:none; 
+  font-size:20px;
+  cursor:pointer; 
+  transition:background .2s;
 }
-.nav-btn:hover{background:#ddd}
+.nav-btn:hover{background:none}
 .nav-btn:disabled{opacity:.3; cursor:default}
 
 #spCanvas{display:block; width:100% !important; height:100% !important}
