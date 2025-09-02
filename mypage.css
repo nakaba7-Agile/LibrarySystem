@@ -117,6 +117,88 @@ padding-bottom: 2px;
     text-align: left; /* 左揃え */
     
 }
+
+/* 読んでいる本 全体 */
+#readingBooks {
+  margin-top: 24px;
+}
+
+#readingBooks h2 {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 16px;
+  border-left: 4px solid #4CAF50; /* 緑のライン */
+  padding-left: 8px;
+  color: #333;
+}
+
+/* 各本のカード */
+.book-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.book-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+本のサムネイル
+.book-item img {
+  width: 60px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #eee;
+  flex-shrink: 0;
+}
+
+/* 本の情報 */
+.book-item div {
+  flex: 1;
+}
+
+.book-item .title {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #222;
+}
+
+.book-item .author {
+  font-size: 0.95em;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.book-item .progress {
+  font-size: 0.9em;
+  color: #4CAF50; /* 緑で進捗感を出す */
+  font-weight: 500;
+}
+
+.book-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.book-card img.thumbnail {
+  width: 60px;
+  height: 90px;
+  object-fit: cover;   /* 画像の比率を崩さずトリミング */
+  border-radius: 8px;
+  background: #eee;
+}
+
 /* ========= Responsive ========= */
 @media (max-width: 720px) {
 .profile-grid { grid-template-columns: 1fr; }
