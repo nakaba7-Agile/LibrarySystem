@@ -53,7 +53,15 @@ main{
 }
 
 /* ========= Panels / Cards ========= */
-.panel {
+.panel{ 
+  background:var(--panel); 
+  border:1px solid var(--line); 
+  border-radius:var(--radius); 
+  box-shadow:var(--shadow); 
+}
+
+
+.graphpanel {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 0 var(--radius) var(--radius) var(--radius);

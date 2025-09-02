@@ -102,7 +102,7 @@
     {
       "id": 9,
       "password": "pwd9",
-      "name": "工藤新一",
+      "name": "中村健一",
       "departmentId": 7,
       "positionId": 8,
       "joinYear": 2008,
@@ -145,7 +145,7 @@
     {
       "id": 12,
       "password": "pwd12",
-      "name": "小林由依",
+      "name": "小林結衣",
       "departmentId": 7,
       "positionId": 4,
       "joinYear": 2009,
@@ -318,8 +318,8 @@
       "userId": 3,
       "bookId": 106,
       "date": "2025-09-27",
-      "progress": 80,
-      "comment":"Deep learningの基礎がよくわかる。"
+      "progress": 100,
+      "comment": "Deep learningの基礎がよくわかる。"
     },
     {
       "id": 1006,
@@ -425,7 +425,7 @@
       "userId": 5,
       "bookId": 106,
       "date": "2025-09-28",
-      "progress": 60
+      "progress": 100
     },
     {
       "id": 1020,
@@ -537,7 +537,7 @@
       "userId": 2,
       "bookId": 106,
       "date": "2025-09-30",
-      "progress": 80
+      "progress": 100
     },
     {
       "id": 1035,
@@ -558,8 +558,8 @@
       "id": 1037,
       "userId": 6,
       "bookId": 103,
-      "date": "2025-09-27",
-      "progress": 85,
+      "date": "2025-09-02",
+      "progress": 100,
       "comment": "Very informative.とても勉強になりました。"
     },
     {
@@ -687,146 +687,6 @@
       "bookId": 101,
       "date": "2025-09-29",
       "progress": 100
-    },
-    {
-      "id": 1055,
-      "userId": 8,
-      "bookId": 106,
-      "date": "2025-09-29",
-      "progress": 80
-    },
-    {
-      "id": 1056,
-      "userId": 9,
-      "bookId": 106,
-      "date": "2025-09-29",
-      "progress": 40
-    },
-    {
-      "id": 1057,
-      "userId": 10,
-      "bookId": 106,
-      "date": "2025-09-29",
-      "progress": 40
-    },
-    {
-      "id": 1058,
-      "userId": 11,
-      "bookId": 106,
-      "date": "2025-09-29",
-      "progress": 20
-    },
-    {
-      "id": 1059,
-      "userId": 12,
-      "bookId": 106,
-      "date": "2025-09-29",
-      "progress": 20
-    },
-    {
-      "id": 1060,
-      "userId": 13,
-      "bookId": 106,
-      "date": "2025-09-29",
-      "progress": 20
-    },
-    {
-      "id": 1061,
-      "userId": 1,
-      "bookId": 106,
-      "date": "2025-09-01",
-      "progress": 100
-    },
-    {
-      "id": 1062,
-      "userId": 7,
-      "bookId": 110,
-      "date": "2025-09-01",
-      "progress": 80
-    },
-    {
-      "id": 1063,
-      "userId": 8,
-      "bookId": 110,
-      "date": "2025-09-01",
-      "progress": 60
-    },
-    {
-      "id": 1064,
-      "userId": 9,
-      "bookId": 110,
-      "date": "2025-09-01",
-      "progress": 30
-    },
-    {
-      "id": 1065,
-      "userId": 10,
-      "bookId": 110,
-      "date": "2025-09-01",
-      "progress": 20
-    },
-    {
-      "id": 1066,
-      "userId": 2,
-      "bookId": 111,
-      "date": "2025-09-01",
-      "progress": 100
-    },
-    {
-      "id": 1067,
-      "userId": 4,
-      "bookId": 111,
-      "date": "2025-09-01",
-      "progress": 100
-    },
-    {
-      "id": 1068,
-      "userId": 7,
-      "bookId": 111,
-      "date": "2025-09-01",
-      "progress": 80
-    },
-    {
-      "id": 1069,
-      "userId": 11,
-      "bookId": 111,
-      "date": "2025-09-01",
-      "progress": 30
-    },
-    {
-      "id": 1070,
-      "userId": 13,
-      "bookId": 111,
-      "date": "2025-09-01",
-      "progress": 10
-    },
-    {
-      "id": 1071,
-      "userId": 3,
-      "bookId": 112,
-      "date": "2025-09-01",
-      "progress": 100
-    },
-    {
-      "id": 1072,
-      "userId": 9,
-      "bookId": 112,
-      "date": "2025-09-01",
-      "progress": 100
-    },
-    {
-      "id": 1073,
-      "userId": 10,
-      "bookId": 112,
-      "date": "2025-09-01",
-      "progress": 60
-    },
-    {
-      "id": 1074,
-      "userId": 11,
-      "bookId": 112,
-      "date": "2025-09-01",
-      "progress": 40
     }
   ],
   "positions": [
