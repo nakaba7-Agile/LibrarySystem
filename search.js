@@ -126,7 +126,7 @@ document.addEventListener("click", async (e)=>{
     // if (typeof showPage === "function") showPage("home");
 
     // showPage('home'); // home画面に遷移
-    // location.reload(); // ページをリロードして最新情報を表示
+    location.reload(); // ページをリロードして最新情報を表示
 
   } catch (e) {
     console.error(e);
@@ -154,7 +154,7 @@ function showToast(message) {
     toast.classList.remove("show");
     setTimeout(() => {
       container.removeChild(toast);
-    }, 500); // アニメーションが終わるのを待って削除
-  }, 5000);
+    }, 400); // アニメーションが終わるのを待って削除
+  }, 2000);
 }
 

@@ -197,6 +197,7 @@
 
           setTimeout(async () => {
             await patchReadingById(row.__idRaw, payload);
+            location.reload(); // ページをリロードして最新情報を表示
           }, 1500);
 
           lastSaved = v;
