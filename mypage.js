@@ -54,6 +54,7 @@ $(async function () {
     certHtml = user.certs.map((c) => `<span class="chip">${c}</span>`).join("");
   }
 
+  $("#avatarimage").html(`<img src="${user.avatarimage}" alt="avatar" />`);
   $("#profileName").text(user.name || "");
   $("#profileDept").text(dept ? dept.name : "");
   $("#profileYears").text(years);
