@@ -22,11 +22,15 @@
 
   <div class="chart-wrap">
     <div class="chart-nav">
-      <button id="prevBtn" class="nav-btn">←</button>
+      <button id="prevBtn" class="nav-btn" aria-label="前へ">
+        <img src="images/CaretCircleLeft.svg" alt="前へ">
+      </button>
       <div id="chartInner" class="chart-inner">
         <canvas id="mainCanvas"></canvas>
       </div>
-      <button id="nextBtn" class="nav-btn">→</button>
+      <button id="nextBtn" class="nav-btn" aria-label="次へ">
+        <img src="images/CaretCircleRight.svg" alt="次へ">
+      </button>
     </div>
 
     <!-- <div id="chartInner" class="chart-inner">
