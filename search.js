@@ -126,7 +126,7 @@ document.addEventListener("click", async (e)=>{
     // if (typeof showPage === "function") showPage("home");
 
     // showPage('home'); // home画面に遷移
-    // location.reload(); // ページをリロードして最新情報を表示
+    location.reload(); // ページをリロードして最新情報を表示
 
   } catch (e) {
     console.error(e);
