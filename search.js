@@ -1,12 +1,27 @@
 // ==== 設定 ====
-const API_SEARCH = "http://localhost:4000";   // json-server のURL
-const LOGIN_USER_ID = parseInt(localStorage.getItem('loginUserId')); // ログインユーザーID;
+const API_SEARCH = "http://localhost:4000";
+const LOGIN_USER_ID = parseInt(localStorage.getItem('loginUserId')); // ログインユーザーID
 
-// DOMヘルパ（jQueryの$と衝突しない）
+// DOMヘルパ
 const qs = (sel) => document.querySelector(sel);
 
 // 便利: HTML生成
 const html = (s, ...v) => s.map((x,i)=>x + (v[i]??"")).join("");
+
+// 安全なトースト
+function showToast(message) {
+  const container = document.getElementById("toastContainer");
+  if (!container) { alert(message); return; }
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.classList.add("show"), 50);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => container.removeChild(toast), 300);
+  }, 1800);
+}
 
 // 検索本体
 async function searchBooksByTitle() {
@@ -25,7 +40,6 @@ async function searchBooksByTitle() {
     const books = await fetch(`${API_SEARCH}/books`).then(r=>r.json());
     const results = books.filter(b => String(b.title || "").includes(keyword));
 
-    // ページ遷移
     if (typeof showPage === "function") showPage("kensaku");
 
     resultsEl.innerHTML = html`
@@ -65,7 +79,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     searchBooksByTitle();
   });
 
-  // Enter でも検索
   input?.addEventListener("keydown", (e)=>{
     if (e.key === "Enter") {
       e.preventDefault();
@@ -74,11 +87,16 @@ document.addEventListener("DOMContentLoaded", ()=>{
   });
 });
 
-// 検索結果の「読んでいる / 読んだ！」登録
+// 「読んでいる / 読んだ！」登録
 document.addEventListener("click", async (e)=>{
   const target = e.target;
   if (!(target instanceof HTMLElement)) return;
   if (!target.classList.contains("register-btn")) return;
+
+  if (!Number.isFinite(LOGIN_USER_ID)) {
+    showToast("ログインが必要です");
+    return;
+  }
 
   const bookId = Number(target.dataset.bookid);
   const isDone = target.classList.contains("done");
@@ -102,15 +120,19 @@ document.addEventListener("click", async (e)=>{
       progress: progressValue
     };
 
-    showToast(isDone ? "「読んだ本」に登録しました" : "「読んでいる本」に登録しました");
-
-    setTimeout(async () => {
-      await fetch(`${API_SEARCH}/readings`, {
+    // ★ 先にPOSTを完了させる（遅延させない／リロード前に完了させる）
+    const res = await fetch(`${API_SEARCH}/readings`, {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify(readingData)
     });
-    }, 1500);
+    if (!res.ok) {
+      const t = await res.text().catch(()=> "");
+      throw new Error(`POST failed: ${res.status} ${t}`);
+    }
+
+    // UI更新・通知
+    showToast(isDone ? "「読んだ本」に登録しました" : "「読んでいる本」に登録しました");
 
     // サイドバーの進捗を「ランキングの月」で再描画（無ければ登録月で）
     try {
@@ -119,42 +141,14 @@ document.addEventListener("click", async (e)=>{
       if (typeof renderInProgressArea === "function") renderInProgressArea(ym);
     } catch(_){}
 
-    // ランキングの今月冊数を再計算依頼
+    // ランキングの今月冊数を再計算依頼（読んだ！の時だけでもOK。ここでは両方で呼んでも害なし）
     try { document.getElementById("rankingFrame")?.contentWindow?.postMessage({ type:"request-monthly-count" }, "*"); } catch(_){}
 
-    // ホームへ戻る
-    // if (typeof showPage === "function") showPage("home");
-
-    // showPage('home'); // home画面に遷移
-    location.reload(); // ページをリロードして最新情報を表示
+    // 必要なら軽く待ってからリロード（任意）
+    // setTimeout(()=> location.reload(), 800);
 
   } catch (e) {
     console.error(e);
     showToast('登録に失敗しました');
   }
 });
-
-function showToast(message) {
-  console.log("showToast called:", message); // デバッグ用
-  const container = document.getElementById("toastContainer");
-  console.log("container:", container);       // null じゃないか確認
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = message;
-
-  container.appendChild(toast);
-
-  // 少し遅れて .show を付与 → アニメーションでフェードイン
-  setTimeout(() => {
-    toast.classList.add("show");
-  }, 100);
-
-  // 3秒後に削除
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => {
-      container.removeChild(toast);
-    }, 400); // アニメーションが終わるのを待って削除
-  }, 2000);
-}
-
