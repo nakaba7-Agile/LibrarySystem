@@ -30,11 +30,15 @@
 
       <!-- 右：グラフ（ナビ付き） -->
       <div class="chart-nav">
-        <button id="prevBtn" class="nav-btn" title="前へ">←</button>
+        <button id="prevBtn" class="nav-btn" title="前へ" aria-label="前へ">
+           <img src="images/CaretCircleLeft.svg" alt="前へ">
+        </button>
         <div id="chartInner" class="chart-inner">
           <canvas id="spCanvas"></canvas>
         </div>
-        <button id="nextBtn" class="nav-btn" title="次へ">→</button>
+        <button id="nextBtn" class="nav-btn" title="次へ" aria-label="次へ">
+           <img src="images/CaretCircleRight.svg" alt="次へ">
+        </button>
       </div>
     </div>
 
