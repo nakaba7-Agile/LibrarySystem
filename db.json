@@ -10,7 +10,8 @@
       "certs": [
         "基本情報技術者",
         "応用情報技術者"
-      ]
+      ],
+      "avatar-image": "images/avatar_1.png"
     },
     {
       "id": 2,
@@ -23,7 +24,8 @@
         "基本情報技術者",
         "応用情報技術者",
         "AWS"
-      ]
+      ],
+      "avatar-image": "images/avatar_2.png"
     },
     {
       "id": 3,
@@ -36,7 +38,8 @@
         "応用情報技術者",
         "AWS",
         "データベーススペシャリスト"
-      ]
+      ],
+      "avatar-image": "images/avatar_3.png"
     },
     {
       "id": 4,
@@ -50,7 +53,8 @@
         "応用情報技術者",
         "AWS",
         "データベーススペシャリスト"
-      ]
+      ],
+      "avatar-image": "images/avatar_4.png"
     },
     {
       "id": 5,
@@ -65,7 +69,8 @@
         "AWS",
         "データベーススペシャリスト",
         "ネットワークスペシャリスト"
-      ]
+      ],
+      "avatar-image": "images/avatar_5.png"
     },
     {
       "id": 6,
@@ -76,7 +81,8 @@
       "joinYear": 2014,
       "certs": [
         "基本情報技術者"
-      ]
+      ],
+      "avatar-image": "images/avatar_6.png"
     },
     {
       "id": 7,
@@ -85,7 +91,8 @@
       "departmentId": 5,
       "positionId": 1,
       "joinYear": 2023,
-      "certs": []
+      "certs": [],
+      "avatar-image": "images/avatar_7.png"
     },
     {
       "id": 8,
@@ -97,12 +104,13 @@
       "certs": [
         "基本情報技術者",
         "応用情報技術者"
-      ]
+      ],
+      "avatar-image": "images/avatar_8.png"
     },
     {
       "id": 9,
       "password": "pwd9",
-      "name": "工藤新一",
+      "name": "中村健一",
       "departmentId": 7,
       "positionId": 8,
       "joinYear": 2008,
@@ -113,7 +121,8 @@
         "データベーススペシャリスト",
         "ネットワークスペシャリスト",
         "情報セキュリティスペシャリスト"
-      ]
+      ],
+      "avatar-image": "images/avatar_9.png"
     },
     {
       "id": 10,
@@ -126,7 +135,8 @@
         "基本情報技術者",
         "応用情報技術者",
         "AWS"
-      ]
+      ],
+      "avatar-image": "images/avatar_10.png"
     },
     {
       "id": 11,
@@ -140,12 +150,13 @@
         "応用情報技術者",
         "AWS",
         "データベーススペシャリスト"
-      ]
+      ],
+      "avatar-image": "images/avatar_11.png"
     },
     {
       "id": 12,
       "password": "pwd12",
-      "name": "小林由依",
+      "name": "小林結衣",
       "departmentId": 7,
       "positionId": 4,
       "joinYear": 2009,
@@ -155,7 +166,8 @@
         "AWS",
         "データベーススペシャリスト",
         "ネットワークスペシャリスト"
-      ]
+      ],
+      "avatar-image": "images/avatar_12.png"
     },
     {
       "id": 13,
@@ -167,7 +179,8 @@
       "certs": [
         "基本情報技術者",
         "応用情報技術者"
-      ]
+      ],
+      "avatar-image": "images/avatar_13.png"
     }
   ],
   "departments": [
@@ -318,8 +331,8 @@
       "userId": 3,
       "bookId": 106,
       "date": "2025-09-27",
-      "progress": 80,
-      "comment":"Deep learningの基礎がよくわかる。"
+      "progress": 100,
+      "comment": "Deep learningの基礎がよくわかる。"
     },
     {
       "id": 1006,
@@ -425,7 +438,7 @@
       "userId": 5,
       "bookId": 106,
       "date": "2025-09-28",
-      "progress": 60
+      "progress": 100
     },
     {
       "id": 1020,
@@ -537,7 +550,7 @@
       "userId": 2,
       "bookId": 106,
       "date": "2025-09-30",
-      "progress": 80
+      "progress": 100
     },
     {
       "id": 1035,
@@ -558,8 +571,8 @@
       "id": 1037,
       "userId": 6,
       "bookId": 103,
-      "date": "2025-09-27",
-      "progress": 85,
+      "date": "2025-09-02",
+      "progress": 100,
       "comment": "Very informative.とても勉強になりました。"
     },
     {
