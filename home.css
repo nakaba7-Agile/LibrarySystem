@@ -53,10 +53,14 @@ main{
 }
 
 /* ========= Panels / Cards ========= */
-.panel{
-  background:var(--panel); border:1px solid var(--line);
-  border-radius:var(--radius); box-shadow:var(--shadow);
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  box-shadow: var(--shadow);
 }
+
+
 .panel .hd{
   padding:14px 16px; border-bottom:1px solid var(--line);
   font-weight:700; font-size:15px;
@@ -262,28 +266,42 @@ nav button{margin-right: 10px;}
   .inprog-title{ font-size:14px; }
 }
 
-/*グラフ切り替えタブ用*/
+/* グラフ切り替えタブ全体のラッパー */
 .graph-tabs {
   display: flex;
-  border-radius: 8px;
-  background: #f2f2f2; /* 背景の薄いグレー */
-  padding: 2px;
-  margin-bottom: 16px;
-  width: fit-content;
+  margin-bottom: -2px; /* 下の境界線とピッタリつける */
+  padding: 0;
+  background: transparent; /* 背景なし */
+  z-index: 2;
+  position: relative;
 }
 
+
+/* 各タブボタンの基本デザイン */
 .tab-button {
-  padding: 8px 16px;
-  background: white;
-  border: none;
-  border-radius: 8px;
+  background: #e0e0e0;
+  border: 1px solid var(--line);   /* ← 統一 */
+  border-bottom: none;
+  padding: 10px 20px;
   cursor: pointer;
   font-weight: bold;
   color: #333;
-  transition: background 0.3s;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  margin-right: 4px;
+  transition: background 0.3s, color 0.3s;
 }
 
+
+/* アクティブなタブ */
 .tab-button.active {
-  background: #d9d9d9; /* アクティブ：グレー */
+  background: white;
+  border-color: var(--line);     /* ← 統一 */
+  border-bottom: 2px solid white;
+  color: #000;
+  z-index: 1;
+  position: relative;
 }
+
+
 
