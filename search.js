@@ -154,7 +154,7 @@ function showToast(message) {
     toast.classList.remove("show");
     setTimeout(() => {
       container.removeChild(toast);
-    }, 500); // アニメーションが終わるのを待って削除
-  }, 5000);
+    }, 400); // アニメーションが終わるのを待って削除
+  }, 2000);
 }
 
