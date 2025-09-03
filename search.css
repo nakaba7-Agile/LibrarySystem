@@ -99,3 +99,8 @@
   align-items: center;
   gap: 8px;
 }
+
+/* ========= ページ切り替え ========= */
+.page{display: none;}
+.page.active{display: block;}
+nav button{margin-right: 10px;}

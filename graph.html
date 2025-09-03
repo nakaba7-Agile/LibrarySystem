@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>読書グラフ</title>
+  <style>
+    #room-tabs button {
+      margin: 0 5px;
+    }
+    #room-tabs button.active {
+      background-color: #4CAF50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>読書グラフ</h1>
+
+  <!-- ラジオボタンでグラフタイプ選択 -->
+  <div id="graph-type">
+    <label><input type="radio" name="type" value="progress" checked> みんなの進捗</label>
+    <label><input type="radio" name="type" value="count"> 読書数</label>
+  </div>
+
+  <!-- ルームタブ -->
+  <div id="room-tabs"></div>
+
+  <!-- グラフ表示用 iframe -->
+  <iframe id="graph-frame" src="" width="100%" height="600px" frameborder="0"></iframe>
+
+  <script src="./graph.js"></script>
+</body>
+</html>
