@@ -40,3 +40,8 @@
   flex: 1;           /* 左右を1:1で分ける */
   padding: 20px;
 }
+
+/* ========= ページ切り替え ========= */
+.page{display: none;}
+.page.active{display: block;}
+nav button{margin-right: 10px;}
