@@ -30,3 +30,13 @@
     opacity: 1;
     transform: translateY(0);
 }
+
+.container {
+  display: flex;
+  height: 100vh; /* 画面の高さ全体にする場合 */
+}
+
+.left, .right {
+  flex: 1;           /* 左右を1:1で分ける */
+  padding: 20px;
+}

@@ -8,8 +8,6 @@
   <!-- Styles -->
   <link rel="stylesheet" href="./home.css" />
   <link rel="stylesheet" href="./ranking.css" />
-
-  <!-- jQuery / Chart.js（重複しないように1本だけ） -->
   <link rel="stylesheet" href="./search.css" />
   <!-- jQuery / Chart.js -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
@@ -111,21 +109,21 @@
                 <button class="tab-button" data-src="shareprogress.html">みんなの進捗</button>
             </div> -->
             <iframe id="rankingFrame" src="ranking.html" width="100%"
-                    style="border:none; display:block; padding:0; margin:0;"></iframe>
+              style="border:none; display:block; padding:0; margin:0;"></iframe>
 
             <script src="./home.js"></script>
 
           </section>
         </div>
+
+        <!-- トースト表示エリア -->
         <div id="toastContainer" class="toast-container"></div>
 
         <!-- 検索ページ -->
-        <div id="kensaku" class="page">
-          <div id="bookSearchResults"></div>
-        </div>
+        <div id="kensaku" class="page"></div>
 
         <!-- その他ページ -->
-        <div id="recomend" class="page">
+        <!-- <div id="recomend" class="page">
           <section class="panel">
             <div class="bd">
               <div class="section-hd">
@@ -151,7 +149,7 @@
               </div>
             </div>
           </section>
-        </div>
+        </div> -->
 
         <div id="mypage" class="page"></div>
       </section>

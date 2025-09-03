@@ -4,6 +4,8 @@ const sections = {
         //   ranking: 'ranking.html',
         //   recommendation: 'recommendation.html',
         //   popular: 'popular.html',
+        kensaku: 'search.html',
+        roomselect: 'roomselect.html',
         mypage: 'mypage.html'
         };
 
@@ -26,6 +28,11 @@ const sections = {
                 if (id === 'search') {
                         const script = document.createElement('script');
                         script.src = './search.js';
+                        document.body.appendChild(script);
+                }
+                if (id === 'roomselect') {
+                        const script = document.createElement('script');
+                        script.src = './roomselect.js';
                         document.body.appendChild(script);
                 }
         });
