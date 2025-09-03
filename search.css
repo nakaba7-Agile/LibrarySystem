@@ -40,3 +40,76 @@
   flex: 1;           /* 左右を1:1で分ける */
   padding: 20px;
 }
+
+
+.book-tile {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 30px 40px;
+  width: 540px; /* 画像に合わせて幅を広げる */
+  display: flex;
+  flex-direction: row;   /* 横並びに変更 */
+  align-items: center;
+  gap: 48px;             /* 画像と情報の間隔 */
+  margin-bottom: 20px;   /* タイル間の余白 */
+  transition: box-shadow 0.2s;
+}
+
+.book-tile-img {
+  width: 100px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #ddd;
+  margin-bottom: 0;      /* 下余白は不要 */
+  flex-shrink: 0;
+}
+
+.book-tile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 左寄せ */
+  gap: 10px;
+}
+
+.book-tile-title {
+  color: #171717;
+  font-size: 1em;
+  font-weight: bold;
+  /* margin-bottom: 18px; */
+}
+
+.book-tile-author {
+  color: #171717;
+  font-size: 0.8em;
+  margin-bottom: 18px;
+}
+
+.roomSelect-btn {
+  font-size: 0.8em;
+  padding: 8px 20px;
+  border-radius: 40px;
+  background: #ddd;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.book-tile.selected {
+  border: 2px solid #1FB9EF; 
+  box-shadow: 0 0 10px rgba(92, 192, 235, 0.6);
+}
+.roomSelect-btn.selected {
+  background-color: #1FB9EF; 
+  color: white;   
+  font-weight: bold;            
+}
+/* ========= ページ切り替え ========= */
+.page{display: none;}
+.page.active{display: block;}
+nav button{margin-right: 10px;}

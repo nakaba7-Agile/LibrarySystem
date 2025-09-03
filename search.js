@@ -42,26 +42,31 @@ async function searchBooksByTitle() {
 
     if (typeof showPage === "function") showPage("kensaku");
 
+   
     resultsEl.innerHTML = html`
-      <h2>「${keyword}」の検索結果（${results.length}件）</h2>
-      ${results.length === 0 ? "<div>該当する本がありません。</div>" : ""}
-      ${results.map(book=>{
-        const img = book.image || "images/noimage.png";
-        const author = book.author || "";
-        return html`
-          <div class="book-result" style="display:flex;align-items:flex-start;gap:16px;margin-bottom:32px;">
-            <img src="${img}" alt="${book.title}" style="width:80px;height:110px;object-fit:cover;border-radius:8px;background:#eee;">
-            <div>
-              <div style="font-size:1.1em;font-weight:bold;margin-bottom:4px;">${book.title}</div>
-              <div style="color:#555;margin-bottom:10px;">${author}</div>
-              <div style="display:flex; gap:8px;">
-                <button class="roomSelect-btn" data-bookid="${book.id}">ルームを探す</button>
-              </div>
-            </div>
+  <div style="margin-bottom:18px;">
+    <span style="font-size:1.1em;font-weight:bold;">
+      「${keyword}」の検索結果（${results.length}件）
+    </span>
+  </div>
+  <div class="book-tile-list">
+    ${results.length === 0 ? "<div>該当する本がありません。</div>" : ""}
+    ${results.map(book=>{
+      const img = book.image || "images/noimage.png";
+      const author = book.author || "";
+      return html`
+        <div class="book-tile">
+          <img src="${img}" alt="${book.title}" class="book-tile-img">
+          <div class="book-tile-info">
+            <div class="book-tile-title">${book.title}</div>
+            <div class="book-tile-author">${author}</div>
+            <button class="roomSelect-btn" data-bookid="${book.id}">ルームを探す</button>
           </div>
-        `;
-      }).join("")}
-    `;
+        </div>
+      `;
+    }).join("")}
+  </div>
+`;
   } catch (e) {
     console.error(e);
     resultsEl.innerHTML = "<div>本データの取得に失敗しました。</div>";
@@ -95,5 +100,31 @@ document.addEventListener("DOMContentLoaded", ()=>{
       }
     }
   });
+
+  // ルームを探すボタンクリックで選択した本のタイルの枠色を変える
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("roomSelect-btn")) {
+    // すでに選ばれているボタンの選択状態をリセット
+    document.querySelectorAll(".roomSelect-btn.selected")
+            .forEach(btn => btn.classList.remove("selected"));
+
+    // 今押したボタンに selected クラスを追加
+    e.target.classList.add("selected");
+
+    // （任意）本タイル枠も色を変える場合
+    const bookTile = e.target.closest(".book-tile");
+    if (bookTile) {
+      document.querySelectorAll(".book-tile.selected")
+              .forEach(el => el.classList.remove("selected"));
+      bookTile.classList.add("selected");
+    }
+
+    // ページ切り替え（右カラム表示など）
+    if (typeof showPage === "function") {
+      showPage("roomselect");
+    }
+  }
+});
+
 
 });

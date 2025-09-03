@@ -1,18 +1,16 @@
-// iframe の高さを中身に合わせて自動調整 + 初回の冊数送信を依頼
+// iframeの高さ調整処理だけ
 function resizeIframe() {
-const iframe = document.getElementById('rankingFrame');
-if (iframe?.contentWindow?.document?.body) {
+  const iframe = document.getElementById('graphFrame');
+  if (iframe?.contentWindow?.document?.body) {
     const height = iframe.contentWindow.document.body.scrollHeight;
     iframe.style.height = (height + 30) + 'px';
+  }
 }
-}
-document.getElementById('rankingFrame').addEventListener('load', () => {
-resizeIframe();
-try {
-    document.getElementById('rankingFrame')
-    .contentWindow?.postMessage({ type: 'request-monthly-count' }, '*');
-} catch (_) {}
+
+document.getElementById('graphFrame').addEventListener('load', () => {
+  resizeIframe();
 });
+
 
 document.addEventListener('DOMContentLoaded', () => {
 const buttons = document.querySelectorAll('.tab-button');
