@@ -55,6 +55,7 @@ async function searchBooksByTitle() {
               <div style="font-size:1.1em;font-weight:bold;margin-bottom:4px;">${book.title}</div>
               <div style="color:#555;margin-bottom:10px;">${author}</div>
               <div style="display:flex; gap:8px;">
+                <button class="roomSelect-btn" data-bookid="${book.id}">ルームを探す</button>
               </div>
             </div>
           </div>
@@ -83,4 +84,16 @@ document.addEventListener("DOMContentLoaded", ()=>{
       searchBooksByTitle();
     }
   });
+
+  // ルームを探すボタンクリックで roomsearch ページへ
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("roomSelect-btn")) {
+      if (typeof showPage === "function") {
+        showPage("roomselect");
+      } else {
+        console.warn("showPage 関数が見つかりません");
+      }
+    }
+  });
+
 });
