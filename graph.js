@@ -70,7 +70,7 @@ function selectRoom(roomId) {
 // ✅ iframeのsrc更新
 function updateIframe() {
   if (selectedRoomId && selectedType) {
-    graphFrame.src = `ranking.html?roomId=${selectedRoomId}&type=${selectedType}`;
+    graphFrame.src = `roomprogress.html?roomId=${selectedRoomId}&type=${selectedType}`;
   }
 }
 

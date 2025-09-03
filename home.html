@@ -95,26 +95,13 @@
       <section class="content">
         <!-- ホーム -->
         <div id="home" class="page active">
-
-          <!-- グラフ切替用タブ（パネル外に移動） -->
-          <div class="graph-tabs">
-            <button class="tab-button active" data-src="ranking.html">読書数</button>
-            <button class="tab-button" data-src="shareprogress.html">みんなの進捗</button>
-          </div>
-          <!-- ランキング（iframe） -->
           <section class="graphpanel">
-            <!-- グラフ切替用タブ -->
-            <!-- <div class="graph-tabs">
-                <button class="tab-button active" data-src="ranking.html">読書数</button>
-                <button class="tab-button" data-src="shareprogress.html">みんなの進捗</button>
-            </div> -->
-            <iframe id="rankingFrame" src="ranking.html" width="100%"
+            <iframe id="graphFrame" src="graph.html" width="100%"
               style="border:none; display:block; padding:0; margin:0;"></iframe>
-
             <script src="./home.js"></script>
-
           </section>
         </div>
+
 
         <!-- トースト表示エリア -->
         <div id="toastContainer" class="toast-container"></div>

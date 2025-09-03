@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>ルーム別ランキング</title>
+  <link rel="stylesheet" href="ranking.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <h2 id="graph-title"></h2>
+  <div class="header-bar">
+    <div class="title-line">
+      <span class="title">ルーム別ランキング</span>
+      <div class="filters">
+        <input type="month" id="month" class="pill" />
+        <select id="selDept" class="pill"><option value="">すべての部門</option></select>
+        <select id="selPos" class="pill"><option value="">すべての役職</option></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-nav">
+      <button id="prevBtn" class="nav-btn" aria-label="前へ">
+        <img src="images/CaretCircleLeft.svg" alt="前へ">
+      </button>
+      <div id="chartInner" class="chart-inner">
+        <canvas id="mainCanvas"></canvas>
+      </div>
+      <button id="nextBtn" class="nav-btn" aria-label="次へ">
+        <img src="images/CaretCircleRight.svg" alt="次へ">
+      </button>
+    </div>
+    <div id="empty" class="empty">該当データがありません</div>
+  </div>
+
+  <script src="./roomprogress.js"></script>
+</body>
+</html>
