@@ -303,7 +303,7 @@
       "bookId": 101,
       "date": "2025-09-01",
       "progress": 100,
-      "comment": "最高に面白い！"
+      "comment": "最高にわかりやすい！"
     },
     {
       "id": 1003,
@@ -325,7 +325,7 @@
       "bookId": 101,
       "date": "2025-09-01",
       "progress": 100,
-      "comment": "Great !"
+      "comment": "読む価値あり。"
     },
     {
       "id": 1006,
@@ -383,7 +383,7 @@
       "bookId": 102,
       "date": "2025-09-01",
       "progress": 100,
-      "comment": "勉強になりました。"
+      "comment": "とても勉強になりました。"
     },
     {
       "id": 1014,
@@ -433,14 +433,16 @@
       "userId": 2,
       "bookId": 103,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "この本を読めば十分！"
     },
     {
       "id": 1021,
       "userId": 3,
       "bookId": 103,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "完全網羅できる！"
     },
     {
       "id": 1022,
@@ -455,7 +457,8 @@
       "userId": 5,
       "bookId": 104,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "初学者におすすめ。"
     },
     {
       "id": 1024,
@@ -471,28 +474,31 @@
       "bookId": 105,
       "date": "2025-08-31",
       "progress": 100,
-      "comment": "AWSの基礎がよくわかる。"
+      "comment": "苦しみの果てに。。。。"
     },
     {
       "id": 1026,
       "userId": 8,
       "bookId": 105,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "何度も挫折しかけました。"
     },
     {
       "id": 1027,
       "userId": 9,
       "bookId": 105,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "メリー苦しみます。"
     },
     {
       "id": 1028,
       "userId": 10,
       "bookId": 106,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "深層学習！深層学習！"
     },
     {
       "id": 1029,
@@ -500,7 +506,7 @@
       "bookId": 106,
       "date": "2025-08-31",
       "progress": 100,
-      "comment": "データベースの基礎がよくわかる。"
+      "comment": "楽しんで読めました"
     },
     {
       "id": 1030,
@@ -508,28 +514,31 @@
       "bookId": 106,
       "date": "2025-08-31",
       "progress": 100,
-      "comment": "データベースの復習に最適！"
+      "comment": "基礎固めに最適！"
     },
     {
       "id": 1031,
       "userId": 1,
       "bookId": 107,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "上だけでも満足感あります。"
     },
     {
       "id": 1032,
       "userId": 2,
       "bookId": 107,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "初学者には難しいかも。"
     },
     {
       "id": 1033,
       "userId": 3,
       "bookId": 107,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "面白かった？です。。"
     },
     {
       "id": 1034,
@@ -544,91 +553,104 @@
       "userId": 5,
       "bookId": 108,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "面白い！！！"
     },
     {
       "id": 1036,
       "userId": 6,
       "bookId": 108,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "下だけ読みました。"
     },
     {
       "id": 1037,
       "userId": 7,
       "bookId": 109,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "楽しんで学べる。"
     },
     {
       "id": 1038,
       "userId": 8,
       "bookId": 109,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "難しすぎない。"
     },
     {
       "id": 1039,
       "userId": 9,
       "bookId": 109,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "ためになったねえ"
     },
     {
       "id": 1040,
       "userId": 10,
       "bookId": 110,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "見た目にこだわれるようになった。"
     },
     {
       "id": 1041,
       "userId": 11,
       "bookId": 110,
       "date": "2025-08-31",
-      "progress": 80
+      "progress": 100,
+      "comment": "見た目は大事"
     },
     {
       "id": 1042,
       "userId": 12,
       "bookId": 110,
       "date": "2025-08-31",
-      "progress": 40
+      "progress": 100,
+      "comment": "使いたくなるデザインのコツを学べた。"
     },
     {
       "id": 1043,
       "userId": 1,
       "bookId": 111,
       "date": "2025-08-31",
-      "progress": 40
+      "progress": 100,
+      "comment": "今まで読んだ本で一番面白い。"
     },
     {
       "id": 1044,
       "userId": 2,
       "bookId": 111,
       "date": "2025-08-31",
-      "progress": 20
+      "progress": 100,
+      "comment": "なかなか楽しめました。"
     },
     {
       "id": 1045,
       "userId": 3,
       "bookId": 111,
       "date": "2025-08-31",
-      "progress": 20
+      "progress": 100,
+      "comment": "不思議な本でした。"
     },
     {
       "id": 1046,
       "userId": 4,
       "bookId": 112,
       "date": "2025-08-31",
-      "progress": 20
+      "progress": 100,
+      "comment": "起業は難しい。"
     },
     {
       "id": 1047,
       "userId": 5,
       "bookId": 112,
       "date": "2025-08-31",
-      "progress": 100
+      "progress": 100,
+      "comment": "起業して下剋上！！"
     },
     {
       "id": 1048,
@@ -636,7 +658,7 @@
       "bookId": 112,
       "date": "2025-08-31",
       "progress": 100,
-      "comment": "内容が難しいが、理解できると面白い。"
+      "comment": "理解できると面白い。"
     },
     {
       "id": 1049,
@@ -644,7 +666,7 @@
       "bookId": 113,
       "date": "2025-08-31",
       "progress": 100,
-      "comment": "内容が難しいが、理解できると面白い。"
+      "comment": "自己啓発！！"
     },
     {
       "id": 1050,
@@ -652,7 +674,7 @@
       "bookId": 113,
       "date": "2025-08-31",
       "progress": 100,
-      "comment": "なかなか理解が追いつかない部分があったが、非常に有益だった。"
+      "comment": "心にも筋肉がある。"
     },
     {
       "id": 1051,
