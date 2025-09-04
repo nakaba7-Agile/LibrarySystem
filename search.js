@@ -90,16 +90,45 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
   });
 
-  // ルームを探すボタンクリックで roomsearch ページへ
-  document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("roomSelect-btn")) {
-      if (typeof showPage === "function") {
-        showPage("roomselect");
-      } else {
-        console.warn("showPage 関数が見つかりません");
-      }
+  // // ルームを探すボタンクリックで roomsearch ページへ
+  // document.addEventListener("click", (e) => {
+  //   if (e.target.classList.contains("roomSelect-btn")) {
+  //     if (typeof showPage === "function") {
+  //       showPage("roomselect");
+  //     } else {
+  //       console.warn("showPage 関数が見つかりません");
+  //     }
+  //   }
+  // });
+  document.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("roomSelect-btn")) {
+    const bookId = e.target.dataset.bookid;
+
+    // ページ切り替え
+    showPage("roomselect");
+
+    // --- ここで roomselect のカードを描画 ---
+    try {
+      const rooms = await fetch(`${API_SEARCH}/rooms?bookId=${bookId}`).then(r => r.json());
+      const roomList = document.getElementById("roomList");
+      roomList.innerHTML = "";
+
+      rooms.forEach(room => {
+        const card = document.createElement("div");
+        card.className = "room-card";
+        card.innerHTML = `
+          <span class="room-name">${room.name}</span>
+          <button class="room-button" data-id="${room.id}">選択</button>
+        `;
+        roomList.appendChild(card);
+      });
+    } catch (err) {
+      console.error("ルーム取得エラー:", err);
     }
-  });
+  }
+});
+
+
 
   // ルームを探すボタンクリックで選択した本のタイルの枠色を変える
 document.addEventListener("click", (e) => {
