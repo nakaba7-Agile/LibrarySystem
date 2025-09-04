@@ -46,7 +46,7 @@ body {
     gap: 15px;
 }
 
-.room-card {
+/* .room-card {
     background: #fff;
     border-radius: 10px;
     padding: 15px;
@@ -54,7 +54,24 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+} */
+
+.room-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column; /* 縦方向に並べる */
+  gap: 10px;              /* 子要素間の余白 */
 }
+/* ルーム名（見出し） */
+.room-header {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+}
+
 
 .room-name {
     font-size: 16px;
@@ -95,8 +112,8 @@ body {
 
 /* アバター */
 .avatar {
-  width: 100px;        /* 小さめの見やすいサイズ */
-  height: 100px;
+  width: 50px;        /* 小さめの見やすいサイズ */
+  height: 50px;
   border-radius: 50%;
   display: block;
   margin: 0 auto 4px; /* 名前との間隔 */
@@ -107,4 +124,109 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* モーダル */
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px 48px;
+  min-width: 480px;
+  max-width: 90vw;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+}
+.modal-book-info {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 32px;
+  margin-top: 18px;
+}
+.modal-book-img {
+  width: 100px;
+  height: 130px;
+  background: #ddd;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.modal-book-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+.modal-book-author {
+  color: #222;
+  font-size: 1em;
+}
+.modal-label {
+  margin-top: 24px;
+  margin-bottom: 6px;
+  font-size: 1em;
+  color: #444;
+}
+.modal-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #eee;
+  font-size: 1em;
+  margin-bottom: 8px;
+}
+.modal-period {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.modal-date {
+  display: flex;
+  align-items: center;
+  background: #eee;
+  border-radius: 8px;
+  padding: 8px 12px;
+  gap: 8px;
+}
+.modal-date-input {
+  border: none;
+  background: transparent;
+  font-size: 1em;
+  outline: none;
+}
+.modal-date-icon {
+  font-size: 1.2em;
+}
+.modal-tilde {
+  font-size: 1.5em;
+  color: #888;
+}
+.modal-btns {
+  display: flex;
+  gap: 24px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+.modal-btn {
+  font-size: 1.1em;
+  padding: 12px 40px;
+  border-radius: 30px;
+  border: none;
+  background: #e5e5e5;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-btn.create {
+  background: #ddd;
+}
+.modal-btn.cancel {
+  background: #e5e5e5;
 }
