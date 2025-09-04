@@ -10,6 +10,7 @@ const radioButtons = document.querySelectorAll('input[name="type"]');
 
 let selectedRoomId = null;
 let selectedType = 'progress'; // 初期値
+let userRooms = []; // ← 追加
 
 // 初期化
 async function init() {
@@ -28,7 +29,7 @@ async function init() {
   console.log('読書している本ID',userReadingIds);
 
   // ユーザーが参加しているルームだけ抽出
-  const userRooms = rooms.filter(room =>
+  userRooms = rooms.filter(room => // ← ここを代入に
     Array.isArray(room.readings) &&
     room.readings.some(rid => userReadingIds.has(rid))
   );
@@ -79,6 +80,13 @@ function selectRoom(roomId) {
     btn.classList.toggle('active', btn.dataset.roomId == roomId);
   });
 
+    // ルーム情報から期間を取得して表示
+  const room = userRooms.find(r => r.id == roomId);
+  const titleEl = document.getElementById('graph-title');
+  if (room && titleEl) {
+    titleEl.textContent = `${room.startDate} ~ ${room.endDate}`;
+  }
+
   updateIframe();
 }
 
@@ -92,6 +100,7 @@ function updateIframe() {
 // ルームがない場合の制御例
 function handleNoRooms() {
   document.getElementById('graph-type').style.display = 'none';
+  document.getElementById('period-wrap').style.display = 'none'; // ← 追加
   document.getElementById('no-room-message').style.display = 'block';
   document.getElementById('graph-frame').style.display = 'none';
 }
@@ -99,6 +108,7 @@ function handleNoRooms() {
 // ルームがある場合は以下のように戻す
 function handleHasRooms() {
   document.getElementById('graph-type').style.display = '';
+  document.getElementById('period-wrap').style.display = ''; // ← 追加
   document.getElementById('no-room-message').style.display = 'none';
   document.getElementById('graph-frame').style.display = '';
 }
