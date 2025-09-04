@@ -65,11 +65,27 @@ document.addEventListener("click", async (e) => {
   }
 
   // 参加ボタン処理
-  if (e.target.classList.contains("room-button")) {
+  if (e.target.classList.contains("room-button") && !e.target.classList.contains("create-room-btn")) {
     const roomId = Number(e.target.dataset.id);
     const bookId = Number(e.target.dataset.bookid);
     const userId = parseInt(localStorage.getItem('loginUserId'));
     const today = new Date().toISOString().slice(0, 10);
+
+    // まずroom取得
+    const roomRes = await fetch(`${API_SEARCH}/rooms/${roomId}`);
+    const roomObj = await roomRes.json();
+
+    // 既に参加しているか判定
+    const readingsRes = await fetch(`${API_SEARCH}/readings`).then(r => r.json());
+    const alreadyJoined = readingsRes.some(r =>
+      r.userId === userId &&
+      r.bookId === bookId &&
+      roomObj.readings.includes(r.id)
+    );
+    if (alreadyJoined) {
+      alert("すでにこのルームに参加しています。");
+      return;
+    }
 
     // 1. reading新規作成
     const newReading = {
@@ -88,9 +104,6 @@ document.addEventListener("click", async (e) => {
     const readingId = created.id;
 
     // 2. room.readingsに追加
-    // まずroom取得
-    const roomRes = await fetch(`${API_SEARCH}/rooms/${roomId}`);
-    const roomObj = await roomRes.json();
     const updatedReadings = Array.isArray(roomObj.readings) ? [...roomObj.readings, readingId] : [readingId];
 
     await fetch(`${API_SEARCH}/rooms/${roomId}`, {
