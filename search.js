@@ -104,27 +104,40 @@ document.addEventListener("DOMContentLoaded", ()=>{
   // ルームを探すボタンクリックで選択した本のタイルの枠色を変える
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("roomSelect-btn")) {
-    // すでに選ばれているボタンの選択状態をリセット
-    document.querySelectorAll(".roomSelect-btn.selected")
-            .forEach(btn => btn.classList.remove("selected"));
-
-    // 今押したボタンに selected クラスを追加
-    e.target.classList.add("selected");
-
-    // （任意）本タイル枠も色を変える場合
     const bookTile = e.target.closest(".book-tile");
+
     if (bookTile) {
+      // すでに選ばれている枠をリセット
       document.querySelectorAll(".book-tile.selected")
               .forEach(el => el.classList.remove("selected"));
+
+      // 今選んだタイルに選択スタイルを付与
       bookTile.classList.add("selected");
     }
 
-    // ページ切り替え（右カラム表示など）
+    // ページ切り替え（必要なら）
     if (typeof showPage === "function") {
       showPage("roomselect");
     }
   }
 });
 
+
+// イベント委譲で動的要素にも対応
+document.addEventListener("mouseover", (e) => {
+  if (e.target.classList.contains("roomSelect-btn")) {
+    e.target.classList.add("hovered"); // ボタン自身も色変更
+    const bookTile = e.target.closest(".book-tile");
+    if (bookTile) bookTile.classList.add("hovered"); // タイルも色変更
+  }
+});
+
+document.addEventListener("mouseout", (e) => {
+  if (e.target.classList.contains("roomSelect-btn")) {
+    e.target.classList.remove("hovered"); // ボタン色を元に戻す
+    const bookTile = e.target.closest(".book-tile");
+    if (bookTile) bookTile.classList.remove("hovered"); // タイル枠も元に戻す
+  }
+});
 
 });
