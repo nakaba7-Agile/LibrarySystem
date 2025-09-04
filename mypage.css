@@ -67,7 +67,7 @@ body{
 
 /* 左カラム（アバター） */
 .avatar-wrap{ display:grid; justify-items:center; gap:12px; }
-.avatar{
+.mypage.avatar{
   width:240px; height:240px; border-radius:50%;
   background:#d1d5db; overflow:hidden; display:grid; place-items:center;
   color:var(--muted); user-select:none;
@@ -158,12 +158,12 @@ dd{ margin:0; }
 /* ========== Responsive ========== */
 @media (max-width: 980px){
   .profile-grid{ grid-template-columns:1fr; max-width:720px; }
-  .avatar{ width:200px; height:200px; }
+  .mypage.avatar{ width:200px; height:200px; }
   dl{ grid-template-columns:120px 1fr; }
   #readingBooks{ max-width:720px; }
 }
 @media (max-width: 600px){
-  .avatar{ width:180px; height:180px; }
+  .mypage.avatar{ width:180px; height:180px; }
 
   .reading-entry .actions{
     height:auto;                    /* 折り返すので固定高は外す */
