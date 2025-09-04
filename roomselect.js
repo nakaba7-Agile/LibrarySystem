@@ -36,6 +36,21 @@ document.addEventListener("click", async (e) => {
         `;
         roomList.appendChild(card);
       });
+
+      // 既存のルーム一覧描画の後に追加
+      const createCard = document.createElement("div");
+      createCard.className = "room-card";
+      createCard.innerHTML = `
+        <button class="room-button create-room-btn" style="width:100%;">＋ 新規ルーム作成</button>
+      `;
+      roomList.appendChild(createCard);
+
+      roomList.addEventListener("click", function (e) {
+        if (e.target.classList.contains("create-room-btn")) {
+          // ここでモーダルを表示する処理を実装
+          // 例: showCreateRoomModal(book情報);
+        }
+      });
     } catch (err) {
       console.error("ルーム取得エラー:", err);
     }
