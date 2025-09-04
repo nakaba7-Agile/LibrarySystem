@@ -747,48 +747,12 @@
       "comment": "３章で挫折しそう。"
     },
     {
-      "id": 1061,
-      "userId": 1,
-      "bookId": 101,
-      "date": "2025-09-04",
-      "progress": 54
-    },
-    {
-      "id": 1062,
       "userId": 13,
       "bookId": 101,
-      "date": "2025-09-06",
-      "progress": 0
-    },
-    {
-      "id": 1063,
-      "userId": 13,
-      "bookId": 102,
-      "date": "2025-09-03",
-      "progress": 0
-    },
-    {
-      "userId": 4,
-      "bookId": 101,
       "date": "2025-09-04",
-      "progress": 75,
+      "progress": 73,
       "comment": "",
-      "id": 1064
-    },
-    {
-      "id": 1065,
-      "userId": 4,
-      "bookId": 109,
-      "date": "2025-09-03",
-      "progress": 56
-    },
-    {
-      "userId": 1,
-      "bookId": 101,
-      "date": "2025-09-04",
-      "progress": 0,
-      "comment": "",
-      "id": 1067
+      "id": 1061
     }
   ],
   "positions": [
@@ -837,8 +801,7 @@
         1002,
         1003,
         1004,
-        1064,
-        1064
+        1061
       ]
     },
     {

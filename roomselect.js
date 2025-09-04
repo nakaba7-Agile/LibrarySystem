@@ -19,6 +19,9 @@ document.addEventListener("click", async (e) => {
       const rooms = await fetch(`${API_SEARCH}/rooms?bookId=${bookId}`).then(r => r.json());
       const readings = await fetch(`${API_SEARCH}/readings`).then(r => r.json());
       const users = await fetch(`${API_SEARCH}/users`).then(r => r.json());
+      // ルーム一覧描画時
+      const positions = await fetch(`${API_SEARCH}/positions`).then(r => r.json());
+      const departments = await fetch(`${API_SEARCH}/departments`).then(r => r.json());
 
       const roomList = document.getElementById("roomList");
       roomList.innerHTML = "";
@@ -30,12 +33,19 @@ document.addEventListener("click", async (e) => {
         // このルームの読み取りデータを取得
         const roomReadings = readings.filter(r => room.readings.includes(r.id));
         const members = roomReadings.map(r => users.find(u => u.id === r.userId));
-        const membersHTML = members.map(u => `
-          <div class="member">
-            <img src="${u.avatarimage}" alt="${u.name}" class="avatar">
-            <div class="member-name">${u.name}</div>
-          </div>
-        `).join("");
+        const membersHTML = members.map(u => {
+          const positionName = positions.find(p => p.id === u.positionId)?.name || "";
+          const departmentName = departments.find(d => d.id === u.departmentId)?.name || "";
+          return `
+            <div class="member">
+              <img src="${u.avatarimage}" alt="${u.name}" class="avatar"
+                data-userid="${u.id}"
+                data-position="${positionName}"
+                data-department="${departmentName}">
+              <div class="member-name">${u.name}</div>
+            </div>
+          `;
+        }).join("");
 
 
         // 平均進捗率を計算
