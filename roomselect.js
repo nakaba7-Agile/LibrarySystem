@@ -192,4 +192,3 @@ document.getElementById("roomList").addEventListener("click", function(e) {
     showCreateRoomModal(book);
   }
 });
-
