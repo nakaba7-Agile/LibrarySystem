@@ -25,6 +25,8 @@ body{
 .container{
   max-width:1200px;
   margin:0 auto;
+  padding-inline-start: 0;
+  padding-block-start: 0;
   display:flex !important;      /* 他CSSの grid / flex-row を打ち消す */
   flex-direction:column;
   gap:28px;
