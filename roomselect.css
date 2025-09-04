@@ -95,8 +95,8 @@ body {
 
 /* アバター */
 .avatar {
-  width: 100px;        /* 小さめの見やすいサイズ */
-  height: 100px;
+  width: 50px;        /* 小さめの見やすいサイズ */
+  height: 50px;
   border-radius: 50%;
   display: block;
   margin: 0 auto 4px; /* 名前との間隔 */
