@@ -259,3 +259,61 @@ function getActiveBookInfo() {
   };
 }
 
+// ツールチップ表示
+document.addEventListener("mouseover", function(e) {
+  if (e.target.classList.contains("avatar")) {
+    const member = e.target.closest(".member");
+    if (!member) return;
+    const name = member.querySelector(".member-name")?.textContent || "";
+    // 追加情報（例: 部署や役職など）を取得する場合はdata属性やAPIから取得
+    // ここでは例として名前のみ
+    const tooltip = document.getElementById("avatarTooltip");
+    tooltip.textContent = name;
+    tooltip.style.display = "block";
+    // 位置調整
+    const rect = e.target.getBoundingClientRect();
+    tooltip.style.left = `${rect.left + window.scrollX + rect.width/2 - tooltip.offsetWidth/2}px`;
+    tooltip.style.top = `${rect.bottom + window.scrollY + 8}px`;
+  }
+});
+document.addEventListener("mousemove", function(e) {
+  if (e.target.classList.contains("avatar")) {
+    const tooltip = document.getElementById("avatarTooltip");
+    const rect = e.target.getBoundingClientRect();
+    tooltip.style.left = `${rect.left + window.scrollX + rect.width/2 - tooltip.offsetWidth/2}px`;
+    tooltip.style.top = `${rect.bottom + window.scrollY + 8}px`;
+  }
+});
+document.addEventListener("mouseout", function(e) {
+  if (e.target.classList.contains("avatar")) {
+    document.getElementById("avatarTooltip").style.display = "none";
+  }
+});
+
+// クリックでマイページ遷移
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("avatar")) {
+    // ユーザーIDを取得（例: data-userid属性をavatar imgに付与しておくと良い）
+    const member = e.target.closest(".member");
+    const userName = member.querySelector(".member-name")?.textContent || "";
+    // users配列からuserIdを取得する例
+    fetch("http://localhost:4000/users")
+      .then(r => r.json())
+      .then(users => {
+        const user = users.find(u => u.name === userName);
+        if (user) {
+          localStorage.setItem('mypageUserId', user.id);
+          // SPAの場合
+          if (typeof showPage === "function") {
+            showPage('mypage');
+          } else {
+            // 通常遷移
+            window.location.href = "mypage.html";
+          }
+        }
+      });
+  }
+});
+
+
+
