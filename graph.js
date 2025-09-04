@@ -1,7 +1,7 @@
-// ✅ ログインユーザーID（仮に1とする）
-const loginUserId = 1;
+// ログインユーザーID（仮に1とする）
+const loginUserId = parseInt(localStorage.getItem('loginUserId'));
 
-// 🔗 APIエンドポイント
+// APIエンドポイント
 const BASE_URL = 'http://localhost:4000';
 
 const roomTabsContainer = document.getElementById('room-tabs');
@@ -11,25 +11,38 @@ const radioButtons = document.querySelectorAll('input[name="type"]');
 let selectedRoomId = null;
 let selectedType = 'progress'; // 初期値
 
-// 🚀 初期化
+// 初期化
 async function init() {
   const [rooms, readings] = await Promise.all([
     fetch(`${BASE_URL}/rooms`).then(res => res.json()),
     fetch(`${BASE_URL}/readings`).then(res => res.json())
   ]);
 
-  // ログインユーザーが参加しているルームを抽出
-  const userRoomList = rooms.filter(room => {
-    if (!Array.isArray(room.readings)) return false;
+  // ログインユーザーのreading一覧（idのみ）
+  const userReadingIds = new Set(
+    readings
+      .filter(r => r.userId === loginUserId)
+      .map(r => r.id)
+  );
 
-    return room.readings.some(readingId => {
-      const reading = readings.find(r => r.id === readingId);
-      return reading && reading.userId === loginUserId;
-    });
-  });
+  console.log('読書している本ID',userReadingIds);
+
+  // ユーザーが参加しているルームだけ抽出
+  const userRooms = rooms.filter(room =>
+    Array.isArray(room.readings) &&
+    room.readings.some(rid => userReadingIds.has(rid))
+  );
+
+  console.log('参加中の部屋',userRooms);
+
+  // タブ表示のためにルームが一件もない場合対策
+  if (userRooms.length === 0) {
+    roomTabsContainer.textContent = '参加中のルームがありません';
+    return;
+  }
 
   // タブ作成
-  userRoomList.forEach((room, index) => {
+  userRooms.forEach((room, index) => {
     const btn = document.createElement('button');
     btn.textContent = room.name;
     btn.dataset.roomId = room.id;
@@ -55,7 +68,7 @@ async function init() {
   });
 }
 
-// ✅ ルーム選択時の処理
+// ルーム選択時の処理
 function selectRoom(roomId) {
   selectedRoomId = roomId;
 
@@ -67,12 +80,11 @@ function selectRoom(roomId) {
   updateIframe();
 }
 
-// ✅ iframeのsrc更新
+// iframeのsrc更新
 function updateIframe() {
   if (selectedRoomId && selectedType) {
     graphFrame.src = `roomprogress.html?roomId=${selectedRoomId}&type=${selectedType}`;
   }
 }
 
-// ▶️ 実行
 init();
