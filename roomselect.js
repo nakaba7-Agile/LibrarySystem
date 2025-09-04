@@ -37,20 +37,26 @@ document.addEventListener("click", async (e) => {
           </div>
         `).join("");
 
-        
-  // 平均進捗率を計算
-  let avgProgress = 0;
-  if (roomReadings.length > 0) {
-    const totalProgress = roomReadings.reduce((sum, r) => sum + r.progress, 0);
-    avgProgress = Math.round(totalProgress / roomReadings.length);
-  }
+
+        // 平均進捗率を計算
+        let avgProgress = 0;
+        if (roomReadings.length > 0) {
+          const totalProgress = roomReadings.reduce((sum, r) => sum + r.progress, 0);
+          avgProgress = Math.round(totalProgress / roomReadings.length);
+        }
 
         card.innerHTML = `
-          <span class="room-name">${room.name}</span>
-           <div class="room-progress">平均進捗率：${avgProgress}%</div>
-          <div class="room-members">${membersHTML}</div>
-          <button class="room-button" data-id="${room.id}" data-bookid="${room.bookId}">参加</button>
-        `;
+  <div class="room-header">
+    <span class="room-name">${room.name}</span>
+    <span class="room-dates">${room.startDate} ～ ${room.endDate}</span>
+  </div>
+  <div class="room-progress">平均進捗率：${avgProgress}%</div>
+  <div class="room-members">${membersHTML}</div>
+  <button class="room-button" data-id="${room.id}" data-bookid="${room.bookId}">
+    <class="button-icon"> 参加
+  </button>
+`;
+
         roomList.appendChild(card);
       });
 
@@ -159,7 +165,7 @@ function hideCreateRoomModal() {
 
 // ボタンイベント
 document.getElementById("cancelCreateBtn").onclick = hideCreateRoomModal;
-document.getElementById("submitCreateBtn").onclick = async function() {
+document.getElementById("submitCreateBtn").onclick = async function () {
   const name = document.getElementById("roomNameInput").value;
   const start = document.getElementById("startDateInput").value;
   const end = document.getElementById("endDateInput").value;
@@ -178,7 +184,7 @@ document.getElementById("submitCreateBtn").onclick = async function() {
   }
 
   // bookIdを取得
-  const books = await fetch("http://localhost:4000/books").then(r=>r.json());
+  const books = await fetch("http://localhost:4000/books").then(r => r.json());
   const bookData = books.find(b => b.title === book.title && b.author === book.author);
   if (!bookData) {
     alert("本の情報が見つかりません");
@@ -187,13 +193,13 @@ document.getElementById("submitCreateBtn").onclick = async function() {
 
   // 既存のrooms, readingsを取得
   const [rooms, readings] = await Promise.all([
-    fetch("http://localhost:4000/rooms").then(r=>r.json()),
-    fetch("http://localhost:4000/readings").then(r=>r.json())
+    fetch("http://localhost:4000/rooms").then(r => r.json()),
+    fetch("http://localhost:4000/readings").then(r => r.json())
   ]);
 
   // 新しいidを決定
-  const newRoomId = rooms.length ? Math.max(...rooms.map(r=>r.id)) + 1 : 1;
-  const newReadingId = readings.length ? Math.max(...readings.map(r=>r.id)) + 1 : 1;
+  const newRoomId = rooms.length ? Math.max(...rooms.map(r => r.id)) + 1 : 1;
+  const newReadingId = readings.length ? Math.max(...readings.map(r => r.id)) + 1 : 1;
 
   // 新しいreadingを追加（自分自身のreadingを仮登録）
   const loginUserId = parseInt(localStorage.getItem('loginUserId'));
@@ -206,7 +212,7 @@ document.getElementById("submitCreateBtn").onclick = async function() {
   };
   await fetch("http://localhost:4000/readings", {
     method: "POST",
-    headers: {"Content-Type":"application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newReading)
   });
 
@@ -221,7 +227,7 @@ document.getElementById("submitCreateBtn").onclick = async function() {
   };
   await fetch("http://localhost:4000/rooms", {
     method: "POST",
-    headers: {"Content-Type":"application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newRoom)
   });
 
@@ -232,7 +238,7 @@ document.getElementById("submitCreateBtn").onclick = async function() {
 };
 
 // ルーム作成ボタンからモーダルを開く
-document.getElementById("roomList").addEventListener("click", function(e) {
+document.getElementById("roomList").addEventListener("click", function (e) {
   if (e.target.classList.contains("create-room-btn")) {
     const book = getActiveBookInfo();
     if (!book) {
