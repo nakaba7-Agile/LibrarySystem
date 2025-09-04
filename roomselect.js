@@ -53,7 +53,7 @@ document.addEventListener("click", async (e) => {
   <div class="room-progress">平均進捗率：${avgProgress}%</div>
   <div class="room-members">${membersHTML}</div>
   <button class="room-button" data-id="${room.id}" data-bookid="${room.bookId}">
-    <img src="images/join.png" alt="参加" class="button-icon"> 参加
+    <class="button-icon"> 参加
   </button>
 `;
 
