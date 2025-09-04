@@ -158,7 +158,7 @@ dd{ margin:0; }
 /* ========== Responsive ========== */
 @media (max-width: 980px){
   .profile-grid{ grid-template-columns:1fr; max-width:720px; }
-  .avatar{ width:200px; height:200px; }
+  .mypage.avatar{ width:200px; height:200px; }
   dl{ grid-template-columns:120px 1fr; }
   #readingBooks{ max-width:720px; }
 }
