@@ -91,8 +91,8 @@
   font-size: 0.8em;
   padding: 8px 20px;
   border-radius: 40px;
-  background: #ddd;
-  border: none;
+  background: #fff;
+  border: 1px solid #171717;
   cursor: pointer;
   font-family: inherit;
   display: flex;
@@ -104,10 +104,15 @@
   border: 2px solid #1FB9EF; 
   box-shadow: 0 0 10px rgba(92, 192, 235, 0.6);
 }
-.roomSelect-btn.selected {
-  background-color: #1FB9EF; 
-  color: white;   
-  font-weight: bold;            
+.book-tile.hovered:not(.selected)  {
+  border: 1px solid #1FB9EF; /* 青色でホバーを示す */
+  
+}
+.roomSelect-btn.hovered:not(.selected)  {
+  background-color: #17afe7; /* 青色に変更 */
+  color: white;
+  font-weight: 600;   
+  border: none; 
 }
 /* ========= ページ切り替え ========= */
 .page{display: none;}
