@@ -29,7 +29,7 @@ function showToast(msg) {
 
 // ========== プロフィール ==========
 $(async function () {
-  const userId = localStorage.getItem("loginUserId");
+  const userId = localStorage.getItem("mypageUserId");
   if (!userId) return;
 
   const users = await $.getJSON(`${API}/users?id=${encodeURIComponent(userId)}`);

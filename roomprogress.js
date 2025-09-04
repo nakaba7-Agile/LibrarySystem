@@ -112,7 +112,8 @@ function ensureChart(){
       userMeta: [],
       borderRadius: 10,
       borderSkipped: false,
-      borderWidth: 0
+      borderWidth: 0,
+      userIds: []
     }]},
     options:{
       responsive:true,
@@ -153,6 +154,18 @@ function ensureChart(){
               return `${meta.dept}／${meta.pos}`;
             }
           }
+        }
+      },
+      // ★ 棒クリックで userId を取得
+      onClick(evt, elements) {
+        if (!elements.length) return;
+        const idx = elements[0].index;
+        const ds  = chart.data.datasets[0];
+        const userId = ds.userIds?.[idx];
+        if (userId) {
+          console.log("Clicked userId:", userId);
+          localStorage.setItem('mypageUserId', userId);
+          showPage('mypage');
         }
       }
     },
@@ -356,11 +369,14 @@ function render() {
                                  (String(r.id) === String(MY_USER_ID) || r.name === MY_NAME) ? '#1FB9EF' : '#ACE9FF');
   const userMeta = finalRows.map(r => ({ dept: r.dept, pos: r.pos }));
 
+  const ids      = finalRows.map(r => r.id);
+
   const c = ensureChart();
   c.data.labels = labels;
   c.data.datasets[0].data = counts;
   c.data.datasets[0].backgroundColor = colors;
   c.data.datasets[0].userMeta = userMeta;
+  c.data.datasets[0].userIds = ids;
 
   const maxVal = counts.length ? Math.max(...counts) : 0;
   const yopt = c.options.scales.y;
