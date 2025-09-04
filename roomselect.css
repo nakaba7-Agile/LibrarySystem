@@ -202,12 +202,14 @@ body {
   border-radius: 8px;
   padding: 8px 12px;
   gap: 8px;
+  flex: 1;
 }
 .modal-date-input {
   border: none;
   background: transparent;
   font-size: 1em;
   outline: none;
+  width: 100%; 
 }
 
 .modal-tilde {
@@ -217,12 +219,15 @@ body {
 .modal-btns {
   display: flex;
   gap: 24px;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 24px;
+
 }
 .modal-btn {
   font-size: 1.1em;
-  padding: 12px 40px;
+   padding: 12px 0;      /* ← 横幅は固定するので左右paddingは不要 */
+  width: 150px;         /* ← 横幅を揃える */
+  text-align: center;   /* ← ボタン内テキストを中央寄せ */
   border-radius: 30px;
   border: none;
   background: #e5e5e5;
@@ -230,8 +235,19 @@ body {
   transition: background 0.2s;
 }
 .modal-btn.create {
-  background: #ddd;
+  background: #007BFF;
+  color: white;
 }
 .modal-btn.cancel {
-  background: #e5e5e5;
+  background: #fff;
+  border: 1px solid #171717;
+}
+.modal-btn.create:hover {
+  background: #0056b3; /* ← ホバーした時の色 */
+  color: white;
+  font-weight: 600; 
+}
+.modal-btn.cancel:hover {
+  background: #f0f0f0; /* ← ホバーした時の色 */
+  border: 1px solid #171717;
 }
