@@ -52,7 +52,6 @@ body{
   column-gap:clamp(28px,4vw,56px);
   row-gap:24px;
   align-items:start;
-  max-width:1100px;
   margin-inline:auto;
 }
 
