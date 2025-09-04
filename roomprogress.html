@@ -5,19 +5,37 @@
   <title>ルーム別ランキング</title>
   <link rel="stylesheet" href="ranking.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    /* 日付バッジ風デザイン */
+    #graph-title {
+      display: inline-block;
+      margin-left: 18px;
+      padding: 4px 16px;
+      background: #f3f6fa;
+      color: #1976d2;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+      border: 1px solid #e0e7ef;
+      vertical-align: middle;
+      min-width: 120px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <h2 id="graph-title"></h2>
   <div class="header-bar">
     <div class="title-line">
-      <span class="title">ルーム別ランキング</span>
+      <span class="title">ランキング</span>
       <div class="filters">
         <div id="month-wrap" style="display:block;">
           <input type="month" id="month" class="pill" />
         </div>
-        <select id="selDept" class="pill"><option value="">すべての部門</option></select>
-        <select id="selPos" class="pill"><option value="">すべての役職</option></select>
+        <select id="selDept" class="pill" style="display:none;"><option value="">すべての部門</option></select>
+        <select id="selPos" class="pill" style="display:none;"><option value="">すべての役職</option></select>
       </div>
+      <h2 id="graph-title"></h2>
     </div>
   </div>
 

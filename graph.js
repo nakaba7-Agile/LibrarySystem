@@ -37,8 +37,10 @@ async function init() {
 
   // タブ表示のためにルームが一件もない場合対策
   if (userRooms.length === 0) {
-    roomTabsContainer.textContent = '参加中のルームがありません';
+    handleNoRooms(); // ルームがない場合の処理を追加
     return;
+  } else {
+    handleHasRooms(); // ルームがある場合の処理
   }
 
   // タブ作成
@@ -86,5 +88,22 @@ function updateIframe() {
     graphFrame.src = `roomprogress.html?roomId=${selectedRoomId}&type=${selectedType}`;
   }
 }
+
+// ルームがない場合の制御例
+function handleNoRooms() {
+  document.getElementById('graph-type').style.display = 'none';
+  document.getElementById('no-room-message').style.display = 'block';
+  document.getElementById('graph-frame').style.display = 'none';
+}
+
+// ルームがある場合は以下のように戻す
+function handleHasRooms() {
+  document.getElementById('graph-type').style.display = '';
+  document.getElementById('no-room-message').style.display = 'none';
+  document.getElementById('graph-frame').style.display = '';
+}
+
+// 例：ルームがない場合に呼び出す
+// handleNoRooms();
 
 init();
