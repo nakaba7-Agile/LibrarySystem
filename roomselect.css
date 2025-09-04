@@ -76,3 +76,35 @@ body {
 .room-button:hover {
     background-color: #0056b3;
 }
+
+/* ルームメンバー一覧 */
+.room-members {
+  display: flex;
+  gap: 8px;           /* アイコン間の余白 */
+  flex-wrap: wrap;    /* 必要なら折り返す */
+  margin: 10px 0;
+}
+
+/* 個々のメンバー */
+.member {
+  text-align: center;
+  font-size: 12px;
+  width: 40px;        /* アバターと名前が収まる幅 */
+  flex-shrink: 0;     /* 幅が縮まらないようにする */
+}
+
+/* アバター */
+.avatar {
+  width: 24px;        /* 小さめの見やすいサイズ */
+  height: 24px;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 4px; /* 名前との間隔 */
+}
+
+/* 名前 */
+.member-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
