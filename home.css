@@ -64,7 +64,7 @@ main{
 .graphpanel {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
 
