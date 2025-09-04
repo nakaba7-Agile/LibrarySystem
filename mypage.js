@@ -1,5 +1,5 @@
 // ====== settings ======
-const API = "http://localhost:4000";
+const API_MYPAGE = "http://localhost:4000";
 
 // ====== 便利関数 ======
 function ymdToday() {
@@ -32,13 +32,13 @@ $(async function () {
   const userId = localStorage.getItem("mypageUserId");
   if (!userId) return;
 
-  const users = await $.getJSON(`${API}/users?id=${encodeURIComponent(userId)}`);
+  const users = await $.getJSON(`${ API_MYPAGE}/users?id=${encodeURIComponent(userId)}`);
   if (!users.length) return;
   const user = users[0];
 
   const [departments, positions] = await Promise.all([
-    $.getJSON(`${API}/departments`),
-    $.getJSON(`${API}/positions`),
+    $.getJSON(`${ API_MYPAGE}/departments`),
+    $.getJSON(`${ API_MYPAGE}/positions`),
   ]);
   const dept = departments.find((d) => String(d.id) === String(user.departmentId));
   const pos  = positions.find((p) => String(p.id) === String(user.positionId));
@@ -67,7 +67,7 @@ $(async function () {
   const userId = localStorage.getItem("loginUserId");
   if (!userId) return;
 
-  const readings = await $.getJSON(`${API}/readings?userId=${encodeURIComponent(userId)}`);
+  const readings = await $.getJSON(`${ API_MYPAGE}/readings?userId=${encodeURIComponent(userId)}`);
   if (!readings.length) {
     $("#readingBooks").html(`<div class="muted">（読書履歴はありません）</div>`);
     return;
@@ -75,7 +75,7 @@ $(async function () {
 
   const bookIds = readings.map((r) => r.bookId);
   const books = await $.getJSON(
-    `${API}/books?id=${bookIds.map(encodeURIComponent).join("&id=")}`
+    `${ API_MYPAGE}/books?id=${bookIds.map(encodeURIComponent).join("&id=")}`
   );
 
   const merged = readings
@@ -174,7 +174,7 @@ $(async function () {
       status.text("保存中…");
 
       await $.ajax({
-        url: `${API}/readings/${encodeURIComponent(readingId)}`,
+        url: `${ API_MYPAGE}/readings/${encodeURIComponent(readingId)}`,
         method: "PATCH",
         contentType: "application/json",
         data: JSON.stringify({ comment: text }),
@@ -216,7 +216,7 @@ $(async function () {
 
     try {
       await $.ajax({
-        url: `${API}/readings/${encodeURIComponent(readingId)}`,
+        url: `${ API_MYPAGE}/readings/${encodeURIComponent(readingId)}`,
         method: "PATCH",
         contentType: "application/json",
         data: JSON.stringify(payload),
