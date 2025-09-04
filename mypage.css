@@ -22,7 +22,7 @@ body{
 }
 
 /* ========== page container ========== */
-.container{
+.mypage.container{
   max-width:1200px;
   margin:0 auto;
   padding-inline-start: 0;
