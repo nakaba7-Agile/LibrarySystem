@@ -321,23 +321,32 @@ function render() {
   // ★ 集計処理をtypeで分岐
   const map = new Map();
   if (type === 'progress') {
-    // 期間内の進捗率（最新のprogress値、なければ0％）
+    // ルーム内の本ID一覧
+    const roomReadingIds = new Set(room.readings);
+    const roomBookIds = new Set(
+      RAW.readings.filter(r => roomReadingIds.has(r.id)).map(r => r.bookId)
+    );
+
     for (const user of users) {
       const uid = String(user.id);
-      // 期間内のreading（同一ユーザー）
+      // 期間内＆ルーム内のreading（同一ユーザー＆ルーム内の本のみ）
       const readingsInMonth = RAW.readings.filter(r =>
         String(r.userId) === uid &&
-        between(r.date, sd, ed)
+        between(r.date, sd, ed) &&
+        roomBookIds.has(r.bookId)
       );
-      // 最新のprogress値（または0）
-      let progress = 0;
-      if (readingsInMonth.length > 0) {
-        // 最新日付のprogress
-        progress = readingsInMonth
-          .map(r => ({ date: r.date, progress: Number(r.progress ?? 0) }))
-          .sort((a, b) => new Date(b.date) - new Date(a.date))[0].progress;
-      }
-      map.set(uid, progress);
+      // ルーム内の本ごとに最新progressを取得
+      const latestProgressByBook = {};
+      readingsInMonth.forEach(r => {
+        const bid = String(r.bookId);
+        if (!latestProgressByBook[bid] || new Date(r.date) > new Date(latestProgressByBook[bid].date)) {
+          latestProgressByBook[bid] = r;
+        }
+      });
+      // 平均progress（または0）
+      const progresses = Object.values(latestProgressByBook).map(r => Number(r.progress ?? 0));
+      const avgProgress = progresses.length ? Math.round(progresses.reduce((a,b)=>a+b,0)/progresses.length) : 0;
+      map.set(uid, avgProgress);
     }
   } else {
     // 冊数（期間内でprogress>=100の読了本のみ）
@@ -444,9 +453,7 @@ window.addEventListener("message", async (e) => {
   if (!data || typeof data !== "object") return;
   if (data.type === "request-monthly-count") {
     try {
-      RAW.readings = await fetch(`${API}/readings`).then(r => r.json());
-      render();
-      postMonthlyCountToParent();
+      await fetchAll(); // ← readingsだけでなく全データ再取得
     } catch (err) {
       console.error("recalc monthly-count failed:", err);
     }
