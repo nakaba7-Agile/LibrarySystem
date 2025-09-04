@@ -122,6 +122,8 @@ body {
   border-radius: 50%;
   display: block;
   margin: 0 auto 4px; /* 名前との間隔 */
+  cursor: pointer;
+  position: relative;
 }
 
 /* 名前 */
