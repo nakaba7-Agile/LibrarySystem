@@ -82,7 +82,7 @@ body {
   display: flex;
   gap: 8px;           /* アイコン間の余白 */
   flex-wrap: wrap;    /* 必要なら折り返す */
-  margin: 10px 0;
+  /* margin: 10px 0; */
 }
 
 /* 個々のメンバー */
@@ -95,8 +95,8 @@ body {
 
 /* アバター */
 .avatar {
-  width: 24px;        /* 小さめの見やすいサイズ */
-  height: 24px;
+  width: px;        /* 小さめの見やすいサイズ */
+  height: 100px;
   border-radius: 50%;
   display: block;
   margin: 0 auto 4px; /* 名前との間隔 */
