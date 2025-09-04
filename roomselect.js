@@ -75,13 +75,74 @@ function hideCreateRoomModal() {
 
 // ボタンイベント
 document.getElementById("cancelCreateBtn").onclick = hideCreateRoomModal;
-document.getElementById("submitCreateBtn").onclick = function() {
-  // 入力値取得
+document.getElementById("submitCreateBtn").onclick = async function() {
   const name = document.getElementById("roomNameInput").value;
   const start = document.getElementById("startDateInput").value;
   const end = document.getElementById("endDateInput").value;
-  // バリデーションやAPI送信処理をここに実装
+
+  // 入力チェック
+  if (!name || !start || !end) {
+    alert("すべて入力してください");
+    return;
+  }
+
+  // 必要なデータを取得
+  const bookTitle = document.getElementById("modalBookTitle").textContent;
+  const bookAuthor = document.getElementById("modalBookAuthor").textContent;
+  const bookImg = document.getElementById("modalBookImg").src;
+
+  // 既存のrooms, readingsを取得
+  const [rooms, readings] = await Promise.all([
+    fetch("http://localhost:4000/rooms").then(r=>r.json()),
+    fetch("http://localhost:4000/readings").then(r=>r.json())
+  ]);
+
+  // 新しいidを決定
+  const newRoomId = rooms.length ? Math.max(...rooms.map(r=>r.id)) + 1 : 1;
+  const newReadingId = readings.length ? Math.max(...readings.map(r=>r.id)) + 1 : 1;
+
+  // bookIdを取得（bookTitleから検索）
+  const books = await fetch("http://localhost:4000/books").then(r=>r.json());
+  const book = books.find(b => b.title === bookTitle && b.author === bookAuthor);
+  if (!book) {
+    alert("本の情報が見つかりません");
+    return;
+  }
+
+  // 新しいreadingを追加（自分自身のreadingを仮登録）
+  const loginUserId = parseInt(localStorage.getItem('loginUserId'));
+  const newReading = {
+    id: newReadingId,
+    userId: loginUserId,
+    bookId: book.id,
+    date: start,
+    progress: 0
+  };
+  await fetch("http://localhost:4000/readings", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(newReading)
+  });
+
+  // 新しいroomを追加
+  const newRoom = {
+    id: newRoomId,
+    name: name,
+    bookId: book.id,
+    startDate: start,
+    endDate: end,
+    readings: [newReadingId]
+  };
+  await fetch("http://localhost:4000/rooms", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(newRoom)
+  });
+
   hideCreateRoomModal();
+
+  // ルーム一覧を再取得・再描画（必要ならリロードや関数呼び出し）
+  location.reload();
 };
 
 // ルーム作成ボタンからモーダルを開く
