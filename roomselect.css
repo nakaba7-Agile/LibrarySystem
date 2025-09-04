@@ -46,7 +46,7 @@ body {
     gap: 15px;
 }
 
-.room-card {
+/* .room-card {
     background: #fff;
     border-radius: 10px;
     padding: 15px;
@@ -54,7 +54,24 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+} */
+
+.room-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column; /* 縦方向に並べる */
+  gap: 10px;              /* 子要素間の余白 */
 }
+/* ルーム名（見出し） */
+.room-header {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+}
+
 
 .room-name {
     font-size: 16px;

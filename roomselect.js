@@ -30,10 +30,12 @@ document.addEventListener("click", async (e) => {
         `).join("");
 
         card.innerHTML = `
-          <span class="room-name">${room.name}</span>
-          <div class="room-members">${membersHTML}</div>
-          <button class="room-button" data-id="${room.id}">選択</button>
-        `;
+      <div class="room-header">
+    <span class="room-name">${room.name}</span>
+  </div>
+  <div class="room-members">${membersHTML}</div>
+  <button class="room-button" data-id="${room.id}">選択</button>
+`;
         roomList.appendChild(card);
       });
 
