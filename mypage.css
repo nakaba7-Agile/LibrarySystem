@@ -28,7 +28,7 @@ body{
   padding-inline-start: 0;
   padding-block-start: 0;
   display:flex !important;      /* 他CSSの grid / flex-row を打ち消す */
-  flex-direction:column;
+  /* flex-direction:column; */
   gap:28px;
 }
 
