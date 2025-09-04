@@ -118,10 +118,26 @@ document.addEventListener("DOMContentLoaded", ()=>{
         card.className = "room-card";
         card.innerHTML = `
           <span class="room-name">${room.name}</span>
-          <button class="room-button" data-id="${room.id}">選択</button>
+          <button class="room-button" data-id="${room.id}">参加</button>
         `;
         roomList.appendChild(card);
       });
+
+      // ▼▼▼ 新規ルーム作成ボタンを追加 ▼▼▼
+      const createCard = document.createElement("div");
+      createCard.className = "room-card";
+      createCard.innerHTML = `
+        <button class="room-button create-room-btn" style="width:100%;">＋ 新規ルーム作成</button>
+      `;
+      roomList.appendChild(createCard);
+
+      // 新規ルーム作成ボタンのクリックイベント
+      createCard.querySelector(".create-room-btn").addEventListener("click", () => {
+        // ここで新規ルーム作成の処理を実装
+        alert("新規ルーム作成ダイアログを表示します（実装してください）");
+      });
+      // ▲▲▲ ここまで ▲▲▲
+
     } catch (err) {
       console.error("ルーム取得エラー:", err);
     }
