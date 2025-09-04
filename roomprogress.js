@@ -165,7 +165,7 @@ function ensureChart(){
         if (userId) {
           console.log("Clicked userId:", userId);
           localStorage.setItem('mypageUserId', userId);
-          showPage('mypage');
+          window.parent.postMessage({ type: 'show-mypage' }, '*');
         }
       }
     },

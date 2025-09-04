@@ -28,3 +28,9 @@ buttons.forEach(btn => {
     });
 });
 });
+
+window.addEventListener('message', (e) => {
+  if (e.data?.type === 'show-mypage') {
+    showPage('mypage');
+  }
+});
