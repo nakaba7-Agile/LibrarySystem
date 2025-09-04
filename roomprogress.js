@@ -325,12 +325,7 @@ function render() {
   // 読書数モードなら ルームの関係ない今までの読書数、進捗モードならprogressの平均など計算
   const map = calculateCounts(users, RAW.readings);
 
-  if (type === 'count') {
-    reads.forEach(r => {
-      const k = String(r.userId);
-      map.set(k, (map.get(k) || 0) + 1);
-    });
-  } else if (type === 'progress') {
+  if (type === 'progress') {
     // 進捗モードでは例えば最新のprogress値を使用
     reads.forEach(r => {
       const k = String(r.userId);
@@ -444,6 +439,22 @@ $('#month')?.addEventListener('change', () => {
   const ym = $('#month').value;
   window.parent?.postMessage({ type: 'month-change', ym }, '*');
   render();
+});
+
+// ★ ページ送り（スライド）機能を追加
+$('#nextBtn')?.addEventListener('click', () => {
+  // ページ数計算
+  const totalPages = Math.ceil((allRows.length - 1) / (BARS_PER_PAGE - 1)) || 1;
+  if (currentPage < totalPages - 1) {
+    currentPage++;
+    render();
+  }
+});
+$('#prevBtn')?.addEventListener('click', () => {
+  if (currentPage > 0) {
+    currentPage--;
+    render();
+  }
 });
 
 // ---- 初期呼び出し ----
