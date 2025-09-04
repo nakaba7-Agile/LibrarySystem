@@ -37,8 +37,17 @@ document.addEventListener("click", async (e) => {
           </div>
         `).join("");
 
+        
+  // 平均進捗率を計算
+  let avgProgress = 0;
+  if (roomReadings.length > 0) {
+    const totalProgress = roomReadings.reduce((sum, r) => sum + r.progress, 0);
+    avgProgress = Math.round(totalProgress / roomReadings.length);
+  }
+
         card.innerHTML = `
           <span class="room-name">${room.name}</span>
+           <div class="room-progress">平均進捗率：${avgProgress}%</div>
           <div class="room-members">${membersHTML}</div>
           <button class="room-button" data-id="${room.id}" data-bookid="${room.bookId}">参加</button>
         `;
