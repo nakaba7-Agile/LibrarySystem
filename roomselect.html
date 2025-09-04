@@ -10,6 +10,38 @@
   <!-- 下部：ルーム一覧（カード風） -->
   <div class="room-list" id="roomList"></div>
 
+  <!-- 新規ルーム作成モーダル -->
+<div id="createRoomModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2>ルームの作成</h2>
+    <div class="modal-book-info">
+      <img id="modalBookImg" src="images/noimage.png" alt="" class="modal-book-img">
+      <div>
+        <div id="modalBookTitle" class="modal-book-title"></div>
+        <div id="modalBookAuthor" class="modal-book-author"></div>
+      </div>
+    </div>
+    <div class="modal-label">ルーム名</div>
+    <input id="roomNameInput" type="text" class="modal-input" placeholder="チームに名前をつける">
+    <div class="modal-label">期間</div>
+    <div class="modal-period">
+      <div class="modal-date">
+        <span class="modal-date-icon">📅</span>
+        <input id="startDateInput" type="date" class="modal-date-input" placeholder="開始日程">
+      </div>
+      <span class="modal-tilde">〜</span>
+      <div class="modal-date">
+        <span class="modal-date-icon">📅</span>
+        <input id="endDateInput" type="date" class="modal-date-input" placeholder="終了日程">
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button id="cancelCreateBtn" class="modal-btn cancel">キャンセル</button>
+      <button id="submitCreateBtn" class="modal-btn create">作成</button>
+    </div>
+  </div>
+</div>
+
   <!-- jQuery + 外部JS -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="./roomselect.js"></script>

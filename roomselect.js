@@ -57,3 +57,43 @@ document.addEventListener("click", async (e) => {
   }
 });
 
+// モーダル表示
+function showCreateRoomModal(book) {
+  document.getElementById("modalBookImg").src = book?.image || "images/noimage.png";
+  document.getElementById("modalBookTitle").textContent = book?.title || "";
+  document.getElementById("modalBookAuthor").textContent = book?.author || "";
+  document.getElementById("roomNameInput").value = "";
+  document.getElementById("startDateInput").value = "";
+  document.getElementById("endDateInput").value = "";
+  document.getElementById("createRoomModal").style.display = "flex";
+}
+
+// モーダル非表示
+function hideCreateRoomModal() {
+  document.getElementById("createRoomModal").style.display = "none";
+}
+
+// ボタンイベント
+document.getElementById("cancelCreateBtn").onclick = hideCreateRoomModal;
+document.getElementById("submitCreateBtn").onclick = function() {
+  // 入力値取得
+  const name = document.getElementById("roomNameInput").value;
+  const start = document.getElementById("startDateInput").value;
+  const end = document.getElementById("endDateInput").value;
+  // バリデーションやAPI送信処理をここに実装
+  hideCreateRoomModal();
+};
+
+// ルーム作成ボタンからモーダルを開く
+document.getElementById("roomList").addEventListener("click", function(e) {
+  if (e.target.classList.contains("create-room-btn")) {
+    // 選択中の本の情報を取得（必要に応じて修正）
+    const book = {
+      image: document.querySelector(".book-tile-img")?.src,
+      title: document.querySelector(".book-tile-title")?.textContent,
+      author: document.querySelector(".book-tile-author")?.textContent
+    };
+    showCreateRoomModal(book);
+  }
+});
+
