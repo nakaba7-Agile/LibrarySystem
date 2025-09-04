@@ -35,12 +35,16 @@
       position: relative;
     }
 
-    /* グラフ種別タブ風ボタン */
+    .graph-type-wrap {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-top: 4px;
+      padding-left: 12px;
+    }
     #graph-type {
       display: flex;
       gap: 10px;
-      margin-top: 4px;
-      padding-left: 12px; /* ← ここを追加 */
     }
     #graph-type input[type="radio"] {
       display: none;
@@ -66,6 +70,28 @@
       box-shadow: 0 2px 8px rgba(25,118,210,0.08);
     }
 
+    .period-label {
+      font-size: 1rem;
+      color: #555;
+      margin-right: 6px;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+    }
+    .period-badge {
+      display: inline-block;
+      padding: 4px 16px;
+      background: #f3f6fa;
+      color: #1976d2;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+      border: 1px solid #e0e7ef;
+      vertical-align: middle;
+      min-width: 120px;
+      text-align: center;
+    }
+
     #no-room-message {
       display: none;
       text-align: center;
@@ -85,15 +111,21 @@
 </head>
 <body>
 
-  <!-- 上段コントロール：1段目=ルームタブ / 2段目=グラフ種別タブ -->
+  <!-- 上段コントロール：1段目=ルームタブ / 2段目=グラフ種別タブ＋期間 -->
   <div class="controls">
     <div id="room-tabs" class="seg-tabs" role="tablist" aria-label="ルーム"></div>
 
-    <div id="graph-type" role="group" aria-label="グラフ種別">
-      <input type="radio" id="progress" name="type" value="progress" checked>
-      <label for="progress">みんなの進捗</label>
-      <input type="radio" id="count" name="type" value="count">
-      <label for="count">読書数</label>
+    <div class="graph-type-wrap">
+      <div id="graph-type" role="group" aria-label="グラフ種別">
+        <input type="radio" id="progress" name="type" value="progress" checked>
+        <label for="progress">みんなの進捗</label>
+        <input type="radio" id="count" name="type" value="count">
+        <label for="count">読書数</label>
+      </div>
+      <div id="period-wrap" style="display:flex; align-items:center; gap:6px;">
+        <span class="period-label">ルーム開催期間</span>
+        <span id="graph-title" class="period-badge"></span>
+      </div>
     </div>
   </div>
 
@@ -103,5 +135,6 @@
   <iframe id="graph-frame" src="" width="100%" height="600" frameborder="0"></iframe>
 
   <script src="./graph.js"></script>
+
 </body>
 </html>
