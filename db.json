@@ -316,7 +316,7 @@
       "userId": 4,
       "bookId": 101,
       "date": "2025-09-01",
-      "progress": 60
+      "progress": 33
     },
     {
       "id": 1005,
@@ -396,7 +396,7 @@
       "userId": 3,
       "bookId": 102,
       "date": "2025-09-01",
-      "progress": 70
+      "progress": 88
     },
     {
       "id": 1016,
@@ -751,30 +751,52 @@
       "userId": 1,
       "bookId": 101,
       "date": "2025-09-04",
-      "progress": 0
+      "progress": 54
     },
     {
       "id": 1062,
-      "userId": 1,
+      "userId": 13,
+      "bookId": 101,
+      "date": "2025-09-06",
+      "progress": 0
+    },
+    {
+      "id": 1063,
+      "userId": 13,
       "bookId": 102,
       "date": "2025-09-03",
       "progress": 0
     },
     {
-      "userId": 1,
-      "bookId": 103,
+      "userId": 4,
+      "bookId": 101,
       "date": "2025-09-04",
-      "progress": 0,
+      "progress": 75,
       "comment": "",
-      "id": 1063
+      "id": 1064
+    },
+    {
+      "id": 1065,
+      "userId": 4,
+      "bookId": 109,
+      "date": "2025-09-03",
+      "progress": 56
     },
     {
       "userId": 13,
+      "bookId": 109,
+      "date": "2025-09-04",
+      "progress": 0,
+      "comment": "",
+      "id": 1066
+    },
+    {
+      "userId": 1,
       "bookId": 101,
       "date": "2025-09-04",
-      "progress": 100,
+      "progress": 0,
       "comment": "",
-      "id": 1064
+      "id": 1067
     }
   ],
   "positions": [
@@ -823,6 +845,7 @@
         1002,
         1003,
         1004,
+        1064,
         1064
       ]
     },
@@ -836,7 +859,8 @@
         1005,
         1006,
         1007,
-        1008
+        1008,
+        1067
       ]
     },
     {

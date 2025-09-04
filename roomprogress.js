@@ -290,12 +290,6 @@ function render() {
   const room = RAW.rooms.find(r => String(r.id) === String(roomId));
   if (!room) return;
 
-  // 期間表示
-  const titleEl = document.getElementById('graph-title');
-  if (titleEl) {
-    titleEl.textContent = `${room.startDate} ~ ${room.endDate}`;
-  }
-
   const selDept = $('#selDept'), selPos = $('#selPos'), monthEl = $('#month');
   const deptId = selDept ? selDept.value || null : null;
   const posId = selPos ? selPos.value || null : null;
