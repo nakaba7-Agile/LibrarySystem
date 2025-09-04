@@ -53,7 +53,12 @@ const valueLabelPlugin = {
       }
       const centerY = (el.y + el.base) / 2;
       ctx.fillStyle = isMine ? '#fff' : '#171717';
-      ctx.fillText(`${value}%`, el.x, centerY);
+      if(type==='count'){
+        ctx.fillText(`${value}冊`, el.x, centerY);
+      }
+      else if(type==='progress'){
+        ctx.fillText(`${value}%`, el.x, centerY);
+      }
     }
     ctx.restore();
   }
@@ -95,6 +100,28 @@ function niceCeil(v) {
   else if (n <= 5) m = 5;
   return m * pow;
 }
+
+// 読書データから冊数を集計する処理
+function calculateCounts(users, readings) {
+  const map = new Map();
+
+  for (const user of users) {
+    const uid = String(user.id);
+
+    // progress >= 100 の読了本のみ
+    const finished = readings.filter(r =>
+      String(r.userId) === uid &&
+      Number(r.progress ?? 0) >= 100
+    );
+
+    // 同じ bookId は1冊としてカウント
+    const uniqueBooks = new Set(finished.map(r => r.bookId));
+    map.set(uid, uniqueBooks.size);
+  }
+
+  return map; // Map<userId, 冊数>
+}
+
 
 function ensureChart(){
   if(chart) return chart;
@@ -295,18 +322,10 @@ function render() {
     (type === 'count' ? (Number(r.progress ?? 0) >= 100) : true)
   );
 
-  console.log('room.readings:', room.readings);
-  console.log('自分のreading.id一覧:', RAW.readings.filter(r => r.userId === MY_USER_ID).map(r => r.id));
+  // 読書数モードなら ルームの関係ない今までの読書数、進捗モードならprogressの平均など計算
+  const map = calculateCounts(users, RAW.readings);
 
-
-  // 読書数モードなら count集計、進捗モードならprogressの平均など計算
-  const map = new Map();
-  if (type === 'count') {
-    reads.forEach(r => {
-      const k = String(r.userId);
-      map.set(k, (map.get(k) || 0) + 1);
-    });
-  } else if (type === 'progress') {
+  if (type === 'progress') {
     // 進捗モードでは例えば最新のprogress値を使用
     reads.forEach(r => {
       const k = String(r.userId);
@@ -420,6 +439,22 @@ $('#month')?.addEventListener('change', () => {
   const ym = $('#month').value;
   window.parent?.postMessage({ type: 'month-change', ym }, '*');
   render();
+});
+
+// ★ ページ送り（スライド）機能を追加
+$('#nextBtn')?.addEventListener('click', () => {
+  // ページ数計算
+  const totalPages = Math.ceil((allRows.length - 1) / (BARS_PER_PAGE - 1)) || 1;
+  if (currentPage < totalPages - 1) {
+    currentPage++;
+    render();
+  }
+});
+$('#prevBtn')?.addEventListener('click', () => {
+  if (currentPage > 0) {
+    currentPage--;
+    render();
+  }
 });
 
 // ---- 初期呼び出し ----
