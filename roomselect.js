@@ -1,34 +1,44 @@
-const API = "http://localhost:4000";
+document.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("roomSelect-btn")) {
+    const bookId = e.target.dataset.bookid;
 
-// URLパラメータから bookId を取得
-const params = new URLSearchParams(window.location.search);
-const bookId = params.get("bookId");
+    showPage("roomselect");
 
-$(async function() {
-  try {
-    // bookId に対応する rooms だけ取得
-    const rooms = await $.getJSON(`${API}/rooms?bookId=${bookId}`);
+    try {
+      const rooms = await fetch(`${API_SEARCH}/rooms?bookId=${bookId}`).then(r => r.json());
+      const readings = await fetch(`${API_SEARCH}/readings`).then(r => r.json());
+      const users = await fetch(`${API_SEARCH}/users`).then(r => r.json());
 
-    const $roomList = $("#roomList");
-    $roomList.empty();
+      const roomList = document.getElementById("roomList");
+      roomList.innerHTML = "";
 
-    rooms.forEach(room => {
-      const $card = $(`
-        <div class="room-card">
+      rooms.forEach(room => {
+        const card = document.createElement("div");
+        card.className = "room-card";
+
+        // このルームの読み取りデータを取得
+        const roomReadings = readings.filter(r => room.readings.includes(r.id));
+
+        // userId → user 情報に変換
+        const members = roomReadings.map(r => users.find(u => u.id === r.userId));
+
+        const membersHTML = members.map(u => `
+          <div class="member">
+            <img src="${u.avatarimage}" alt="${u.name}" class="avatar">
+            <div class="member-name">${u.name}</div>
+          </div>
+        `).join("");
+
+        card.innerHTML = `
           <span class="room-name">${room.name}</span>
+          <div class="room-members">${membersHTML}</div>
           <button class="room-button" data-id="${room.id}">選択</button>
-        </div>
-      `);
-      $roomList.append($card);
-    });
-
-    $roomList.on("click", ".room-button", function() {
-      const roomId = $(this).data("id");
-      alert(`ルームID ${roomId} が選択されました！`);
-    });
-
-  } catch (err) {
-    console.error("ルーム取得エラー:", err);
+        `;
+        roomList.appendChild(card);
+      });
+    } catch (err) {
+      console.error("ルーム取得エラー:", err);
+    }
   }
 });
 

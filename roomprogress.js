@@ -145,6 +145,15 @@ function ensureChart(){
     options:{
       responsive:true,
       maintainAspectRatio:false,
+      onHover(evt, elements) {
+        const canvas = evt.chart.canvas;
+        if (elements.length > 0) {
+          canvas.style.cursor = 'pointer';   // 棒の上にいるとき
+        } else {
+          canvas.style.cursor = 'default';   // それ以外
+        }
+      },
+      
       layout: { padding: { left: 6, right: PADDING_PX, bottom: 8 } },
       scales:{
         x: {
