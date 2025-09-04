@@ -277,16 +277,21 @@ function buildSelectors(){
 function render() {
   if (!roomId) return;
 
-  // 月・dept・pos を既存と同様に集計
-  // readingsを "roomId に含まれるもの" に絞り込み
+  // ルーム情報取得
   const room = RAW.rooms.find(r => String(r.id) === String(roomId));
-
   if (!room) return;
+
+  // 期間表示
+  const titleEl = document.getElementById('graph-title');
+  if (titleEl) {
+    titleEl.textContent = `${room.startDate} ~ ${room.endDate}`;
+  }
 
   const selDept = $('#selDept'), selPos = $('#selPos'), monthEl = $('#month');
   const deptId = selDept ? selDept.value || null : null;
   const posId = selPos ? selPos.value || null : null;
 
+  // 月の開始・終了日
   let ym = monthEl?.value;
   if (!ym) {
     const t = new Date();
@@ -294,14 +299,14 @@ function render() {
   }
   const { start: sd, end: ed } = monthToRange(ym);
 
-  // roomに属するreadingのuserIdをセットで取得
+  // ルームに属するユーザーID
   const roomUserIds = new Set(
-  RAW.readings
+    RAW.readings
       .filter(r => room.readings.includes(r.id))
       .map(r => String(r.userId))
   );
 
-  // ユーザー一覧をroomのuserIdに絞る（+フィルタ）
+  // ユーザー一覧をルームのuserIdに絞る（+フィルタ）
   let users = RAW.users.filter(u => {
     if (!roomUserIds.has(String(u.id))) return false;
     if (deptId && String(u.departmentId) !== String(deptId)) return false;
@@ -309,31 +314,47 @@ function render() {
     return true;
   });
 
-
+  // 自分を先頭に追加（未参加でも）
   const me = RAW.users.find(u => String(u.id) === String(MY_USER_ID) || u.name === MY_NAME);
   if (me && !users.some(u => String(u.id) === String(me.id))) users = [me, ...users];
-  const uids = new Set(users.map(u => String(u.id)));
 
-  // roomに含まれるreadingだけ & フィルタ
-  const roomReadings = RAW.readings.filter(r => room.readings.includes(r.id));
-  const reads = roomReadings.filter(r =>
-    uids.has(String(r.userId)) &&
-    between(r.date, sd, ed) &&
-    (type === 'count' ? (Number(r.progress ?? 0) >= 100) : true)
-  );
-
-  // 読書数モードなら ルームの関係ない今までの読書数、進捗モードならprogressの平均など計算
-  const map = calculateCounts(users, RAW.readings);
-
+  // ★ 集計処理をtypeで分岐
+  const map = new Map();
   if (type === 'progress') {
-    // 進捗モードでは例えば最新のprogress値を使用
-    reads.forEach(r => {
-      const k = String(r.userId);
-      map.set(k, Math.max(map.get(k) || 0, Number(r.progress ?? 0)));
-    });
+    // 期間内の進捗率（最新のprogress値、なければ0％）
+    for (const user of users) {
+      const uid = String(user.id);
+      // 期間内のreading（同一ユーザー）
+      const readingsInMonth = RAW.readings.filter(r =>
+        String(r.userId) === uid &&
+        between(r.date, sd, ed)
+      );
+      // 最新のprogress値（または0）
+      let progress = 0;
+      if (readingsInMonth.length > 0) {
+        // 最新日付のprogress
+        progress = readingsInMonth
+          .map(r => ({ date: r.date, progress: Number(r.progress ?? 0) }))
+          .sort((a, b) => new Date(b.date) - new Date(a.date))[0].progress;
+      }
+      map.set(uid, progress);
+    }
+  } else {
+    // 冊数（期間内でprogress>=100の読了本のみ）
+    for (const user of users) {
+      const uid = String(user.id);
+      const finished = RAW.readings.filter(r =>
+        String(r.userId) === uid &&
+        Number(r.progress ?? 0) >= 100 &&
+        between(r.date, sd, ed)
+      );
+      // 同じbookIdは1冊としてカウント
+      const uniqueBooks = new Set(finished.map(r => r.bookId));
+      map.set(uid, uniqueBooks.size);
+    }
   }
 
-  // rows を build
+  // rowsを構築
   const deptById = new Map(RAW.departments.map(d => [String(d.id), d.name]));
   const posById = new Map(RAW.positions.map(p => [String(p.id), p.name]));
 
@@ -348,8 +369,7 @@ function render() {
     };
   });
 
-  if (type === 'count') rows = rows.filter(r => r.count > 0);
-
+  // 0でも表示
   rows.sort((a, b) => {
     const isAme = String(a.id) === String(MY_USER_ID) || a.name === MY_NAME;
     const isBme = String(b.id) === String(MY_USER_ID) || b.name === MY_NAME;
@@ -361,11 +381,9 @@ function render() {
   allRows = rows;
 
   // ページング・描画は従来どおり
-  // （省略せず既存ロジックをコピー）
   const meRow = rows.find(r => String(r.id) === String(MY_USER_ID) || r.name === MY_NAME);
   const others = rows.filter(r => String(r.id) !== String(MY_USER_ID) && r.name !== MY_NAME);
 
-  // ページングは他人だけ（自分 + 4人 = 5本）
   const totalPages = Math.ceil(others.length / (BARS_PER_PAGE - 1)) || 1;
   if (currentPage >= totalPages) currentPage = totalPages - 1;
   if (currentPage < 0) currentPage = 0;
@@ -376,7 +394,6 @@ function render() {
 
   let finalRows = meRow ? [meRow, ...pageRows] : [...pageRows];
 
-  // 足りない分はダミー（透明）で埋める
   while (finalRows.length < BARS_PER_PAGE) {
     finalRows.push({ id:'', name:'', count:0, dept:'', pos:'' });
   }
@@ -384,10 +401,8 @@ function render() {
   const labels   = finalRows.map(r => r.name);
   const counts   = finalRows.map(r => r.count);
   const colors   = finalRows.map(r => r.name === '' ? 'transparent' :
-    
                                  (String(r.id) === String(MY_USER_ID) || r.name === MY_NAME) ? '#1FB9EF' : '#ACE9FF');
   const userMeta = finalRows.map(r => ({ dept: r.dept, pos: r.pos }));
-
   const ids      = finalRows.map(r => r.id);
 
   const c = ensureChart();
@@ -397,16 +412,22 @@ function render() {
   c.data.datasets[0].userMeta = userMeta;
   c.data.datasets[0].userIds = ids;
 
+  // Y軸設定
   const maxVal = counts.length ? Math.max(...counts) : 0;
   const yopt = c.options.scales.y;
   yopt.min = 0;
-  if (maxVal <= 10) {
-    yopt.max = 10;
-    yopt.suggestedMax = undefined;
+  if (type === 'progress') {
+    yopt.max = 100;
+    yopt.suggestedMax = 100;
   } else {
-    const upper = niceCeil(maxVal);
-    yopt.max = upper;
-    yopt.suggestedMax = undefined;
+    if (maxVal <= 10) {
+      yopt.max = 10;
+      yopt.suggestedMax = undefined;
+    } else {
+      const upper = niceCeil(maxVal);
+      yopt.max = upper;
+      yopt.suggestedMax = undefined;
+    }
   }
 
   c.update();
@@ -457,5 +478,19 @@ $('#prevBtn')?.addEventListener('click', () => {
   }
 });
 
+// ラジオボタンの状態監視
+function updateMonthInputVisibility() {
+  // graph.htmlからtypeを渡している場合はparams.get('type')で取得
+  const type = new URLSearchParams(window.location.search).get('type') || 'count';
+  const wrap = document.getElementById('month-wrap');
+  if (wrap) {
+    wrap.style.display = (type === 'progress') ? 'none' : '';
+  }
+}
+
 // ---- 初期呼び出し ----
 fetchAll();
+updateMonthInputVisibility();
+
+// URLのtype変更時にも反映（iframeのsrc変更時に再読込されるので基本不要ですが念のため）
+window.addEventListener('DOMContentLoaded', updateMonthInputVisibility);
