@@ -88,10 +88,20 @@ document.getElementById("submitCreateBtn").onclick = async function() {
     return;
   }
 
-  // 必要なデータを取得
-  const bookTitle = document.getElementById("modalBookTitle").textContent;
-  const bookAuthor = document.getElementById("modalBookAuthor").textContent;
-  const bookImg = document.getElementById("modalBookImg").src;
+  // activeな本の情報を取得
+  const book = getActiveBookInfo();
+  if (!book) {
+    alert("本を選択してください");
+    return;
+  }
+
+  // bookIdを取得
+  const books = await fetch("http://localhost:4000/books").then(r=>r.json());
+  const bookData = books.find(b => b.title === book.title && b.author === book.author);
+  if (!bookData) {
+    alert("本の情報が見つかりません");
+    return;
+  }
 
   // 既存のrooms, readingsを取得
   const [rooms, readings] = await Promise.all([
@@ -103,20 +113,12 @@ document.getElementById("submitCreateBtn").onclick = async function() {
   const newRoomId = rooms.length ? Math.max(...rooms.map(r=>r.id)) + 1 : 1;
   const newReadingId = readings.length ? Math.max(...readings.map(r=>r.id)) + 1 : 1;
 
-  // bookIdを取得（bookTitleから検索）
-  const books = await fetch("http://localhost:4000/books").then(r=>r.json());
-  const book = books.find(b => b.title === bookTitle && b.author === bookAuthor);
-  if (!book) {
-    alert("本の情報が見つかりません");
-    return;
-  }
-
   // 新しいreadingを追加（自分自身のreadingを仮登録）
   const loginUserId = parseInt(localStorage.getItem('loginUserId'));
   const newReading = {
     id: newReadingId,
     userId: loginUserId,
-    bookId: book.id,
+    bookId: bookData.id,
     date: start,
     progress: 0
   };
@@ -130,7 +132,7 @@ document.getElementById("submitCreateBtn").onclick = async function() {
   const newRoom = {
     id: newRoomId,
     name: name,
-    bookId: book.id,
+    bookId: bookData.id,
     startDate: start,
     endDate: end,
     readings: [newReadingId]
@@ -150,13 +152,22 @@ document.getElementById("submitCreateBtn").onclick = async function() {
 // ルーム作成ボタンからモーダルを開く
 document.getElementById("roomList").addEventListener("click", function(e) {
   if (e.target.classList.contains("create-room-btn")) {
-    // 選択中の本の情報を取得（必要に応じて修正）
-    const book = {
-      image: document.querySelector(".book-tile-img")?.src,
-      title: document.querySelector(".book-tile-title")?.textContent,
-      author: document.querySelector(".book-tile-author")?.textContent
-    };
+    const book = getActiveBookInfo();
+    if (!book) {
+      alert("本を選択してください");
+      return;
+    }
     showCreateRoomModal(book);
   }
 });
+
+function getActiveBookInfo() {
+  const selected = document.querySelector('.book-tile.selected');
+  if (!selected) return null;
+  return {
+    image: selected.querySelector('.book-tile-img')?.src,
+    title: selected.querySelector('.book-tile-title')?.textContent,
+    author: selected.querySelector('.book-tile-author')?.textContent
+  };
+}
 
