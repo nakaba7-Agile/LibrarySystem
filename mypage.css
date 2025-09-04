@@ -5,6 +5,9 @@
   --accent:#2563eb;
   --bg:#ffffff;
   --chip:#f3f4f6;
+
+  /* サムネとコメント欄の基準高さ */
+  --thumb-h: 96px;  /* 画像の縦と同じくらいに */
 }
 
 /* ========== base ========== */
@@ -20,13 +23,13 @@ body{
 
 /* ========== page container ========== */
 .container{
-  max-width:1200px;                 /* ページの最大幅 */
-  margin:0 auto;                    /* 画面中央 */
+  max-width:1200px;
+  margin:0 auto;
   padding-inline:clamp(16px,4vw,40px);
   padding-block:clamp(12px,2vw,20px);
-  display: flex !important;      /* 他CSSの grid / flex-row を打ち消す */
-  flex-direction: column;
-  gap: 28px;    
+  display:flex !important;      /* 他CSSの grid / flex-row を打ち消す */
+  flex-direction:column;
+  gap:28px;
 }
 
 /* ========== card ========== */
@@ -40,20 +43,15 @@ body{
 }
 
 /* 念のため、カードは幅いっぱいに */
-.container > .card{
-  width: 100%;
-}
+.container > .card{ width:100%; }
 
 /* ========== profile grid (中央寄せの肝) ========== */
 .profile-grid{
   display:grid;
-  /* 左:アバター / 右:本文。本文側は最小520px、最大で余りを使用 */
-  grid-template-columns: 300px minmax(520px, 1fr);
+  grid-template-columns:300px minmax(520px,1fr);
   column-gap:clamp(28px,4vw,56px);
   row-gap:24px;
   align-items:start;
-
-  /* ここで “中身のグリッド” 自体に幅制限と中央寄せを与える */
   max-width:1100px;
   margin-inline:auto;
 }
@@ -69,42 +67,21 @@ body{
 }
 
 /* 左カラム（アバター） */
-.avatar-wrap{
-  display:grid;
-  justify-items:center;
-  gap:12px;
-}
+.avatar-wrap{ display:grid; justify-items:center; gap:12px; }
 .avatar{
-  width:240px;
-  height:240px;
-  border-radius:50%;
-  background:#d1d5db;
-  overflow:hidden;
-  display:grid;
-  place-items:center;
-  color:var(--muted);
-  user-select:none;
+  width:240px; height:240px; border-radius:50%;
+  background:#d1d5db; overflow:hidden; display:grid; place-items:center;
+  color:var(--muted); user-select:none;
 }
-.avatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
+.avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
 
 /* 右カラム（項目） */
 dl{
-  margin:0;
-  display:grid;
-  grid-template-columns:140px minmax(360px, 1fr);
-  row-gap:22px;
-  column-gap:24px;
+  margin:0; display:grid;
+  grid-template-columns:140px minmax(360px,1fr);
+  row-gap:22px; column-gap:24px;
 }
-dt{
-  color:var(--text);
-  font-weight:700;
-  letter-spacing:.02em;
-}
+dt{ color:var(--text); font-weight:700; letter-spacing:.02em; }
 dd{ margin:0; }
 .value{ font-size:18px; }
 .muted{ color:var(--muted); }
@@ -112,68 +89,67 @@ dd{ margin:0; }
 /* chips */
 .chips{ display:flex; flex-wrap:wrap; gap:10px; }
 .chip{
-  background:var(--chip);
-  border:1px solid var(--border);
-  padding:6px 10px;
-  border-radius:999px;
-  font-size:14px;
+  background:var(--chip); border:1px solid var(--border);
+  padding:6px 10px; border-radius:999px; font-size:14px;
 }
 
 /* ========== 読書履歴 ========== */
-/* プロフィールの“下に”同じ最大幅で中央に置く */
 #readingBooks{
   max-width:1100px;
   margin:28px auto 0;
   padding-inline:clamp(2px,1vw,6px);
 }
 #readingBooks h2{
-  font-size:1.3em;
-  font-weight:bold;
-  margin:0 0 16px;
-  border-left:4px solid #4CAF50;
-  padding-left:8px;
-  color:#333;
+  font-size:1.3em; font-weight:bold; margin:0 0 16px;
+  border-left:4px solid #4CAF50; padding-left:8px; color:#333;
 }
 
-/* 各本 */
+/* 各本の行 */
 .book-card{
   display:flex;
-  align-items:flex-start;
+  align-items:stretch;              /* ← 行全体を同じ高さに（＝サムネ基準） */
   gap:16px;
   margin-bottom:24px;
 }
 .book-card img.thumbnail{
-  width:60px; height:90px;
+  width:72px;                       /* お好みで */
+  height:var(--thumb-h);            /* ← サムネ高さの基準 */
   object-fit:cover;
   border-radius:8px;
   background:#eee;
 }
+
+/* コメント入力とボタン行 */
 .reading-entry .actions{
   display:flex;
-  align-items:center;
+  align-items:center;               /* ← ボタンを縦中央に */
   gap:12px;
   margin-top:8px;
   flex-wrap:nowrap;
+  height:var(--thumb-h);            /* ← サムネと同じ高さにそろえる */
 }
 
-/* コメント欄・ボタン */
+/* コメント欄（高さを行いっぱいに） */
 .reading-entry .actions .comment{
   flex:1 1 36ch;
   min-width:220px;
   max-width:520px;
-  height:38px;
-  padding:8px 10px;
-  line-height:1.4;
+  height:100%;                      /* ← 行の高さ = サムネ高さ */
+  padding:10px 12px;
+  line-height:1.5;
   resize:vertical;
 }
+
+/* ボタン（縦中央） */
 .reading-entry .actions .comment-save-btn{
-  height:38px;
+  height:40px;
   padding:0 14px;
   white-space:nowrap;
+  align-self:center;                /* 念のため */
 }
+
 .reading-entry .actions .comment-status{
-  font-size:12px;
-  color:var(--muted);
+  font-size:12px; color:var(--muted);
 }
 
 /* 進捗スライダー行 */
@@ -182,22 +158,23 @@ dd{ margin:0; }
 
 /* ========== Responsive ========== */
 @media (max-width: 980px){
-  /* プロフィールを縦積みにして中央 */
-  .profile-grid{
-    grid-template-columns: 1fr;
-    max-width:720px;
-  }
+  .profile-grid{ grid-template-columns:1fr; max-width:720px; }
   .avatar{ width:200px; height:200px; }
   dl{ grid-template-columns:120px 1fr; }
   #readingBooks{ max-width:720px; }
 }
 @media (max-width: 600px){
   .avatar{ width:180px; height:180px; }
-  .reading-entry .actions{ flex-wrap:wrap; }
+
+  .reading-entry .actions{
+    height:auto;                    /* 折り返すので固定高は外す */
+    flex-wrap:wrap;
+    align-items:stretch;
+  }
   .reading-entry .actions .comment{
     flex:1 1 100%;
     min-width:0;
-    height:80px;
+    min-height:var(--thumb-h);      /* モバイルでも見やすい高さ */
   }
-  .reading-entry .actions .comment-save-btn{ height:40px; }
+  .reading-entry .actions .comment-save-btn{ height:40px; margin-top:8px; }
 }
