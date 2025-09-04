@@ -6,37 +6,12 @@
   <link rel="stylesheet" href="./roomselect.css" />
 </head>
 <body>
-  <!-- 上部：本の情報 -->
-  <div class="book-container">
-    <img src="book.jpg" alt="本の表紙">
-    <div class="book-info">
-      <div class="book-title">本のタイトル</div>
-      <div class="book-author">著者: 山田太郎</div>
-    </div>
-  </div>
 
   <!-- 下部：ルーム一覧（カード風） -->
-  <div class="room-list">
-    <div class="room-card">
-      <span class="room-name">ルーム1</span>
-      <button class="room-button">選択</button>
-    </div>
-    <div class="room-card">
-      <span class="room-name">ルーム2</span>
-      <button class="room-button">選択</button>
-    </div>
-    <div class="room-card">
-      <span class="room-name">ルーム3</span>
-      <button class="room-button">選択</button>
-    </div>
-    <div class="room-card">
-      <span class="room-name">ルーム4</span>
-      <button class="room-button">選択</button>
-    </div>
-    <div class="room-card">
-      <span class="room-name">ルーム5</span>
-      <button class="room-button">選択</button>
-    </div>
-  </div>
+  <div class="room-list" id="roomList"></div>
+
+  <!-- jQuery + 外部JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="./roomselect.js"></script>
 </body>
 </html>
