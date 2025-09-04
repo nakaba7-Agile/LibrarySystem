@@ -1,4 +1,16 @@
 document.addEventListener("click", async (e) => {
+  // 新規ルーム作成ボタン
+  if (e.target.classList.contains("create-room-btn")) {
+    // bookIdをdata属性で渡しておく
+    const bookId = e.target.dataset.bookid;
+    // 本情報取得
+    const book = bookId
+      ? await fetch(`http://localhost:4000/books/${bookId}`).then(r => r.json())
+      : null;
+    showCreateRoomModal(book);
+    return; // 以降の処理を止める
+  }
+
   if (e.target.classList.contains("roomSelect-btn")) {
     const bookId = e.target.dataset.bookid;
     showPage("roomselect");
@@ -37,8 +49,8 @@ document.addEventListener("click", async (e) => {
       const createCard = document.createElement("div");
       createCard.className = "room-card";
       createCard.innerHTML = `
-        <button class="room-button create-room-btn" style="width:100%;">＋ 新規ルーム作成</button>
-      `;
+  <button class="room-button create-room-btn" data-bookid="${bookId}" style="width:100%;">＋ 新規ルーム作成</button>
+`;
       roomList.appendChild(createCard);
 
       roomList.addEventListener("click", function (e) {
