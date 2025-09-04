@@ -259,7 +259,7 @@ window.addEventListener("storage", (e) => {
 // ====== 再描画関数 ======
 async function renderMypage(userId) {
   // 今の $(async function () { ... }) の中身を関数化して呼び出す
-  var userId = localStorage.getItem("mypageUserId");
+  userId = localStorage.getItem("mypageUserId");
   if (!userId) return;
 
   var users = await $.getJSON(`${ API_MYPAGE}/users?id=${encodeURIComponent(userId)}`);
