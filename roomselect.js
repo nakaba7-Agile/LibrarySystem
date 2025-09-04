@@ -59,7 +59,7 @@ document.addEventListener("click", async (e) => {
   }
 });
 
-// モーダル表示
+
 function showCreateRoomModal(book) {
   document.getElementById("modalBookImg").src = book?.image || "images/noimage.png";
   document.getElementById("modalBookTitle").textContent = book?.title || "";
