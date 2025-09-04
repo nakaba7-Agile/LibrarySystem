@@ -3,20 +3,20 @@ const API_MYPAGE = "http://localhost:4000";
 
 // ====== 便利関数 ======
 function ymdToday() {
-  const d = new Date();
-  const pad = (n) => String(n).padStart(2, "0");
+  var d = new Date();
+  var pad = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 function requestMonthlyCountFromRanking() {
   try {
-    const f = document.getElementById("rankingFrame");
+    var f = document.getElementById("rankingFrame");
     f?.contentWindow?.postMessage({ type: "request-monthly-count" }, "*");
   } catch (_) {}
 }
 function showToast(msg) {
-  const container = document.getElementById("toastContainer");
+  var container = document.getElementById("toastContainer");
   if (!container) { alert(msg); return; }
-  const toast = document.createElement("div");
+  var toast = document.createElement("div");
   toast.className = "toast";
   toast.textContent = msg;
   container.appendChild(toast);
@@ -29,23 +29,23 @@ function showToast(msg) {
 
 // ========== プロフィール ==========
 $(async function () {
-  const userId = localStorage.getItem("mypageUserId");
+  var userId = localStorage.getItem("mypageUserId");
   if (!userId) return;
 
-  const users = await $.getJSON(`${ API_MYPAGE}/users?id=${encodeURIComponent(userId)}`);
+  var users = await $.getJSON(`${ API_MYPAGE}/users?id=${encodeURIComponent(userId)}`);
   if (!users.length) return;
-  const user = users[0];
+  var user = users[0];
 
-  const [departments, positions] = await Promise.all([
+  var [departments, positions] = await Promise.all([
     $.getJSON(`${ API_MYPAGE}/departments`),
     $.getJSON(`${ API_MYPAGE}/positions`),
   ]);
-  const dept = departments.find((d) => String(d.id) === String(user.departmentId));
-  const pos  = positions.find((p) => String(p.id) === String(user.positionId));
+  var dept = departments.find((d) => String(d.id) === String(user.departmentId));
+  var pos  = positions.find((p) => String(p.id) === String(user.positionId));
 
   let years = "";
   if (user.joinYear) {
-    const now = new Date();
+    var now = new Date();
     years = now.getFullYear() - user.joinYear + 1 + "年目";
   }
 
@@ -64,23 +64,23 @@ $(async function () {
 
 // ========== 読んでいる本 ==========
 $(async function () {
-  const userId = localStorage.getItem("loginUserId");
+  var userId = localStorage.getItem("mypageUserId");
   if (!userId) return;
 
-  const readings = await $.getJSON(`${ API_MYPAGE}/readings?userId=${encodeURIComponent(userId)}`);
+  var readings = await $.getJSON(`${ API_MYPAGE}/readings?userId=${encodeURIComponent(userId)}`);
   if (!readings.length) {
     $("#readingBooks").html(`<div class="muted">（読書履歴はありません）</div>`);
     return;
   }
 
-  const bookIds = readings.map((r) => r.bookId);
-  const books = await $.getJSON(
+  var bookIds = readings.map((r) => r.bookId);
+  var books = await $.getJSON(
     `${ API_MYPAGE}/books?id=${bookIds.map(encodeURIComponent).join("&id=")}`
   );
 
-  const merged = readings
+  var merged = readings
     .map((r) => {
-      const book = books.find((b) => String(b.id) === String(r.bookId));
+      var book = books.find((b) => String(b.id) === String(r.bookId));
       if (!book) return null;
       return {
         ...r,
@@ -94,21 +94,21 @@ $(async function () {
 
   merged.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  const groups = {};
+  var groups = {};
   merged.forEach((r) => {
-    const d = new Date(r.date);
-    const key = `${d.getFullYear()}年${d.getMonth() + 1}月`;
+    var d = new Date(r.date);
+    var key = `${d.getFullYear()}年${d.getMonth() + 1}月`;
     (groups[key] ||= []).push(r);
   });
 
   let out = "";
-  for (const [month, items] of Object.entries(groups)) {
+  for (var [month, items] of Object.entries(groups)) {
     out += `<div class="month-block"><h2>${month}</h2>`;
     items.forEach((r) => {
-      const d = new Date(r.date);
-      const day = `${d.getDate()}日`;
+      var d = new Date(r.date);
+      var day = `${d.getDate()}日`;
 
-      const progressUi =
+      var progressUi =
         Number(r.progress ?? 0) < 100
           ? `
           <div class="progress-control" data-readingid="${r.id}">
@@ -146,27 +146,27 @@ $(async function () {
 
   // ===== スライダー：表示更新（ドラッグ中）
   $(document).on("input", ".progress-slider", function () {
-    const val = $(this).val();
-    const box = $(this).closest(".progress-control");
+    var val = $(this).val();
+    var box = $(this).closest(".progress-control");
     box.find(".progress-value").text(`${val}%`);
-    const st = box.find(".save-status");
+    var st = box.find(".save-status");
     st.text(val === $(this).data("_lastSaved") ? "" : "未保存の変更…");
   });
 
   // ===== スライダー：離したら保存
   $(document).on("change", ".progress-slider", async function () {
-    const readingId = String($(this).data("readingid"));
-    const newVal = Number($(this).val());
+    var readingId = String($(this).data("readingid"));
+    var newVal = Number($(this).val());
     await saveProgress(readingId, newVal);
   });
 
   // ===== コメント登録ボタン
   $(document).on("click", ".comment-save-btn", async function () {
-    const readingId = String($(this).data("readingid"));
-    const wrap = $(this).closest(".actions");
-    const ta = wrap.find(`.comment[data-readingid="${readingId}"]`);
-    const status = wrap.find(".comment-status");
-    const text = (ta.val() || "").toString();
+    var readingId = String($(this).data("readingid"));
+    var wrap = $(this).closest(".actions");
+    var ta = wrap.find(`.comment[data-readingid="${readingId}"]`);
+    var status = wrap.find(".comment-status");
+    var text = (ta.val() || "").toString();
 
     try {
       $(this).prop("disabled", true);
@@ -197,22 +197,22 @@ $(async function () {
   $(document).on("keydown", ".comment", function (e) {
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
       e.preventDefault();
-      const readingId = String($(this).data("readingid"));
+      var readingId = String($(this).data("readingid"));
       $(this).closest(".actions").find(`.comment-save-btn[data-readingid="${readingId}"]`).trigger("click");
     }
   });
 
   // ====== 進捗保存処理 ======
   async function saveProgress(readingId, value) {
-    const box = $(`.progress-control[data-readingid="${readingId}"]`);
-    const slider = box.find(".progress-slider");
-    const status = box.find(".save-status");
-    const valueEl = box.find(".progress-value");
+    var box = $(`.progress-control[data-readingid="${readingId}"]`);
+    var slider = box.find(".progress-slider");
+    var status = box.find(".save-status");
+    var valueEl = box.find(".progress-value");
 
     slider.prop("disabled", true);
     status.text("保存中…");
 
-    const payload = value >= 100 ? { progress: 100, date: ymdToday() } : { progress: value };
+    var payload = value >= 100 ? { progress: 100, date: ymdToday() } : { progress: value };
 
     try {
       await $.ajax({
@@ -235,7 +235,7 @@ $(async function () {
     } catch (e) {
       console.error(e);
       status.text("保存失敗。再試行してください");
-      const last = Number(slider.data("_lastSaved"));
+      var last = Number(slider.data("_lastSaved"));
       if (!Number.isNaN(last)) {
         slider.val(String(last));
         valueEl.text(`${last}%`);
@@ -246,3 +246,49 @@ $(async function () {
     }
   }
 });
+
+
+// ====== 他タブで userId が変わったら再描画 ======
+window.addEventListener("storage", (e) => {
+    if (e.key === "mypageUserId") {
+        renderMypage(e.newValue);  // ユーザーIDを渡して再描画
+    }
+});
+
+
+// ====== 再描画関数 ======
+async function renderMypage(userId) {
+  // 今の $(async function () { ... }) の中身を関数化して呼び出す
+  var userId = localStorage.getItem("mypageUserId");
+  if (!userId) return;
+
+  var users = await $.getJSON(`${ API_MYPAGE}/users?id=${encodeURIComponent(userId)}`);
+  if (!users.length) return;
+  var user = users[0];
+
+  var [departments, positions] = await Promise.all([
+    $.getJSON(`${ API_MYPAGE}/departments`),
+    $.getJSON(`${ API_MYPAGE}/positions`),
+  ]);
+  var dept = departments.find((d) => String(d.id) === String(user.departmentId));
+  var pos  = positions.find((p) => String(p.id) === String(user.positionId));
+
+  let years = "";
+  if (user.joinYear) {
+    var now = new Date();
+    years = now.getFullYear() - user.joinYear + 1 + "年目";
+  }
+
+  let certHtml = "";
+  if (Array.isArray(user.certs)) {
+    certHtml = user.certs.map((c) => `<span class="chip">${c}</span>`).join("");
+  }
+
+  $("#avatarimage").html(`<img src="${user.avatarimage}" alt="avatar" />`);
+  $("#profileName").text(user.name || "");
+  $("#profileDept").text(dept ? dept.name : "");
+  $("#profileYears").text(years);
+  $("#profilePosition").text(pos ? pos.name : "");
+  $("#profileCerts").html(certHtml);
+}
+
