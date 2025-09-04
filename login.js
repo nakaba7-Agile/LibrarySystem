@@ -9,6 +9,7 @@ $('#loginForm').on('submit', async function(e) {
     if (users.length === 1 && users[0].password === password) {
         // ログイン成功: ユーザーIDをlocalStorageに保存
         localStorage.setItem('loginUserId', id);
+        localStorage.setItem('mypageUserId', id);
         window.location.href = "home.html"; // home画面に遷移
     } else {
         $('#loginError').text('社員IDまたはパスワードが正しくありません');

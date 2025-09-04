@@ -73,7 +73,7 @@
                 <img src="images/topPageIcon.png" alt="トップページへの遷移アイコン" height="36px">
                 トップページ
             </div>
-            <div class="headerItem myPage" onclick="localStorage.setItem('mypageUserId', localStorage.getItem('loginUserId')); renderMypage('mypageUserId'); showPage('mypage')" style="cursor:pointer;">
+            <div class="headerItem myPage" onclick="localStorage.setItem('mypageUserId', localStorage.getItem('loginUserId')); renderMypage('mypageUserId'); console.log(localStorage.getItem(mypageUserId)); showPage('mypage')" style="cursor:pointer;">
                 <img id="avatarIcon" alt="デフォルトのマイページアイコン" height="38px">
                 <span id="userName">名前</span> さん
             </div>
